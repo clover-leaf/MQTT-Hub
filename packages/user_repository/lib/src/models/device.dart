@@ -15,22 +15,36 @@ class Device extends Equatable {
   Device({
     FieldId? id,
     required this.groupID,
+    required this.brokerID,
     required this.name,
+    required this.topic,
+    required this.jsonEnable,
   })  : assert(
           id == null || id.isNotEmpty,
           'id can not be null and should be empty',
         ),
         id = id ?? const Uuid().v4();
 
-  /// The group ID
+  /// The ID
   final FieldId id;
 
   /// The parent group ID
   @JsonKey(name: 'group_id')
   final FieldId groupID;
 
-  /// The name of project
+  /// The broker ID
+  @JsonKey(name: 'broker_id')
+  final FieldId brokerID;
+
+  /// The name of device
   final String name;
+
+  /// The topic of device
+  final String topic;
+
+  /// Whether use json or not
+  @JsonKey(name: 'json_enable')
+  final bool jsonEnable;
 
   /// Deserializes the given [JsonMap] into a [Device].
   static Device fromJson(JsonMap json) {
@@ -44,15 +58,21 @@ class Device extends Equatable {
   Device copyWith({
     FieldId? id,
     FieldId? groupID,
+    FieldId? brokerID,
     String? name,
+    String? topic,
+    bool? jsonEnable,
   }) {
     return Device(
       id: id ?? this.id,
       groupID: groupID ?? this.groupID,
+      brokerID: brokerID ?? this.brokerID,
       name: name ?? this.name,
+      topic: topic ?? this.topic,
+      jsonEnable: jsonEnable ?? this.jsonEnable,
     );
   }
 
   @override
-  List<Object> get props => [id, groupID, name];
+  List<Object> get props => [id, groupID, brokerID, name, topic, jsonEnable];
 }
