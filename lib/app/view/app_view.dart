@@ -22,9 +22,10 @@ class _AppViewState extends State<AppView> {
       try {
         final token = await repository.recoverSession();
         await repository.checkToken(token);
-        repository.token = token;
         if (!mounted) return;
-        context.read<AppBloc>().add(const AppAuthenticated());
+        context
+            .read<AppBloc>()
+            .add(AppAuthenticated(token: token, toWrite: false));
       } catch (err) {
         context.read<AppBloc>().add(const AppUnauthenticated());
       }
@@ -37,11 +38,12 @@ class _AppViewState extends State<AppView> {
 
   @override
   Widget build(BuildContext context) {
+    final status = context.select((AppBloc bloc) => bloc.state.status);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       home: FlowBuilder<AppStatus>(
-        state: context.select((AppBloc bloc) => bloc.state.status),
+        state: status,
         onGeneratePages: onGenerateAppViewPages,
       ),
     );

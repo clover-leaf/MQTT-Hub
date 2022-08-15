@@ -70,9 +70,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   ) async {
     try {
       if (state.status.isSubmissionInProgress || !state.valid) {
-        emit(
-          state.copyWith(error: 'Please fill infomation'),
-        );
+        emit(state.copyWith(error: 'Please fill infomation'));
         return;
       }
       emit(state.copyWith(status: FormzStatus.submissionInProgress));
@@ -81,9 +79,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         event.username,
         event.password,
       );
-      _userRepository.token = token;
-      emit(state.copyWith(status: FormzStatus.submissionSuccess));
-      _userRepository.updateAuthenticator(isAuth: true);
+      emit(state.copyWith(status: FormzStatus.submissionSuccess, token: token));
     } catch (error) {
       emit(
         state.copyWith(

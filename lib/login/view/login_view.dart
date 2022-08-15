@@ -1,4 +1,5 @@
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+import 'package:bee/app/bloc/app_bloc.dart';
 import 'package:bee/gen/assets.gen.dart';
 import 'package:bee/gen/colors.gen.dart';
 import 'package:bee/login/bloc/bloc.dart';
@@ -12,26 +13,40 @@ class LoginView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // use ListView to make page scroll up when keyboard comes
-    return BlocListener<LoginBloc, LoginState>(
-      listenWhen: (previous, current) => previous.error != current.error,
-      listener: (context, state) {
-        if (state.error != null) {
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(
-              SnackBar(
-                elevation: 0,
-                behavior: SnackBarBehavior.floating,
-                backgroundColor: Colors.transparent,
-                content: AwesomeSnackbarContent(
-                  title: 'On Snap!',
-                  message: state.error!,
-                  contentType: ContentType.failure,
-                ),
-              ),
-            );
-        }
-      },
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<LoginBloc, LoginState>(
+          listenWhen: (previous, current) => previous.error != current.error,
+          listener: (context, state) {
+            if (state.error != null) {
+              ScaffoldMessenger.of(context)
+                ..hideCurrentSnackBar()
+                ..showSnackBar(
+                  SnackBar(
+                    elevation: 0,
+                    behavior: SnackBarBehavior.floating,
+                    backgroundColor: Colors.transparent,
+                    content: AwesomeSnackbarContent(
+                      title: 'On Snap!',
+                      message: state.error!,
+                      contentType: ContentType.failure,
+                    ),
+                  ),
+                );
+            }
+          },
+        ),
+        BlocListener<LoginBloc, LoginState>(
+          listenWhen: (previous, current) => previous.status != current.status,
+          listener: (context, state) {
+            if (state.status.isSubmissionSuccess) {
+              context
+                  .read<AppBloc>()
+                  .add(AppAuthenticated(token: state.token!, toWrite: true));
+            }
+          },
+        ),
+      ],
       child: ListView(
         padding: const EdgeInsets.symmetric(
           vertical: 32,
@@ -75,7 +90,7 @@ class _DomainNameInput extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final isInProgress = context.select(
-      (LoginBloc bloc) => bloc.state.status == FormzStatus.submissionInProgress,
+      (LoginBloc bloc) => bloc.state.status.isSubmissionInProgress,
     );
 
     return Padding(
@@ -130,7 +145,7 @@ class _EmailInput extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final isInProgress = context.select(
-      (LoginBloc bloc) => bloc.state.status == FormzStatus.submissionInProgress,
+      (LoginBloc bloc) => bloc.state.status.isSubmissionInProgress,
     );
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
@@ -187,7 +202,7 @@ class _PasswordInput extends StatelessWidget {
       (LoginBloc bloc) => bloc.state.passwordVisible,
     );
     final isInProgress = context.select(
-      (LoginBloc bloc) => bloc.state.status == FormzStatus.submissionInProgress,
+      (LoginBloc bloc) => bloc.state.status.isSubmissionInProgress,
     );
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),

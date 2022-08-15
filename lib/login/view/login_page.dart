@@ -6,7 +6,29 @@ import 'package:user_repository/user_repository.dart';
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
 
-  static Page<void> page() => const MaterialPage<void>(child: LoginPage());
+  static Page<void> page() => const MaterialPage<void>(
+        child: LoginPage(),
+      );
+
+  static PageRoute<void> route() {
+    return PageRouteBuilder<void>(
+      transitionDuration: const Duration(milliseconds: 400),
+      pageBuilder: (context, animation, secondaryAnimation) =>
+          const LoginPage(),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = Offset(0, 1);
+        const end = Offset.zero;
+        const curve = Curves.ease;
+        final tween =
+            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+        return SlideTransition(
+          position: animation.drive(tween),
+          child: child,
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -40,4 +40,38 @@ class HttpWrapper {
       throw Exception(message);
     }
   }
+
+  /// PUT method
+  Future<Map<String, dynamic>> put(
+    Uri uri, {
+    required Map<String, dynamic> body,
+    Map<String, String>? header,
+  }) async {
+    final res =
+        await _httpClient.put(uri, body: jsonEncode(body), headers: header);
+    if (res.statusCode == 200) {
+      final body = jsonDecode(res.body) as Map<String, dynamic>;
+      return body;
+    } else {
+      final body = jsonDecode(res.body) as Map<String, dynamic>;
+      final message = body['message'] as String;
+      throw Exception(message);
+    }
+  }
+
+  /// DELETE method
+  Future<Map<String, dynamic>> delete(
+    Uri uri, {
+    Map<String, String>? header,
+  }) async {
+    final res = await _httpClient.delete(uri, headers: header);
+    if (res.statusCode == 200) {
+      final body = jsonDecode(res.body) as Map<String, dynamic>;
+      return body;
+    } else {
+      final body = jsonDecode(res.body) as Map<String, dynamic>;
+      final message = body['message'] as String;
+      throw Exception(message);
+    }
+  }
 }

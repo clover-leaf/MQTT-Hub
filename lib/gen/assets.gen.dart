@@ -14,6 +14,15 @@ import 'package:flutter/services.dart';
 class $AssetsIconsGen {
   const $AssetsIconsGen();
 
+  /// File path: assets/icons/add.svg
+  SvgGenImage get add => const SvgGenImage('assets/icons/add.svg');
+
+  /// File path: assets/icons/arrow-left.svg
+  SvgGenImage get arrowLeft => const SvgGenImage('assets/icons/arrow-left.svg');
+
+  /// File path: assets/icons/box-2.svg
+  SvgGenImage get box2 => const SvgGenImage('assets/icons/box-2.svg');
+
   /// File path: assets/icons/box.svg
   SvgGenImage get box => const SvgGenImage('assets/icons/box.svg');
 
@@ -23,11 +32,30 @@ class $AssetsIconsGen {
   /// File path: assets/icons/eye.svg
   SvgGenImage get eye => const SvgGenImage('assets/icons/eye.svg');
 
+  /// File path: assets/icons/folder-add.svg
+  SvgGenImage get folderAdd => const SvgGenImage('assets/icons/folder-add.svg');
+
   /// File path: assets/icons/lock.svg
   SvgGenImage get lock => const SvgGenImage('assets/icons/lock.svg');
 
+  /// File path: assets/icons/logout.svg
+  SvgGenImage get logout => const SvgGenImage('assets/icons/logout.svg');
+
+  /// File path: assets/icons/more.svg
+  SvgGenImage get more => const SvgGenImage('assets/icons/more.svg');
+
+  /// File path: assets/icons/refresh.svg
+  SvgGenImage get refresh => const SvgGenImage('assets/icons/refresh.svg');
+
+  /// File path: assets/icons/setting.svg
+  SvgGenImage get setting => const SvgGenImage('assets/icons/setting.svg');
+
   /// File path: assets/icons/sms.svg
   SvgGenImage get sms => const SvgGenImage('assets/icons/sms.svg');
+
+  /// File path: assets/icons/textalign-left.svg
+  SvgGenImage get textalignLeft =>
+      const SvgGenImage('assets/icons/textalign-left.svg');
 }
 
 class Assets {
