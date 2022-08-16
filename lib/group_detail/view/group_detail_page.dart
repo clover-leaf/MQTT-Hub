@@ -12,18 +12,18 @@ class GroupDetailPage extends StatelessWidget {
   const GroupDetailPage({super.key});
 
   static PageRoute<void> route({
+    required String path,
+    required Project rootProject,
     required Group group,
-    required Project? parentProject,
-    required Group? parentGroup,
   }) {
     return PageRouteBuilder<void>(
       transitionDuration: const Duration(milliseconds: 400),
       pageBuilder: (context, animation, secondaryAnimation) => BlocProvider(
         create: (context) => GroupDetailBloc(
           context.read<UserRepository>(),
+          path: path,
+          rootProject: rootProject,
           group: group,
-          parentProject: parentProject,
-          parentGroup: parentGroup,
         )
           ..add(const GroupSubscriptionRequested())
           ..add(const DeviceSubscriptionRequested()),
@@ -48,6 +48,9 @@ class GroupDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final group = context.select((GroupDetailBloc bloc) => bloc.state.group);
+    final rootProject =
+        context.select((GroupDetailBloc bloc) => bloc.state.rootProject);
+    final path = context.select((GroupDetailBloc bloc) => bloc.state.path);
 
     return Scaffold(
       backgroundColor: theme.backgroundColor,
@@ -67,6 +70,7 @@ class GroupDetailPage extends StatelessWidget {
                   onPressed: () => Navigator.of(bContext).pop(
                     () => Navigator.of(context).push(
                       EditGroupPage.route(
+                        path: path,
                         project: null,
                         group: group,
                         initGroup: null,
@@ -79,7 +83,10 @@ class GroupDetailPage extends StatelessWidget {
                   onPressed: () => Navigator.of(bContext).pop(
                     () => Navigator.of(context).push(
                       EditDevicePage.route(
+                        path: path,
+                        rootProject: rootProject,
                         parentGroup: group,
+                        initAttributes: [],
                         initDevice: null,
                       ),
                     ),

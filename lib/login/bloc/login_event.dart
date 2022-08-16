@@ -31,13 +31,13 @@ class LoginDomainNameChanged extends LoginEvent {
   List<Object> get props => [domainName];
 }
 
-class LoginEmailChanged extends LoginEvent {
-  const LoginEmailChanged(this.email);
+class LoginUsernameChanged extends LoginEvent {
+  const LoginUsernameChanged(this.username);
 
-  final String email;
+  final String username;
 
   @override
-  List<Object> get props => [email];
+  List<Object> get props => [username];
 }
 
 class LoginPasswordChanged extends LoginEvent {

@@ -9,7 +9,10 @@ class EditDevicePage extends StatelessWidget {
   const EditDevicePage({super.key});
 
   static PageRoute<void> route({
+    required String path,
+    required Project rootProject,
     required Group parentGroup,
+    required List<Attribute> initAttributes,
     required Device? initDevice,
   }) {
     return PageRouteBuilder<void>(
@@ -17,9 +20,12 @@ class EditDevicePage extends StatelessWidget {
       pageBuilder: (context, animation, secondaryAnimation) => BlocProvider(
         create: (context) => EditDeviceBloc(
           context.read<UserRepository>(),
+          path: path,
+          rootProject: rootProject,
           parentGroup: parentGroup,
+          initAttributes: initAttributes,
           initDevice: initDevice,
-        ),
+        )..add(const BrokerSubscriptionRequested()),
         child: const EditDevicePage(),
       ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -40,20 +46,24 @@ class EditDevicePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final deviceName =
-        context.select((EditDeviceBloc bloc) => bloc.state.deviceName);
+    final state = context.watch<EditDeviceBloc>().state;
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor: theme.backgroundColor,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         backgroundColor: ColorName.blue,
         splashColor: ColorName.darkBlue,
         foregroundColor: ColorName.darkBlue,
-        onPressed: () => context
-            .read<EditDeviceBloc>()
-            .add(EditSubmitted(deviceName: deviceName.value)),
-        child: Assets.icons.add.svg(color: ColorName.white),
+        onPressed: () => context.read<EditDeviceBloc>().add(
+              EditSubmitted(
+                deviceName: state.deviceName.value,
+                topicName: state.topicName.value,
+                selectedBrokerID: state.selectedBrokerID,
+              ),
+            ),
+        child: Assets.icons.folderAdd.svg(color: ColorName.white),
       ),
       bottomNavigationBar: BottomAppBar(
         color: theme.backgroundColor,

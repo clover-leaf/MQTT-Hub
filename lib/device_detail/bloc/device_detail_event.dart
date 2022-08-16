@@ -6,3 +6,7 @@ class DeviceDetailEvent extends Equatable {
   @override
   List<Object?> get props => [];
 }
+
+class AttributeSubscriptionRequested extends DeviceDetailEvent {
+  const AttributeSubscriptionRequested();
+}

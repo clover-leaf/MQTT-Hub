@@ -155,7 +155,7 @@ class _EmailInput extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(bottom: 12),
             child: Text(
-              'E-mail',
+              'Username',
               style: textTheme.labelLarge!.copyWith(
                 fontWeight: FontWeight.w600,
               ),
@@ -166,7 +166,7 @@ class _EmailInput extends StatelessWidget {
             keyboardType: TextInputType.emailAddress,
             style: textTheme.labelLarge,
             decoration: InputDecoration(
-              hintText: 'Your Email',
+              hintText: 'Your Username',
               hintStyle: textTheme.labelLarge!.copyWith(
                 color: ColorName.blueGray,
               ),
@@ -183,8 +183,8 @@ class _EmailInput extends StatelessWidget {
                 fit: BoxFit.scaleDown,
               ),
             ),
-            onChanged: (email) =>
-                context.read<LoginBloc>().add(LoginEmailChanged(email)),
+            onChanged: (username) =>
+                context.read<LoginBloc>().add(LoginUsernameChanged(username)),
           ),
         ],
       ),
@@ -290,7 +290,7 @@ class _LoginButton extends StatelessWidget {
         onPressed: () => context.read<LoginBloc>().add(
               LoginSubmitted(
                 domainName: state.domainName.value,
-                username: state.email.value,
+                username: state.username.value,
                 password: state.password.value,
               ),
             ),

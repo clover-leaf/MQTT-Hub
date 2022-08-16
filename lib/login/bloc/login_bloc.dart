@@ -11,7 +11,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   LoginBloc(this._userRepository) : super(const LoginState()) {
     on<LoginSubmitted>(_onLogin);
     on<LoginDomainNameChanged>(_onDomainNameChanged);
-    on<LoginEmailChanged>(_onEmailChanged);
+    on<LoginUsernameChanged>(_onUsernameChanged);
     on<LoginPasswordChanged>(_onPasswordChanged);
     on<LoginPasswordVisibleChanged>(_onPasswordVisibleChanged);
   }
@@ -31,15 +31,15 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     );
   }
 
-  void _onEmailChanged(
-    LoginEmailChanged event,
+  void _onUsernameChanged(
+    LoginUsernameChanged event,
     Emitter<LoginState> emit,
   ) {
-    final email = Email.dirty(event.email);
+    final username = Username.dirty(event.username);
     emit(
       state.copyWith(
-        email: email,
-        valid: Formz.validate([email]).isValid,
+        username: username,
+        valid: Formz.validate([username]).isValid,
       ),
     );
   }

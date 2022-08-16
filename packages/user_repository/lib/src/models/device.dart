@@ -18,7 +18,6 @@ class Device extends Equatable {
     required this.brokerID,
     required this.name,
     required this.topic,
-    required this.jsonEnable,
   })  : assert(
           id == null || id.isNotEmpty,
           'id can not be null and should be empty',
@@ -42,10 +41,6 @@ class Device extends Equatable {
   /// The topic of device
   final String topic;
 
-  /// Whether use json or not
-  @JsonKey(name: 'json_enable')
-  final bool jsonEnable;
-
   /// Deserializes the given [JsonMap] into a [Device].
   static Device fromJson(JsonMap json) {
     return _$DeviceFromJson(json);
@@ -61,7 +56,6 @@ class Device extends Equatable {
     FieldId? brokerID,
     String? name,
     String? topic,
-    bool? jsonEnable,
   }) {
     return Device(
       id: id ?? this.id,
@@ -69,10 +63,9 @@ class Device extends Equatable {
       brokerID: brokerID ?? this.brokerID,
       name: name ?? this.name,
       topic: topic ?? this.topic,
-      jsonEnable: jsonEnable ?? this.jsonEnable,
     );
   }
 
   @override
-  List<Object> get props => [id, groupID, brokerID, name, topic, jsonEnable];
+  List<Object> get props => [id, groupID, brokerID, name, topic];
 }

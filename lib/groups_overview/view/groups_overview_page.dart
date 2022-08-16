@@ -48,6 +48,7 @@ class GroupsOverviewPage extends StatelessWidget {
         foregroundColor: ColorName.darkBlue,
         onPressed: () => Navigator.of(context).push(
           EditGroupPage.route(
+            path: project.name,
             project: project,
             group: null,
             initGroup: null,

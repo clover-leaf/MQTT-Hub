@@ -9,6 +9,7 @@ class EditGroupPage extends StatelessWidget {
   const EditGroupPage({super.key});
 
   static PageRoute<void> route({
+    required String path,
     required Project? project,
     required Group? group,
     required Group? initGroup,
@@ -18,6 +19,7 @@ class EditGroupPage extends StatelessWidget {
       pageBuilder: (context, animation, secondaryAnimation) => BlocProvider(
         create: (context) => EditGroupBloc(
           context.read<UserRepository>(),
+          path: path,
           project: project,
           group: group,
           initGroup: initGroup,
@@ -55,7 +57,7 @@ class EditGroupPage extends StatelessWidget {
         onPressed: () => context
             .read<EditGroupBloc>()
             .add(EditSubmitted(groupName: groupName.value)),
-        child: Assets.icons.add.svg(color: ColorName.white),
+        child: Assets.icons.folderAdd.svg(color: ColorName.white),
       ),
       bottomNavigationBar: BottomAppBar(
         color: theme.backgroundColor,

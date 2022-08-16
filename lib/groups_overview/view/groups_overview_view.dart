@@ -77,9 +77,9 @@ class _GroupItem extends StatelessWidget {
       ),
       onPressed: () => Navigator.of(context).push(
         GroupDetailPage.route(
+          path: project.name,
+          rootProject: project,
           group: group,
-          parentProject: project,
-          parentGroup: null,
         ),
       ),
       child: Container(

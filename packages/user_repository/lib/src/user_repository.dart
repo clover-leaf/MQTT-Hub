@@ -31,11 +31,25 @@ class UserRepository {
   /// the controller of [Stream] of [Project]
   final _projectStreamController = BehaviorSubject<List<Project>>.seeded([]);
 
+  /// the controller of [Stream] of [Broker]
+  final _brokerStreamController = BehaviorSubject<List<Broker>>.seeded([]);
+
+  /// the controller of [Stream] of [User]
+  final _userStreamController = BehaviorSubject<List<User>>.seeded([]);
+
+  /// the controller of [Stream] of [UserProject]
+  final _userProjectStreamController =
+      BehaviorSubject<List<UserProject>>.seeded([]);
+
   /// the controller of [Stream] of [Group]
   final _groupStreamController = BehaviorSubject<List<Group>>.seeded([]);
 
   /// the controller of [Stream] of [Device]
   final _deviceStreamController = BehaviorSubject<List<Device>>.seeded([]);
+
+  /// the controller of [Stream] of [Attribute]
+  final _attributeStreamController =
+      BehaviorSubject<List<Attribute>>.seeded([]);
 
   /// read secure-storage if it contains token
   Future<String> recoverSession() async {
@@ -47,9 +61,9 @@ class UserRepository {
     }
   }
 
-  /// check if token is valid
-  Future<void> checkToken(String token) async {
-    await _apiClient.checkToken(token);
+  /// get user info match with JWT
+  Future<void> getUserInJWT(String token) async {
+    await _apiClient.getUserInJWT(token);
   }
 
   /// read all pair
@@ -60,8 +74,8 @@ class UserRepository {
   /// login into tenant with given data
   /// return token
   /// throw Exception(message) when fail
-  Future<String> login(String domain, String email, String password) async {
-    return _apiClient.login(domain, email, password);
+  Future<String> login(String domain, String username, String password) async {
+    return _apiClient.login(domain, username, password);
   }
 
   /// set token
@@ -78,8 +92,8 @@ class UserRepository {
     _token = null;
   }
 
-  // < PROJECT REST API>
-  /// udate authenticator stream
+  // ================== PROJECT REST API ========================
+  ///
   Stream<List<Project>> subscribeProjectStream() {
     return _projectStreamController.asBroadcastStream();
   }
@@ -129,10 +143,162 @@ class UserRepository {
       _projectStreamController.add(projects);
     }
   }
-  // </ PROJECT REST API>
+  // ================== PROJECT REST API ========================
 
-  // < GROUP REST API>
-  /// udate authenticator stream
+  // ================== USER REST API ========================
+  ///
+  Stream<List<User>> subscribeUserStream() {
+    return _userStreamController.asBroadcastStream();
+  }
+
+  /// create or update user
+  Future<void> saveUser(User user) async {
+    if (_token == null) throw Exception('Token not found');
+    final users = [..._userStreamController.value];
+    final idx = users.indexWhere((t) => t.id == user.id);
+    if (idx == -1) {
+      await _apiClient.createUser(token: _token!, user: user.toJson());
+      users.add(user);
+    } else {
+      await _apiClient.updateUser(
+        token: _token!,
+        userID: user.id,
+        user: user.toJson(),
+      );
+      users
+        ..removeAt(idx)
+        ..insertAll(idx, [user]);
+    }
+    _userStreamController.add(users);
+  }
+
+  /// get user list
+  Future<void> getUsers() async {
+    if (_token == null) throw Exception('Token not found');
+    final data = await _apiClient.getUsers(_token!);
+    final users = data
+        .map((dynamic json) => User.fromJson(json as Map<String, dynamic>))
+        .toList();
+    _userStreamController.add(users);
+  }
+
+  /// delete user by ID
+  Future<void> deleteUser(String userID) async {
+    final users = [..._userStreamController.value];
+    final idx = users.indexWhere((t) => t.id == userID);
+    if (idx > -1) {
+      await _apiClient.deleteUser(token: _token!, userID: userID);
+      users.removeAt(idx);
+      _userStreamController.add(users);
+    }
+  }
+  // ================== USER REST API ========================
+
+  // ================== USER-PROJECT REST API ========================
+  ///
+  Stream<List<UserProject>> subscribeUserProjectStream() {
+    return _userProjectStreamController.asBroadcastStream();
+  }
+
+  /// create or update user-project
+  Future<void> saveUserProject(UserProject userProject) async {
+    if (_token == null) throw Exception('Token not found');
+    final userProjects = [..._userProjectStreamController.value];
+    final idx = userProjects.indexWhere((t) => t.id == userProject.id);
+    if (idx == -1) {
+      await _apiClient.createUserProject(
+        token: _token!,
+        userProject: userProject.toJson(),
+      );
+      userProjects.add(userProject);
+    } else {
+      await _apiClient.updateUserProject(
+        token: _token!,
+        id: userProject.id,
+        userProject: userProject.toJson(),
+      );
+      userProjects
+        ..removeAt(idx)
+        ..insertAll(idx, [userProject]);
+    }
+    _userProjectStreamController.add(userProjects);
+  }
+
+  /// get user-project list
+  Future<void> getUserProjects() async {
+    if (_token == null) throw Exception('Token not found');
+    final data = await _apiClient.getUserProjects(_token!);
+    final userProjects = data
+        .map(
+          (dynamic json) => UserProject.fromJson(json as Map<String, dynamic>),
+        )
+        .toList();
+    _userProjectStreamController.add(userProjects);
+  }
+
+  /// delete user-project by ID
+  Future<void> deleteUserProject(String id) async {
+    final userProjects = [..._userProjectStreamController.value];
+    final idx = userProjects.indexWhere((t) => t.id == id);
+    if (idx > -1) {
+      await _apiClient.deleteUserProject(token: _token!, id: id);
+      userProjects.removeAt(idx);
+      _userProjectStreamController.add(userProjects);
+    }
+  }
+  // ================== USER-PROJECT REST API ========================
+
+  // ================== BROKER REST API ========================
+  ///
+  Stream<List<Broker>> subscribeBrokerStream() {
+    return _brokerStreamController.asBroadcastStream();
+  }
+
+  /// create or update broker
+  Future<void> saveBroker(Broker broker) async {
+    if (_token == null) throw Exception('Token not found');
+    final brokers = [..._brokerStreamController.value];
+    final idx = brokers.indexWhere((t) => t.id == broker.id);
+    if (idx == -1) {
+      await _apiClient.createBroker(token: _token!, broker: broker.toJson());
+      brokers.add(broker);
+    } else {
+      await _apiClient.updateBroker(
+        token: _token!,
+        brokerID: broker.id,
+        broker: broker.toJson(),
+      );
+      brokers
+        ..removeAt(idx)
+        ..insertAll(idx, [broker]);
+    }
+    _brokerStreamController.add(brokers);
+  }
+
+  /// get broker list
+  Future<void> getBrokers() async {
+    if (_token == null) throw Exception('Token not found');
+    final data = await _apiClient.getBrokers(_token!);
+    final brokers = data
+        .map((dynamic json) => Broker.fromJson(json as Map<String, dynamic>))
+        .toList();
+    _brokerStreamController.add(brokers);
+  }
+
+  /// delete broker by ID
+  Future<void> deleteBroker(String brokerID) async {
+    final brokers = [..._brokerStreamController.value];
+    final idx = brokers.indexWhere((t) => t.id == brokerID);
+    if (idx > -1) {
+      await _apiClient.deleteBroker(token: _token!, brokerID: brokerID);
+      brokers.removeAt(idx);
+      _brokerStreamController.add(brokers);
+    }
+  }
+  // ================== BROKER REST API ========================
+
+  // ================== GROUP REST API ========================
+  ///
   Stream<List<Group>> subscribeGroupStream() {
     return _groupStreamController.asBroadcastStream();
   }
@@ -179,10 +345,10 @@ class UserRepository {
       await getDevices();
     }
   }
-  // </ GROUP REST API>
+  // ================== GROUP REST API ========================
 
-  // < DEVICE REST API>
-  /// udate authenticator stream
+  // ================== DEVICE REST API ========================
+  ///
   Stream<List<Device>> subscribeDeviceStream() {
     return _deviceStreamController.asBroadcastStream();
   }
@@ -228,5 +394,60 @@ class UserRepository {
       _deviceStreamController.add(devices);
     }
   }
-  // </ DEVICE REST API>
+  // ================== DEVICE REST API ========================
+
+  // ================== ATTRIBUTE REST API ========================
+  ///
+  Stream<List<Attribute>> subscribeAttributeStream() {
+    return _attributeStreamController.asBroadcastStream();
+  }
+
+  /// create or update attribute
+  Future<void> saveAttribute(Attribute attribute) async {
+    if (_token == null) throw Exception('Token not found');
+    final attributes = [..._attributeStreamController.value];
+    final idx = attributes.indexWhere((t) => t.id == attribute.id);
+    if (idx == -1) {
+      await _apiClient.createAttribute(
+        token: _token!,
+        attribute: attribute.toJson(),
+      );
+      attributes.add(attribute);
+    } else {
+      await _apiClient.updateAttribute(
+        token: _token!,
+        attributeID: attribute.id,
+        attribute: attribute.toJson(),
+      );
+      attributes
+        ..removeAt(idx)
+        ..insertAll(idx, [attribute]);
+    }
+    _attributeStreamController.add(attributes);
+  }
+
+  /// get attribute list
+  Future<void> getAttributes() async {
+    if (_token == null) throw Exception('Token not found');
+    final data = await _apiClient.getAttributes(_token!);
+    final attributes = data
+        .map((dynamic json) => Attribute.fromJson(json as Map<String, dynamic>))
+        .toList();
+    _attributeStreamController.add(attributes);
+  }
+
+  /// delete attribute by ID
+  Future<void> deleteAttribute(String attributeID) async {
+    final attributes = [..._attributeStreamController.value];
+    final idx = attributes.indexWhere((t) => t.id == attributeID);
+    if (idx > -1) {
+      await _apiClient.deleteAttribute(
+        token: _token!,
+        attributeID: attributeID,
+      );
+      attributes.removeAt(idx);
+      _attributeStreamController.add(attributes);
+    }
+  }
+  // ================== ATTRIBUTE REST API ========================
 }

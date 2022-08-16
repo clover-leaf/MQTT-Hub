@@ -24,11 +24,13 @@ dependencies:
     path: ./packages/form_inputs
   formz: ^0.4.1
   intl: ^0.17.0
+  loader_overlay: ^2.0.10
   modal_bottom_sheet: ^2.1.0
   secure_storage_client:
     path: ./packages/secure_storage_client
   user_repository:
     path: ./packages/user_repository
+  uuid: ^3.0.6
 
 dev_dependencies:
   bloc_test: ^9.0.3

@@ -3,6 +3,7 @@ import 'package:flow_builder/flow_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:user_repository/user_repository.dart';
 
 class AppView extends StatefulWidget {
@@ -21,7 +22,7 @@ class _AppViewState extends State<AppView> {
       final repository = context.read<UserRepository>();
       try {
         final token = await repository.recoverSession();
-        await repository.checkToken(token);
+        await repository.getUserInJWT(token);
         if (!mounted) return;
         context
             .read<AppBloc>()
@@ -42,9 +43,11 @@ class _AppViewState extends State<AppView> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
-      home: FlowBuilder<AppStatus>(
-        state: status,
-        onGeneratePages: onGenerateAppViewPages,
+      home: LoaderOverlay(
+        child: FlowBuilder<AppStatus>(
+          state: status,
+          onGeneratePages: onGenerateAppViewPages,
+        ),
       ),
     );
   }

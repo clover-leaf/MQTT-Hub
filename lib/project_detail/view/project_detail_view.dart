@@ -1,6 +1,8 @@
+import 'package:bee/brokers_overview/brokers_overview.dart';
 import 'package:bee/gen/colors.gen.dart';
 import 'package:bee/groups_overview/view/view.dart';
 import 'package:bee/project_detail/bloc/project_detail_bloc.dart';
+import 'package:bee/users_overview/users_overview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -28,8 +30,14 @@ class ProjectDetailView extends StatelessWidget {
           onPress: () {},
         ),
         _Item(
-          label: 'Members',
-          onPress: () {},
+          label: 'Users',
+          onPress: () =>
+              Navigator.of(context).push(UsersOverviewPage.route(project)),
+        ),
+        _Item(
+          label: 'Brokers',
+          onPress: () =>
+              Navigator.of(context).push(BrokersOverviewPage.route(project)),
         ),
       ],
     );

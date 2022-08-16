@@ -8,14 +8,14 @@ part 'group_detail_state.dart';
 class GroupDetailBloc extends Bloc<GroupDetailEvent, GroupDetailState> {
   GroupDetailBloc(
     this._userRepository, {
+    required String path,
+    required Project rootProject,
     required Group group,
-    required Project? parentProject,
-    required Group? parentGroup,
   }) : super(
           GroupDetailState(
+            path: path,
+            rootProject: rootProject,
             group: group,
-            parentProject: parentProject,
-            parentGroup: parentGroup,
           ),
         ) {
     on<GroupSubscriptionRequested>(_onGroupSubscriptionRequested);

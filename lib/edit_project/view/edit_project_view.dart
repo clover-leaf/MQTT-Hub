@@ -27,7 +27,7 @@ class EditProjectView extends StatelessWidget {
                     content: AwesomeSnackbarContent(
                       title: 'On Snap!',
                       message: state.error!,
-                      contentType: ContentType.success,
+                      contentType: ContentType.failure,
                     ),
                   ),
                 );

@@ -8,15 +8,15 @@ import 'package:user_repository/user_repository.dart';
 class DeviceDetailPage extends StatelessWidget {
   const DeviceDetailPage({super.key});
 
-  static PageRoute<void> route({
-    required Device device,
-    required Group parentGroup,
-  }) {
+  static PageRoute<void> route({required String path, required Device device}) {
     return PageRouteBuilder<void>(
       transitionDuration: const Duration(milliseconds: 400),
       pageBuilder: (context, animation, secondaryAnimation) => BlocProvider(
-        create: (context) =>
-            DeviceDetailBloc(device: device, parentGroup: parentGroup),
+        create: (context) => DeviceDetailBloc(
+          context.read<UserRepository>(),
+          path: path,
+          device: device,
+        )..add(const AttributeSubscriptionRequested()),
         child: const DeviceDetailPage(),
       ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {

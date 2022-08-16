@@ -9,7 +9,14 @@ part 'edit_project_state.dart';
 
 class EditProjectBloc extends Bloc<EditProjectEvent, EditProjectState> {
   EditProjectBloc(this._userRepository, {Project? initProject})
-      : super(EditProjectState(initProject: initProject)) {
+      : super(
+          EditProjectState(
+            initProject: initProject,
+            projectName: initProject != null
+                ? ProjectName.dirty(initProject.name)
+                : const ProjectName.pure(),
+          ),
+        ) {
     on<EditSubmitted>(_onSubmitted);
     on<EditProjectNameChanged>(_onProjectNameChanged);
   }

@@ -52,10 +52,7 @@ class _Header extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final group = context.select((GroupDetailBloc bloc) => bloc.state.group);
-    final parentProject =
-        context.select((GroupDetailBloc bloc) => bloc.state.parentProject);
-    final parentGroup =
-        context.select((GroupDetailBloc bloc) => bloc.state.parentGroup);
+    final path = context.select((GroupDetailBloc bloc) => bloc.state.path);
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
@@ -68,20 +65,12 @@ class _Header extends StatelessWidget {
               fontWeight: FontWeight.w500,
             ),
           ),
-          if (parentProject != null)
-            Text(
-              'in ${parentProject.name}',
-              style: textTheme.titleSmall!.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
+          Text(
+            path,
+            style: textTheme.titleSmall!.copyWith(
+              fontWeight: FontWeight.w500,
             ),
-          if (parentGroup != null)
-            Text(
-              'in ${parentGroup.name}',
-              style: textTheme.titleSmall!.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
-            ),
+          ),
         ],
       ),
     );
@@ -123,6 +112,9 @@ class _GroupItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final curGroup = context.select((GroupDetailBloc bloc) => bloc.state.group);
+    final path = context.select((GroupDetailBloc bloc) => bloc.state.path);
+    final rootProject =
+        context.select((GroupDetailBloc bloc) => bloc.state.rootProject);
 
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
@@ -135,9 +127,9 @@ class _GroupItem extends StatelessWidget {
       ),
       onPressed: () => Navigator.of(context).push(
         GroupDetailPage.route(
+          path: '$path / ${curGroup.name}',
+          rootProject: rootProject,
           group: group,
-          parentProject: null,
-          parentGroup: curGroup,
         ),
       ),
       child: Container(
@@ -166,7 +158,8 @@ class _DeviceItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final group = context.select((GroupDetailBloc bloc) => bloc.state.group);
+    final curGroup = context.select((GroupDetailBloc bloc) => bloc.state.group);
+    final path = context.select((GroupDetailBloc bloc) => bloc.state.path);
 
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
@@ -177,8 +170,12 @@ class _DeviceItem extends StatelessWidget {
         shadowColor: Colors.transparent,
         shape: const RoundedRectangleBorder(),
       ),
-      onPressed: () => Navigator.of(context)
-          .push(DeviceDetailPage.route(device: device, parentGroup: group)),
+      onPressed: () => Navigator.of(context).push(
+        DeviceDetailPage.route(
+          path: '$path / ${curGroup.name}',
+          device: device,
+        ),
+      ),
       child: Container(
         alignment: Alignment.centerLeft,
         padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),

@@ -27,7 +27,7 @@ class EditGroupView extends StatelessWidget {
                     content: AwesomeSnackbarContent(
                       title: 'On Snap!',
                       message: state.error!,
-                      contentType: ContentType.success,
+                      contentType: ContentType.failure,
                     ),
                   ),
                 );
@@ -89,20 +89,12 @@ class _Header extends StatelessWidget {
               fontWeight: FontWeight.w500,
             ),
           ),
-          if (state.project != null)
-            Text(
-              'in ${state.project!.name}',
-              style: textTheme.titleSmall!.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
+          Text(
+            state.path,
+            style: textTheme.titleSmall!.copyWith(
+              fontWeight: FontWeight.w500,
             ),
-          if (state.group != null)
-            Text(
-              'in ${state.group!.name}',
-              style: textTheme.titleSmall!.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
-            ),
+          ),
         ],
       ),
     );

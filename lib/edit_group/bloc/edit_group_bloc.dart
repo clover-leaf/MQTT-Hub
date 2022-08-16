@@ -10,6 +10,7 @@ part 'edit_group_state.dart';
 class EditGroupBloc extends Bloc<EditGroupEvent, EditGroupState> {
   EditGroupBloc(
     this._userRepository, {
+    required String path,
     required Project? project,
     required Group? group,
     Group? initGroup,
@@ -19,9 +20,13 @@ class EditGroupBloc extends Bloc<EditGroupEvent, EditGroupState> {
         ),
         super(
           EditGroupState(
+            path: path,
             project: project,
             group: group,
             initGroup: initGroup,
+            groupName: initGroup != null
+                ? GroupName.dirty(initGroup.name)
+                : const GroupName.pure(),
           ),
         ) {
     on<EditSubmitted>(_onSubmitted);

@@ -18,8 +18,12 @@ class TilesOverviewBloc extends Bloc<TilesOverviewEvent, TilesOverviewState> {
     Emitter<TilesOverviewState> emit,
   ) async {
     await _userRepository.getProjects();
+    await _userRepository.getUsers();
+    await _userRepository.getUserProjects();
+    await _userRepository.getBrokers();
     await _userRepository.getGroups();
     await _userRepository.getDevices();
+    await _userRepository.getAttributes();
   }
 
   void _onLogout(

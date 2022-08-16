@@ -2,6 +2,7 @@ part of 'edit_group_bloc.dart';
 
 class EditGroupState extends Equatable {
   const EditGroupState({
+    required this.path,
     required this.project,
     required this.group,
     this.groupName = const GroupName.pure(),
@@ -11,6 +12,7 @@ class EditGroupState extends Equatable {
     this.error,
   });
 
+  final String path;
   final Project? project;
   final Group? group;
   final GroupName groupName;
@@ -21,9 +23,10 @@ class EditGroupState extends Equatable {
 
   @override
   List<Object?> get props =>
-      [project, group, groupName, initGroup, status, valid, error];
+      [path, project, group, groupName, initGroup, status, valid, error];
 
   EditGroupState copyWith({
+    String? path,
     Project? project,
     Group? group,
     GroupName? groupName,
@@ -33,6 +36,7 @@ class EditGroupState extends Equatable {
     String? error,
   }) {
     return EditGroupState(
+      path: path ?? this.path,
       project: project ?? this.project,
       group: group ?? this.group,
       groupName: groupName ?? this.groupName,

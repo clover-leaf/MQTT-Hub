@@ -12,7 +12,6 @@ Device _$DeviceFromJson(Map<String, dynamic> json) => Device(
       brokerID: json['broker_id'] as String,
       name: json['name'] as String,
       topic: json['topic'] as String,
-      jsonEnable: json['json_enable'] as bool,
     );
 
 Map<String, dynamic> _$DeviceToJson(Device instance) => <String, dynamic>{
@@ -21,5 +20,4 @@ Map<String, dynamic> _$DeviceToJson(Device instance) => <String, dynamic>{
       'broker_id': instance.brokerID,
       'name': instance.name,
       'topic': instance.topic,
-      'json_enable': instance.jsonEnable,
     };
