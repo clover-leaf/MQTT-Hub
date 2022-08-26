@@ -1,6 +1,7 @@
 export 'attribute.dart';
 export 'broker.dart';
 export 'command.dart';
+export 'comparation.dart';
 export 'dashboard.dart';
 export 'device.dart';
 export 'gauge_range.dart';

@@ -24,7 +24,7 @@ Map<String, dynamic> _$TileToJson(Tile instance) => <String, dynamic>{
       'device_id': instance.deviceID,
       'attribute_id': instance.attributeID,
       'name': instance.name,
-      'type': _$TileTypeEnumMap[instance.type],
+      'type': _$TileTypeEnumMap[instance.type]!,
       'lob': instance.lob,
       'color': instance.color,
       'icon': instance.icon,
