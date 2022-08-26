@@ -22,11 +22,16 @@ class _AppViewState extends State<AppView> {
       final repository = context.read<UserRepository>();
       try {
         final token = await repository.recoverSession();
-        await repository.getUserInJWT(token);
+        final res = await repository.getUserInJWT(token);
+        final isAdmin = res['isAdmin']! as bool;
         if (!mounted) return;
-        context
-            .read<AppBloc>()
-            .add(AppAuthenticated(token: token, toWrite: false));
+        context.read<AppBloc>().add(
+              AppAuthenticated(
+                token: token,
+                toWrite: false,
+                isAdmin: isAdmin,
+              ),
+            );
       } catch (err) {
         context.read<AppBloc>().add(const AppUnauthenticated());
       }

@@ -4,7 +4,7 @@ import 'package:meta/meta.dart';
 import 'package:user_repository/src/models/typedef.dart';
 import 'package:uuid/uuid.dart';
 
-part 'user.g.dart';
+part 'generated/user.g.dart';
 
 @immutable
 @JsonSerializable()

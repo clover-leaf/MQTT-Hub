@@ -8,24 +8,71 @@ part 'group_detail_state.dart';
 class GroupDetailBloc extends Bloc<GroupDetailEvent, GroupDetailState> {
   GroupDetailBloc(
     this._userRepository, {
-    required String path,
     required Project rootProject,
     required Group group,
+    required bool isAdmin,
   }) : super(
           GroupDetailState(
-            path: path,
+            isAdmin: isAdmin,
             rootProject: rootProject,
             group: group,
           ),
         ) {
-    on<GroupSubscriptionRequested>(_onGroupSubscriptionRequested);
-    on<DeviceSubscriptionRequested>(_onDeviceSubscriptionRequested);
+    on<BrokerSubscriptionRequested>(_onBrokerSubscribed);
+    on<GroupSubscriptionRequested>(_onGroupSubscribed);
+    on<DeviceSubscriptionRequested>(_onDeviceSubscribed);
+    on<DeletionRequested>(_onDeleted);
+    on<GroupVisibilityChanged>(_onGroupVisibleChanged);
+    on<DeviceVisibilityChanged>(_onDeviceVisibleChanged);
   }
 
   final UserRepository _userRepository;
 
-  /// Subcribes [Stream] of [List] of [Group]
-  Future<void> _onGroupSubscriptionRequested(
+  void _onGroupVisibleChanged(
+    GroupVisibilityChanged event,
+    Emitter<GroupDetailState> emit,
+  ) {
+    emit(state.copyWith(isShowGroup: event.isVisible));
+  }
+
+  void _onDeviceVisibleChanged(
+    DeviceVisibilityChanged event,
+    Emitter<GroupDetailState> emit,
+  ) {
+    emit(state.copyWith(isShowDevice: event.isVisible));
+  }
+
+  Future<void> _onDeleted(
+    DeletionRequested event,
+    Emitter<GroupDetailState> emit,
+  ) async {
+    try {
+      emit(state.copyWith(status: GroupDetailStatus.processing));
+      await _userRepository.deleteGroup(state.group.id);
+      emit(state.copyWith(status: GroupDetailStatus.success));
+    } catch (error) {
+      final err = error.toString().split(':').last.trim();
+      emit(state.copyWith(status: GroupDetailStatus.failure, error: () => err));
+      emit(state.copyWith(status: GroupDetailStatus.normal, error: () => null));
+    }
+  }
+
+  Future<void> _onBrokerSubscribed(
+    BrokerSubscriptionRequested event,
+    Emitter<GroupDetailState> emit,
+  ) async {
+    await emit.forEach<List<Broker>>(
+      _userRepository.subscribeBrokerStream(),
+      onData: (brokers) {
+        final brokerInProjects = brokers
+            .where((br) => br.projectID == state.rootProject.id)
+            .toList();
+        return state.copyWith(brokers: brokerInProjects);
+      },
+    );
+  }
+
+  Future<void> _onGroupSubscribed(
     GroupSubscriptionRequested event,
     Emitter<GroupDetailState> emit,
   ) async {
@@ -37,8 +84,7 @@ class GroupDetailBloc extends Bloc<GroupDetailEvent, GroupDetailState> {
     );
   }
 
-  /// Subcribes [Stream] of [List] of [Device]
-  Future<void> _onDeviceSubscriptionRequested(
+  Future<void> _onDeviceSubscribed(
     DeviceSubscriptionRequested event,
     Emitter<GroupDetailState> emit,
   ) async {

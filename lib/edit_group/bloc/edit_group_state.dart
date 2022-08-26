@@ -1,49 +1,61 @@
 part of 'edit_group_bloc.dart';
 
+enum EditGroupStatus {
+  normal,
+  processing,
+  success,
+  failure,
+}
+
+extension EditGroupStatusX on EditGroupStatus {
+  bool isProcessing() => this == EditGroupStatus.processing;
+  bool isSuccess() => this == EditGroupStatus.success;
+  bool isFailure() => this == EditGroupStatus.failure;
+}
+
 class EditGroupState extends Equatable {
   const EditGroupState({
-    required this.path,
-    required this.project,
-    required this.group,
-    this.groupName = const GroupName.pure(),
-    this.status = FormzStatus.pure,
-    this.valid = false,
-    this.initGroup,
+    this.status = EditGroupStatus.normal,
+    required this.parentProjetID,
+    required this.parentGroupID,
+    this.name = '',
+    this.initialGroup,
     this.error,
   });
 
-  final String path;
-  final Project? project;
-  final Group? group;
-  final GroupName groupName;
-  final FormzStatus status;
-  final Group? initGroup;
-  final bool valid;
+  // immutate
+  final String? parentProjetID;
+  final String? parentGroupID;
+
+  // input
+  final String name;
+
+  // status
+  final EditGroupStatus status;
   final String? error;
+
+  // initial
+  final Group? initialGroup;
 
   @override
   List<Object?> get props =>
-      [path, project, group, groupName, initGroup, status, valid, error];
+      [parentProjetID, parentGroupID, name, initialGroup, status, error];
 
   EditGroupState copyWith({
-    String? path,
-    Project? project,
-    Group? group,
-    GroupName? groupName,
-    FormzStatus? status,
-    bool? valid,
-    Group? initGroup,
-    String? error,
+    String? parentProjetID,
+    String? parentGroupID,
+    String? name,
+    EditGroupStatus? status,
+    Group? initialGroup,
+    String? Function()? error,
   }) {
     return EditGroupState(
-      path: path ?? this.path,
-      project: project ?? this.project,
-      group: group ?? this.group,
-      groupName: groupName ?? this.groupName,
+      parentProjetID: parentProjetID ?? this.parentProjetID,
+      parentGroupID: parentGroupID ?? this.parentGroupID,
+      name: name ?? this.name,
       status: status ?? this.status,
-      valid: valid ?? this.valid,
-      initGroup: initGroup ?? this.initGroup,
-      error: error ?? this.error,
+      initialGroup: initialGroup ?? this.initialGroup,
+      error: error != null ? error() : this.error,
     );
   }
 }

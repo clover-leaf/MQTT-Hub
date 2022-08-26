@@ -1,62 +1,86 @@
 part of 'edit_user_bloc.dart';
 
+enum EditUserStatus {
+  normal,
+  processing,
+  success,
+  failure,
+}
+
+extension EditUserStatusX on EditUserStatus {
+  bool isProcessing() => this == EditUserStatus.processing;
+  bool isSuccess() => this == EditUserStatus.success;
+  bool isFailure() => this == EditUserStatus.failure;
+}
+
 class EditUserState extends Equatable {
   const EditUserState({
-    required this.initUserProjects,
-    required this.selectedProjectIDs,
-    this.projects = const [],
-    this.username = const Username.pure(),
-    this.password = const Password.pure(),
-    this.status = FormzStatus.pure,
-    this.valid = false,
-    this.initUser,
+    this.status = EditUserStatus.normal,
+    required this.initialUserProjects,
+    required this.initialProjects,
+    required this.userProjects,
+    required this.userID,
+    this.username = '',
+    this.password = '',
+    this.initialUser,
     this.error,
   });
 
-  final List<UserProject> initUserProjects;
-  final List<FieldId> selectedProjectIDs;
-  final List<Project> projects;
-  final Username username;
-  final Password password;
-  final FormzStatus status;
-  final User? initUser;
-  final bool valid;
+  // immutate
+  final List<UserProject> initialUserProjects;
+  final List<Project> initialProjects;
+  
+  // initial
+  final User? initialUser;
+
+  // create
+  final String userID;
+
+  // choose
+  final List<UserProject> userProjects;
+
+  // input
+  final String username;
+  final String password;
+
+  // status
+  final EditUserStatus status;
   final String? error;
 
   @override
   List<Object?> get props => [
-        initUserProjects,
-        selectedProjectIDs,
-        projects,
+        initialUserProjects,
+        initialProjects,
+        userID,
         username,
         password,
+        userProjects,
         status,
-        initUser,
-        valid,
+        initialUser,
         error
       ];
 
   EditUserState copyWith({
-    List<FieldId>? selectedProjectIDs,
-    List<UserProject>? initUserProjects,
-    List<Project>? projects,
-    Username? username,
-    Password? password,
-    FormzStatus? status,
-    bool? valid,
-    User? initUser,
-    String? error,
+    List<UserProject>? initialUserProjects,
+    List<Project>? initialProjects,
+    String? userID,
+    String? username,
+    String? password,
+    List<UserProject>? userProjects,
+    EditUserStatus? status,
+    User? initialUser,
+    String? Function()? error,
   }) {
     return EditUserState(
-      initUserProjects: initUserProjects ?? this.initUserProjects,
-      selectedProjectIDs: selectedProjectIDs ?? this.selectedProjectIDs,
-      projects: projects ?? this.projects,
+      initialUserProjects: initialUserProjects ?? this.initialUserProjects,
+      initialProjects: initialProjects ?? this.initialProjects,
+      userID: userID ?? this.userID,
       username: username ?? this.username,
       password: password ?? this.password,
+      userProjects: userProjects ?? this.userProjects,
       status: status ?? this.status,
-      valid: valid ?? this.valid,
-      initUser: initUser ?? this.initUser,
-      error: error ?? this.error,
+      initialUser: initialUser ?? this.initialUser,
+      error: error != null ? error() : this.error,
     );
   }
 }

@@ -1,5 +1,3 @@
-import 'package:bee/edit_group/view/view.dart';
-import 'package:bee/gen/assets.gen.dart';
 import 'package:bee/gen/colors.gen.dart';
 import 'package:bee/groups_overview/groups_overview.dart';
 import 'package:flutter/material.dart';
@@ -9,13 +7,18 @@ import 'package:user_repository/user_repository.dart';
 class GroupsOverviewPage extends StatelessWidget {
   const GroupsOverviewPage({super.key});
 
-  static PageRoute<void> route(Project project) {
+  static PageRoute<void> route(
+      {required bool isAdmin, required Project parentProject,}) {
     return PageRouteBuilder<void>(
       transitionDuration: const Duration(milliseconds: 400),
       pageBuilder: (context, animation, secondaryAnimation) => BlocProvider(
-        create: (context) =>
-            GroupsOverviewBloc(context.read<UserRepository>(), project: project)
-              ..add(const GroupSubscriptionRequested()),
+        create: (context) => GroupsOverviewBloc(
+          context.read<UserRepository>(),
+          parentProject: parentProject,
+          isAdmin: isAdmin,
+        )
+          ..add(const GroupSubscriptionRequested())
+          ..add(const DeviceSubscriptionRequested()),
         child: const GroupsOverviewPage(),
       ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -35,64 +38,9 @@ class GroupsOverviewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final project =
-        context.select((GroupsOverviewBloc bloc) => bloc.state.project);
-
-    return Scaffold(
-      backgroundColor: theme.backgroundColor,
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: ColorName.blue,
-        splashColor: ColorName.darkBlue,
-        foregroundColor: ColorName.darkBlue,
-        onPressed: () => Navigator.of(context).push(
-          EditGroupPage.route(
-            path: project.name,
-            project: project,
-            group: null,
-            initGroup: null,
-          ),
-        ),
-        child: Assets.icons.add.svg(color: ColorName.white),
-      ),
-      bottomNavigationBar: BottomAppBar(
-        color: theme.backgroundColor,
-        elevation: 24,
-        child: SizedBox(
-          height: 64,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              ElevatedButton(
-                onPressed: () => Navigator.of(context).pop(),
-                style: ElevatedButton.styleFrom(
-                  elevation: 0,
-                  shape: const CircleBorder(),
-                  primary: ColorName.white,
-                  onPrimary: ColorName.blue,
-                  shadowColor: Colors.transparent,
-                  padding: const EdgeInsets.all(16),
-                ),
-                child: Assets.icons.arrowLeft.svg(),
-              ),
-              ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  elevation: 0,
-                  shape: const CircleBorder(),
-                  primary: ColorName.white,
-                  onPrimary: ColorName.blue,
-                  shadowColor: Colors.transparent,
-                  padding: const EdgeInsets.all(16),
-                ),
-                child: Assets.icons.lock.svg(),
-              ),
-            ],
-          ),
-        ),
-      ),
-      body: const GroupsOverviewView(),
+    return const Scaffold(
+      backgroundColor: ColorName.white,
+      body: GroupsOverviewView(),
     );
   }
 }

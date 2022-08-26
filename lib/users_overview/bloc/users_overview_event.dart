@@ -15,12 +15,15 @@ class UserProjectSubscriptionRequested extends UsersOverviewEvent {
   const UserProjectSubscriptionRequested();
 }
 
-class UserAdded extends UsersOverviewEvent {
-  const UserAdded({required this.user, required this.project});
+class ProjectSubscriptionRequested extends UsersOverviewEvent {
+  const ProjectSubscriptionRequested();
+}
 
-  final User user;
-  final Project project;
+class DeletionRequested extends UsersOverviewEvent {
+  const DeletionRequested(this.userID);
+
+  final String userID;
 
   @override
-  List<Object?> get props => [user, project];
+  List<Object?> get props => [userID];
 }

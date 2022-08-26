@@ -1,62 +1,83 @@
 part of 'edit_broker_bloc.dart';
 
+enum EditBrokerStatus {
+  normal,
+  processing,
+  success,
+  failure,
+}
+
+extension EditBrokerStatusX on EditBrokerStatus {
+  bool isProcessing() => this == EditBrokerStatus.processing;
+  bool isSuccess() => this == EditBrokerStatus.success;
+  bool isFailure() => this == EditBrokerStatus.failure;
+}
+
+
 class EditBrokerState extends Equatable {
   const EditBrokerState({
-    required this.project,
-    this.brokerName = const BrokerName.pure(),
-    this.urlName = const UrlName.pure(),
-    this.brokerAccount = const BrokerAccount.pure(),
-    this.brokerPassword = const BrokerPassword.pure(),
-    this.status = FormzStatus.pure,
-    this.valid = false,
-    this.initBroker,
+    this.status = EditBrokerStatus.normal,
+    required this.parentProject,
+    this.name = '',
+    this.url = '',
+    this.port = '',
+    this.account = '',
+    this.password = '',
+    this.initialBroker,
     this.error,
   });
 
-  final Project project;
-  final BrokerName brokerName;
-  final UrlName urlName;
-  final BrokerAccount brokerAccount;
-  final BrokerPassword brokerPassword;
-  final FormzStatus status;
-  final bool valid;
-  final Broker? initBroker;
+  // immutate
+  final Project parentProject;
+
+  // input
+  final String name;
+  final String url;
+  final String port;
+  final String account;
+  final String password;
+
+  // initial
+  final Broker? initialBroker;
+
+  // status
+  final EditBrokerStatus status;
   final String? error;
 
   @override
   List<Object?> get props => [
-        project,
-        brokerName,
-        urlName,
-        brokerAccount,
-        brokerPassword,
-        initBroker,
+        parentProject,
+        name,
+        port,
+        url,
+        account,
+        password,
+        initialBroker,
         status,
-        valid,
         error
       ];
 
   EditBrokerState copyWith({
-    Project? project,
-    BrokerName? brokerName,
-    UrlName? urlName,
-    BrokerAccount? brokerAccount,
-    BrokerPassword? brokerPassword,
-    FormzStatus? status,
-    bool? valid,
-    Broker? initBroker,
-    String? error,
+    Project? parentProject,
+    String? name,
+    String? url,
+    String? port,
+    String? account,
+    String? password,
+    EditBrokerStatus? status,
+    Broker? initialBroker,
+    String? Function()? error,
   }) {
     return EditBrokerState(
-      project: project ?? this.project,
-      brokerName: brokerName ?? this.brokerName,
-      urlName: urlName ?? this.urlName,
-      brokerAccount: brokerAccount ?? this.brokerAccount,
-      brokerPassword: brokerPassword ?? this.brokerPassword,
+      parentProject: parentProject ?? this.parentProject,
+      name: name ?? this.name,
+      url: url ?? this.url,
+      port: port ?? this.port,
+      account: account ?? this.account,
+      password: password ?? this.password,
       status: status ?? this.status,
-      valid: valid ?? this.valid,
-      initBroker: initBroker ?? this.initBroker,
-      error: error ?? this.error,
+      initialBroker: initialBroker ?? this.initialBroker,
+      error: error != null ? error() : this.error,
     );
   }
 }

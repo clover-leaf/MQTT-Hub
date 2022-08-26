@@ -1,12 +1,14 @@
 part of 'app_bloc.dart';
 
 enum AppStatus {
-  authenticated,
+  userAuthenticated,
+  adminAuthenticated,
   unauthenticated,
 }
 
 extension AppStatusX on AppStatus {
-  bool isAuthenticated() => this == AppStatus.authenticated;
+  bool isUserAuthenticated() => this == AppStatus.userAuthenticated;
+  bool isAdminAuthenticated() => this == AppStatus.adminAuthenticated;
   bool isUnauthenticated() => this == AppStatus.unauthenticated;
 }
 

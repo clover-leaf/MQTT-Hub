@@ -6,3 +6,23 @@ class ProjectDetailEvent extends Equatable {
   @override
   List<Object?> get props => [];
 }
+
+class GroupSubscriptionRequested extends ProjectDetailEvent {
+  const GroupSubscriptionRequested();
+}
+
+class BrokerSubscriptionRequested extends ProjectDetailEvent {
+  const BrokerSubscriptionRequested();
+}
+
+class UserProjectSubscriptionRequested extends ProjectDetailEvent {
+  const UserProjectSubscriptionRequested();
+}
+
+class DashboardSubscriptionRequested extends ProjectDetailEvent {
+  const DashboardSubscriptionRequested();
+}
+
+class DeletionRequested extends ProjectDetailEvent {
+  const DeletionRequested();
+}

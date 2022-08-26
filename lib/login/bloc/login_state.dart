@@ -1,57 +1,59 @@
 part of 'login_bloc.dart';
 
+enum LoginStatus {
+  normal,
+  processing,
+  success,
+  failure,
+}
+
+extension LoginStatusX on LoginStatus {
+  bool isProcessing() => this == LoginStatus.processing;
+  bool isSuccess() => this == LoginStatus.success;
+  bool isFailure() => this == LoginStatus.failure;
+}
+
 class LoginState extends Equatable {
   const LoginState({
-    this.domainName = const DomainName.pure(),
-    this.username = const Username.pure(),
-    this.password = const Password.pure(),
-    this.status = FormzStatus.pure,
-    this.valid = false,
-    this.passwordVisible = false,
+    this.status = LoginStatus.normal,
+    this.domainName = '',
+    this.username = '',
+    this.password = '',
     this.token,
     this.error,
+    this.isAdmin,
   });
 
-  final DomainName domainName;
-  final Username username;
-  final Password password;
-  final FormzStatus status;
+  final LoginStatus status;
+  final String domainName;
+  final String username;
+  final String password;
   final String? token;
-  final bool valid;
-  final bool passwordVisible;
   final String? error;
+  final bool? isAdmin;
+
 
   @override
-  List<Object?> get props => [
-        domainName,
-        username,
-        password,
-        status,
-        valid,
-        passwordVisible,
-        token,
-        error
-      ];
+  List<Object?> get props =>
+      [domainName, username, password, status, token, error, isAdmin];
 
   LoginState copyWith({
-    DomainName? domainName,
-    Username? username,
-    Password? password,
-    FormzStatus? status,
-    bool? valid,
-    bool? passwordVisible,
+    String? domainName,
+    String? username,
+    String? password,
+    LoginStatus? status,
     String? token,
-    String? error,
+    bool? isAdmin,
+    String? Function()? error,
   }) {
     return LoginState(
       domainName: domainName ?? this.domainName,
       username: username ?? this.username,
       password: password ?? this.password,
       status: status ?? this.status,
-      valid: valid ?? this.valid,
-      passwordVisible: passwordVisible ?? this.passwordVisible,
       token: token ?? this.token,
-      error: error ?? this.error,
+      isAdmin: isAdmin ?? this.isAdmin,
+      error: error != null ? error() : this.error,
     );
   }
 }

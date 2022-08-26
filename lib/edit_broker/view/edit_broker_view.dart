@@ -1,196 +1,278 @@
-import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+import 'package:bee/components/component.dart';
 import 'package:bee/edit_broker/edit_broker.dart';
 import 'package:bee/gen/assets.gen.dart';
 import 'package:bee/gen/colors.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:formz/formz.dart';
+import 'package:loader_overlay/loader_overlay.dart';
+import 'package:user_repository/user_repository.dart';
 
 class EditBrokerView extends StatelessWidget {
-  const EditBrokerView({super.key});
+  const EditBrokerView({
+    super.key,
+    required this.initialName,
+    required this.initialUrl,
+    required this.initialPort,
+    required this.initialAccount,
+    required this.initialPassword,
+    required this.initialBroker,
+  });
+
+  final String? initialName;
+  final String? initialUrl;
+  final String? initialPort;
+  final String? initialAccount;
+  final String? initialPassword;
+  final Broker? initialBroker;
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocListener(
-      listeners: [
-        BlocListener<EditBrokerBloc, EditBrokerState>(
-          listenWhen: (previous, current) => previous.error != current.error,
-          listener: (context, state) {
-            if (state.error != null) {
-              ScaffoldMessenger.of(context)
-                ..hideCurrentSnackBar()
-                ..showSnackBar(
-                  SnackBar(
-                    elevation: 0,
-                    behavior: SnackBarBehavior.floating,
-                    backgroundColor: Colors.transparent,
-                    content: AwesomeSnackbarContent(
-                      title: 'On Snap!',
-                      message: state.error!,
-                      contentType: ContentType.failure,
+    // get text theme
+    final textTheme = Theme.of(context).textTheme;
+    // create form key
+    final _formKey = GlobalKey<FormState>();
+    // get padding top
+    final paddingTop = MediaQuery.of(context).viewPadding.top;
+
+    return BlocListener<EditBrokerBloc, EditBrokerState>(
+      listenWhen: (previous, current) => previous.status != current.status,
+      listener: (context, state) {
+        if (state.status.isProcessing()) {
+          context.loaderOverlay.show();
+        } else {
+          if (state.status.isSuccess()) {
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                TSnackbar.success(
+                  context,
+                  content: state.initialBroker == null
+                      ? 'New broker has been created'
+                      : 'Broker has been updated',
+                ),
+              );
+            if (context.loaderOverlay.visible) {
+              context.loaderOverlay.hide();
+            }
+            Navigator.of(context).pop();
+          } else if (state.status.isFailure()) {
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                TSnackbar.error(context, content: state.error!),
+              );
+            if (context.loaderOverlay.visible) {
+              context.loaderOverlay.hide();
+            }
+          }
+        }
+      },
+      child: GestureDetector(
+        onTapDown: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+        behavior: HitTestBehavior.translucent,
+        child: Column(
+          children: [
+            SizedBox(height: paddingTop),
+            _Header(_formKey),
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                children: [
+                  const _Title(),
+                  const SizedBox(height: 20),
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Text(
+                            'NAME',
+                            style: textTheme.bodySmall!
+                                .copyWith(color: ColorName.neural600),
+                          ),
+                        ),
+                        TTextField(
+                          initText: initialName,
+                          labelText: 'Broker Name',
+                          picture: Assets.icons.tag2,
+                          onChanged: (name) => context
+                              .read<EditBrokerBloc>()
+                              .add(NameChanged(name)),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Enter a valid string';
+                            }
+                            return null;
+                          },
+                          textInputType: TextInputType.url,
+                        ),
+                        const SizedBox(height: 24),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Text(
+                            'URL & PORT',
+                            style: textTheme.bodySmall!
+                                .copyWith(color: ColorName.neural600),
+                          ),
+                        ),
+                        LayoutBuilder(
+                          builder: (context, BoxConstraints constraints) {
+                            final width = constraints.maxWidth;
+                            return Row(
+                              children: [
+                                SizedBox(
+                                  width: width * 0.67,
+                                  child: TTextField(
+                                    initText: initialUrl,
+                                    labelText: 'Broker URL',
+                                    picture: Assets.icons.global,
+                                    onChanged: (url) => context
+                                        .read<EditBrokerBloc>()
+                                        .add(UrlChanged(url)),
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Enter a valid string';
+                                      }
+                                      return null;
+                                    },
+                                    textInputType: TextInputType.url,
+                                  ),
+                                ),
+                                SizedBox(width: width * 0.03),
+                                SizedBox(
+                                  width: width * 0.3,
+                                  child: TVanillaText(
+                                    initText: initialPort,
+                                    hintText: 'Port',
+                                    onChanged: (port) => context
+                                        .read<EditBrokerBloc>()
+                                        .add(PortChanged(port)),
+                                    validator: (value) {
+                                      if (value == null ||
+                                          value.isEmpty ||
+                                          int.tryParse(value) == null) {
+                                        return 'Invalid';
+                                      }
+                                      return null;
+                                    },
+                                    textInputType: TextInputType.number,
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 24),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Text(
+                            'ACOUNT',
+                            style: textTheme.bodySmall!
+                                .copyWith(color: ColorName.neural600),
+                          ),
+                        ),
+                        TTextField(
+                          initText: initialAccount,
+                          labelText: 'Broker Account - Optional',
+                          picture: Assets.icons.frame,
+                          onChanged: (account) => context
+                              .read<EditBrokerBloc>()
+                              .add(AccountChanged(account)),
+                          validator: (value) => null,
+                        ),
+                        const SizedBox(height: 24),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Text(
+                            'PASSWORD',
+                            style: textTheme.bodySmall!
+                                .copyWith(color: ColorName.neural600),
+                          ),
+                        ),
+                        TTextField(
+                          initText: initialPassword,
+                          labelText: 'Broker Password - Optional',
+                          picture: Assets.icons.key,
+                          onChanged: (password) => context
+                              .read<EditBrokerBloc>()
+                              .add(PasswordChanged(password)),
+                          validator: (value) => null,
+                        ),
+                      ],
                     ),
                   ),
-                );
-            }
-          },
+                ],
+              ),
+            ),
+          ],
         ),
-        BlocListener<EditBrokerBloc, EditBrokerState>(
-          listenWhen: (previous, current) => previous.status != current.status,
-          listener: (context, state) {
-            if (state.status.isSubmissionSuccess) {
-              ScaffoldMessenger.of(context)
-                ..hideCurrentSnackBar()
-                ..showSnackBar(
-                  SnackBar(
-                    elevation: 0,
-                    behavior: SnackBarBehavior.floating,
-                    backgroundColor: Colors.transparent,
-                    content: AwesomeSnackbarContent(
-                      title: 'Congratulations!',
-                      message: state.initBroker == null
-                          ? 'New broker has been created'
-                          : 'Broker has been updated',
-                      contentType: ContentType.success,
-                    ),
-                  ),
-                );
-              Navigator.of(context).pop();
-            }
-          },
-        ),
-      ],
-      child: ListView(
-        padding: const EdgeInsets.symmetric(
-          vertical: 32,
-          horizontal: 32,
-        ),
-        children: [
-          const _Header(),
-          _Input(
-            label: 'Broker Name',
-            hintText: 'Your Broker Name',
-            onChagned: (brokerName) => context
-                .read<EditBrokerBloc>()
-                .add(EditBrokerNameChanged(brokerName)),
-          ),
-          _Input(
-            label: 'Broker Url',
-            hintText: 'Your Broker Url',
-            onChagned: (urlName) => context
-                .read<EditBrokerBloc>()
-                .add(EditUrlNameChanged(urlName)),
-          ),
-          _Input(
-            label: 'Broker Account (optional)',
-            hintText: 'Your Broker Account',
-            onChagned: (brokerAccount) => context
-                .read<EditBrokerBloc>()
-                .add(EditBrokerAccountChanged(brokerAccount)),
-          ),
-          _Input(
-            label: 'Broker Password (optional)',
-            hintText: 'Your Broker Password',
-            onChagned: (brokerPassword) => context
-                .read<EditBrokerBloc>()
-                .add(EditBrokerPasswordChanged(brokerPassword)),
-          ),
-        ],
       ),
     );
   }
 }
 
 class _Header extends StatelessWidget {
-  const _Header();
+  const _Header(this.formKey);
+
+  final GlobalKey<FormState> formKey;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final initBroker =
-        context.select((EditBrokerBloc bloc) => bloc.state.initBroker);
-    final project =
-        context.select((EditBrokerBloc bloc) => bloc.state.project);
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            initBroker == null ? 'New Broker' : 'Edit Broker',
-            style: textTheme.titleLarge!.copyWith(
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        TCircleButton(
+          picture: Assets.icons.arrowLeft
+              .svg(color: ColorName.neural700, fit: BoxFit.scaleDown),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(right: 12),
+          child: TSecondaryButton(
+            label: 'SAVE',
+            onPressed: () {
+              if (formKey.currentState != null &&
+                  formKey.currentState!.validate()) {
+                context.read<EditBrokerBloc>().add(const Submitted());
+              }
+            },
+            enabled: true,
+            textStyle: textTheme.labelLarge!.copyWith(
+              color: ColorName.sky500,
               fontWeight: FontWeight.w500,
+              letterSpacing: 1.1,
             ),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           ),
-          Text(
-            project.name,
-            style: textTheme.titleSmall!.copyWith(
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
+        )
+      ],
     );
   }
 }
 
-class _Input extends StatelessWidget {
-  const _Input({
-    required this.label,
-    required this.hintText,
-    required this.onChagned,
-  });
-
-  final String label;
-  final String hintText;
-  final void Function(String) onChagned;
+class _Title extends StatelessWidget {
+  const _Title();
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final isInProgress = context.select(
-      (EditBrokerBloc bloc) => bloc.state.status.isSubmissionInProgress,
-    );
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: Text(
-              label,
-              style: textTheme.labelLarge!.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Broker'.toUpperCase(),
+          style: textTheme.titleMedium!.copyWith(
+            fontWeight: FontWeight.w500,
+            letterSpacing: 1.05,
+            color: ColorName.neural700,
           ),
-          TextFormField(
-            readOnly: isInProgress,
-            style: textTheme.labelLarge,
-            decoration: InputDecoration(
-              hintText: hintText,
-              hintStyle: textTheme.labelLarge!.copyWith(
-                color: ColorName.blueGray,
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderSide: const BorderSide(color: ColorName.gray),
-                borderRadius: BorderRadius.circular(4),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: const BorderSide(color: ColorName.blueGray),
-                borderRadius: BorderRadius.circular(4),
-              ),
-              prefixIcon: Assets.icons.box2.svg(
-                color: ColorName.blueGray,
-                fit: BoxFit.scaleDown,
-              ),
-            ),
-            onChanged: onChagned,
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

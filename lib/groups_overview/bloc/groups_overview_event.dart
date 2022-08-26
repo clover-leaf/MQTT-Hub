@@ -10,3 +10,7 @@ class GroupsOverviewEvent extends Equatable {
 class GroupSubscriptionRequested extends GroupsOverviewEvent {
   const GroupSubscriptionRequested();
 }
+
+class DeviceSubscriptionRequested extends GroupsOverviewEvent {
+  const DeviceSubscriptionRequested();
+}

@@ -1,7 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:form_inputs/form_inputs.dart';
-import 'package:formz/formz.dart';
 import 'package:user_repository/user_repository.dart';
 
 part 'edit_user_event.dart';
@@ -10,132 +8,83 @@ part 'edit_user_state.dart';
 class EditUserBloc extends Bloc<EditUserEvent, EditUserState> {
   EditUserBloc(
     this._userRepository, {
-    // new: this is current project
-    // update: null
-    required Project? initProject,
-    required List<UserProject> initUserProjects,
+    required String userID,
+    required List<Project> initialProjects,
+    required List<UserProject> initialUserProjects,
+    required User? initialUser,
   }) : super(
           EditUserState(
-            initUserProjects: initUserProjects,
-            selectedProjectIDs: initProject != null
-                ? [initProject.id]
-                : initUserProjects.map((uspr) => uspr.projectID).toList(),
+            initialUserProjects: initialUserProjects,
+            initialProjects: initialProjects,
+            initialUser: initialUser,
+            userID: userID,
+            userProjects: initialUserProjects,
+            username: initialUser?.username ?? '',
+            password: initialUser?.password ?? '',
           ),
         ) {
-    on<EditSubmitted>(_onSubmitted);
-    on<EditUsernameChanged>(_onUsernameChanged);
-    on<EditPasswordChanged>(_onPasswordChanged);
-    on<EditProjectAdded>(_onProjectAdded);
-    on<EditProjectDeleted>(_onProjectDeleted);
-    on<ProjectSubscriptionRequested>(_onProjectSubscriptionRequested);
+    on<Submitted>(_onSubmitted);
+    on<UsernameChanged>(_onUsernameChanged);
+    on<PasswordChanged>(_onPasswordChanged);
+    on<UserProjectsChanged>(_onUserProjectsChanged);
   }
 
   final UserRepository _userRepository;
 
-  Future<void> _onProjectSubscriptionRequested(
-    ProjectSubscriptionRequested event,
-    Emitter<EditUserState> emit,
-  ) async {
-    await emit.forEach<List<Project>>(
-      _userRepository.subscribeProjectStream(),
-      onData: (projects) {
-        return state.copyWith(projects: projects);
-      },
-    );
+  void _onUsernameChanged(UsernameChanged event, Emitter<EditUserState> emit) {
+    emit(state.copyWith(username: event.username));
   }
 
-  void _onUsernameChanged(
-    EditUsernameChanged event,
-    Emitter<EditUserState> emit,
-  ) {
-    final username = Username.dirty(event.username);
-    emit(
-      state.copyWith(
-        username: username,
-        valid: Formz.validate([username]).isValid,
-      ),
-    );
+  void _onPasswordChanged(PasswordChanged event, Emitter<EditUserState> emit) {
+    emit(state.copyWith(password: event.password));
   }
 
-  void _onPasswordChanged(
-    EditPasswordChanged event,
+  void _onUserProjectsChanged(
+    UserProjectsChanged event,
     Emitter<EditUserState> emit,
   ) {
-    final password = Password.dirty(event.password);
-    emit(
-      state.copyWith(
-        password: password,
-        valid: Formz.validate([password]).isValid,
-      ),
-    );
-  }
-
-  void _onProjectAdded(
-    EditProjectAdded event,
-    Emitter<EditUserState> emit,
-  ) {
-    final selectedProjectIDs = List<FieldId>.from(state.selectedProjectIDs)
-      ..add(event.projectID);
-    emit(state.copyWith(selectedProjectIDs: selectedProjectIDs));
-  }
-
-  void _onProjectDeleted(
-    EditProjectDeleted event,
-    Emitter<EditUserState> emit,
-  ) {
-    final selectedProjectIDs = List<FieldId>.from(state.selectedProjectIDs)
-      ..remove(event.projectID);
-    emit(
-      state.copyWith(
-        selectedProjectIDs: selectedProjectIDs,
-        valid: selectedProjectIDs.isNotEmpty,
-      ),
-    );
+    emit(state.copyWith(userProjects: event.userProjects));
   }
 
   Future<void> _onSubmitted(
-    EditSubmitted event,
+    Submitted event,
     Emitter<EditUserState> emit,
   ) async {
     try {
-      if (state.status.isSubmissionInProgress || !state.valid) {
-        emit(state.copyWith(error: 'Please fill infomation'));
-        return;
-      }
-      emit(state.copyWith(status: FormzStatus.submissionInProgress));
+      emit(state.copyWith(status: EditUserStatus.processing));
       // upsert user
-      final user = state.initUser
-              ?.copyWith(username: event.username, password: event.password) ??
-          User(
-            username: event.username,
-            password: event.password,
-          );
-      await _userRepository.saveUser(user);
-      // delete user-project
-      final deletedUserProject = state.initUserProjects
-          .where((uspr) => !event.selectedProjectIDs.contains(uspr.projectID));
-      for (final usPr in deletedUserProject) {
-        await _userRepository.deleteUserProject(usPr.id);
-      }
-      // add user-project
-      final addProjectIDs = event.selectedProjectIDs.where(
-        // state.initProjects not contain project
-        (prID) => state.initUserProjects
-            .where((uspr) => uspr.projectID == prID)
-            .isEmpty,
+      final user = User(
+        id: state.userID,
+        username: state.username,
+        password: state.password,
       );
-      for (final prID in addProjectIDs) {
-        final usPr = UserProject(projectID: prID, userID: user.id);
+      await _userRepository.saveUser(user);
+
+      final initialUsPrView = {
+        for (final usPr in state.initialUserProjects) usPr.projectID: usPr
+      };
+      final usPrView = {
+        for (final usPr in state.userProjects) usPr.projectID: usPr
+      };
+
+      final newUsPrs = state.userProjects
+          .where((usPr) => !initialUsPrView.keys.contains(usPr.projectID))
+          .toList();
+      for (final usPr in newUsPrs) {
         await _userRepository.saveUserProject(usPr);
       }
-      emit(state.copyWith(status: FormzStatus.submissionSuccess));
+
+      final deletedUsPrs = state.initialUserProjects
+          .where((usPr) => !usPrView.keys.contains(usPr.projectID))
+          .toList();
+      for (final usPr in deletedUsPrs) {
+        await _userRepository.deleteUserProject(usPr.id);
+      }
+      emit(state.copyWith(status: EditUserStatus.success));
     } catch (error) {
-      emit(
-        state.copyWith(
-          status: FormzStatus.submissionFailure,
-          error: error.toString(),
-        ),
-      );
+      final err = error.toString().split(':').last.trim();
+      emit(state.copyWith(status: EditUserStatus.failure, error: () => err));
+      emit(state.copyWith(status: EditUserStatus.normal, error: () => null));
     }
   }
 }

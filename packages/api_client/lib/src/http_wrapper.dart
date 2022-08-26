@@ -66,8 +66,7 @@ class HttpWrapper {
   }) async {
     final res = await _httpClient.delete(uri, headers: header);
     if (res.statusCode == 200) {
-      final body = jsonDecode(res.body) as Map<String, dynamic>;
-      return body;
+      return {};
     } else {
       final body = jsonDecode(res.body) as Map<String, dynamic>;
       final message = body['message'] as String;

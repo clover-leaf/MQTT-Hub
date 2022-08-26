@@ -7,14 +7,23 @@ part 'groups_overview_state.dart';
 
 class GroupsOverviewBloc
     extends Bloc<GroupsOverviewEvent, GroupsOverviewState> {
-  GroupsOverviewBloc(this._userRepository, {required Project project})
-      : super(GroupsOverviewState(project: project)) {
-    on<GroupSubscriptionRequested>(_onGroupSubscriptionRequested);
+  GroupsOverviewBloc(
+    this._userRepository, {
+    required Project parentProject,
+    required bool isAdmin,
+  }) : super(
+          GroupsOverviewState(
+            parentProject: parentProject,
+            isAdmin: isAdmin,
+          ),
+        ) {
+    on<GroupSubscriptionRequested>(_onGroupSubscribed);
+    on<DeviceSubscriptionRequested>(_onDeviceSubscribed);
   }
 
   final UserRepository _userRepository;
 
-  Future<void> _onGroupSubscriptionRequested(
+  Future<void> _onGroupSubscribed(
     GroupSubscriptionRequested event,
     Emitter<GroupsOverviewState> emit,
   ) async {
@@ -22,6 +31,18 @@ class GroupsOverviewBloc
       _userRepository.subscribeGroupStream(),
       onData: (groups) {
         return state.copyWith(groups: groups);
+      },
+    );
+  }
+
+  Future<void> _onDeviceSubscribed(
+    DeviceSubscriptionRequested event,
+    Emitter<GroupsOverviewState> emit,
+  ) async {
+    await emit.forEach<List<Device>>(
+      _userRepository.subscribeDeviceStream(),
+      onData: (devices) {
+        return state.copyWith(devices: devices);
       },
     );
   }

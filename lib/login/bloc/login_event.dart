@@ -8,18 +8,7 @@ class LoginEvent extends Equatable {
 }
 
 class LoginSubmitted extends LoginEvent {
-  const LoginSubmitted({
-    required this.domainName,
-    required this.username,
-    required this.password,
-  });
-
-  final String domainName;
-  final String username;
-  final String password;
-
-  @override
-  List<Object> get props => [domainName, username, password];
+  const LoginSubmitted();
 }
 
 class LoginDomainNameChanged extends LoginEvent {
@@ -47,13 +36,4 @@ class LoginPasswordChanged extends LoginEvent {
 
   @override
   List<Object> get props => [password];
-}
-
-class LoginPasswordVisibleChanged extends LoginEvent {
-  const LoginPasswordVisibleChanged({required this.passwordVisible});
-
-  final bool passwordVisible;
-
-  @override
-  List<Object> get props => [passwordVisible];
 }

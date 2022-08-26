@@ -1,62 +1,46 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:form_inputs/form_inputs.dart';
-import 'package:formz/formz.dart';
 import 'package:user_repository/user_repository.dart';
 
 part 'edit_project_event.dart';
 part 'edit_project_state.dart';
 
 class EditProjectBloc extends Bloc<EditProjectEvent, EditProjectState> {
-  EditProjectBloc(this._userRepository, {Project? initProject})
+  EditProjectBloc(this._userRepository, {required Project? initialProject})
       : super(
           EditProjectState(
-            initProject: initProject,
-            projectName: initProject != null
-                ? ProjectName.dirty(initProject.name)
-                : const ProjectName.pure(),
+            initialProject: initialProject,
+            name: initialProject?.name ?? '',
           ),
         ) {
-    on<EditSubmitted>(_onSubmitted);
-    on<EditProjectNameChanged>(_onProjectNameChanged);
+    on<Submitted>(_onSubmitted);
+    on<NameChanged>(_onNameChanged);
   }
 
   final UserRepository _userRepository;
 
-  void _onProjectNameChanged(
-    EditProjectNameChanged event,
-    Emitter<EditProjectState> emit,
-  ) {
-    final projectName = ProjectName.dirty(event.projectName);
-    emit(
-      state.copyWith(
-        projectName: projectName,
-        valid: Formz.validate([projectName]).isValid,
-      ),
-    );
+  void _onNameChanged(NameChanged event, Emitter<EditProjectState> emit) {
+    emit(state.copyWith(name: event.name));
   }
 
   Future<void> _onSubmitted(
-    EditSubmitted event,
+    Submitted event,
     Emitter<EditProjectState> emit,
   ) async {
     try {
-      if (state.status.isSubmissionInProgress || !state.valid) {
-        emit(state.copyWith(error: 'Please fill infomation'));
-        return;
-      }
-      emit(state.copyWith(status: FormzStatus.submissionInProgress));
-      final project = state.initProject?.copyWith(name: event.projectName) ??
-          Project(name: event.projectName);
+      emit(state.copyWith(status: EditProjectStatus.processing));
+      final project = state.initialProject?.copyWith(name: state.name) ??
+          Project(name: state.name);
       await _userRepository.saveProject(project);
-      emit(state.copyWith(status: FormzStatus.submissionSuccess));
+      if (state.initialProject == null) {
+        final dashboard = Dashboard(projectID: project.id, name: 'Default');
+        await _userRepository.saveDashboard(dashboard);
+      }
+      emit(state.copyWith(status: EditProjectStatus.success));
     } catch (error) {
-      emit(
-        state.copyWith(
-          status: FormzStatus.submissionFailure,
-          error: error.toString(),
-        ),
-      );
+      final err = error.toString().split(':').last.trim();
+      emit(state.copyWith(status: EditProjectStatus.failure, error: () => err));
+      emit(state.copyWith(status: EditProjectStatus.normal, error: () => null));
     }
   }
 }

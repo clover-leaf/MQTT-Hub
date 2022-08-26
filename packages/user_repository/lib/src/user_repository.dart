@@ -1,4 +1,5 @@
 import 'package:api_client/api_client.dart';
+import 'package:gateway_client/gateway_client.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:secure_storage_client/secure_storage_client.dart';
 import 'package:user_repository/user_repository.dart';
@@ -28,6 +29,50 @@ class UserRepository {
   /// JWT key
   final String _tokenKey;
 
+  // ================== GATEWAY ======================
+
+  /// Creates [GatewayClient]
+  GatewayClient createClient({
+    required String brokerID,
+    required String url,
+    required int port,
+    required String? account,
+    required String? password,
+  }) {
+    return GatewayClient(
+      brokerID: brokerID,
+      url: url,
+      port: port,
+      account: account,
+      password: password,
+    );
+  }
+
+  /// Gets a [Stream] of published msg from given [GatewayClient]
+  Stream<Map<String, String>> getPublishMessage(GatewayClient client) {
+    return client.getPublishMessage();
+  }
+
+  /// Publish payload given [GatewayClient]
+  void publishMessage(
+    GatewayClient client, {
+    required String payload,
+    required String topic,
+    bool retain = true,
+  }) {
+    client.published(payload: payload, topic: topic, retain: retain);
+  }
+
+  /// Gets a [Stream] of [ConnectionStatus] from given [GatewayClient]
+  Stream<ConnectionStatus> getConnectionStatus(GatewayClient client) {
+    return client.getConnectionStatus();
+  }
+
+  /// Close connection status stream
+  Future<void> closeConnectionStatusStream(GatewayClient client) async =>
+      client.closeConnectionStatusStream();
+
+  // ================== API ======================
   /// the controller of [Stream] of [Project]
   final _projectStreamController = BehaviorSubject<List<Project>>.seeded([]);
 
@@ -51,6 +96,13 @@ class UserRepository {
   final _attributeStreamController =
       BehaviorSubject<List<Attribute>>.seeded([]);
 
+  /// the controller of [Stream] of [Dashboard]
+  final _dashboardStreamController =
+      BehaviorSubject<List<Dashboard>>.seeded([]);
+
+  /// the controller of [Stream] of [Tile]
+  final _tileStreamController = BehaviorSubject<List<Tile>>.seeded([]);
+
   /// read secure-storage if it contains token
   Future<String> recoverSession() async {
     final token = await _secureStorageClient.readSecureData(_tokenKey);
@@ -62,8 +114,8 @@ class UserRepository {
   }
 
   /// get user info match with JWT
-  Future<void> getUserInJWT(String token) async {
-    await _apiClient.getUserInJWT(token);
+  Future<Map<String, dynamic>> getUserInJWT(String token) async {
+    return _apiClient.getUserInJWT(token);
   }
 
   /// read all pair
@@ -74,7 +126,11 @@ class UserRepository {
   /// login into tenant with given data
   /// return token
   /// throw Exception(message) when fail
-  Future<String> login(String domain, String username, String password) async {
+  Future<Map<String, dynamic>> login(
+    String domain,
+    String username,
+    String password,
+  ) async {
     return _apiClient.login(domain, username, password);
   }
 
@@ -90,6 +146,86 @@ class UserRepository {
   Future<void> resetToken() async {
     await _secureStorageClient.deleteSecureData(_tokenKey);
     _token = null;
+  }
+
+  /// reset stream
+  void resetStream() {
+    _projectStreamController.add([]);
+    _brokerStreamController.add([]);
+    _groupStreamController.add([]);
+    _deviceStreamController.add([]);
+    _attributeStreamController.add([]);
+    _dashboardStreamController.add([]);
+    _tileStreamController.add([]);
+    _userStreamController.add([]);
+    _userProjectStreamController.add([]);
+  }
+
+  /// get initial data for both admin and user
+  Future<void> initialize() async {
+    if (_token == null) throw Exception('Token not found');
+    final res = await _apiClient.getInitialData(_token!);
+    // decode value
+    final projectJsons = res['projects'] as List<dynamic>;
+    final projects = projectJsons
+        .map((dynamic json) => Project.fromJson(json as Map<String, dynamic>))
+        .toList();
+    final brokerJsons = res['brokers'] as List<dynamic>;
+    final brokers = brokerJsons
+        .map((dynamic json) => Broker.fromJson(json as Map<String, dynamic>))
+        .toList();
+    final groupJsons = res['groups'] as List<dynamic>;
+    final groups = groupJsons
+        .map((dynamic json) => Group.fromJson(json as Map<String, dynamic>))
+        .toList();
+    final deviceJsons = res['devices'] as List<dynamic>;
+    final devices = deviceJsons
+        .map((dynamic json) => Device.fromJson(json as Map<String, dynamic>))
+        .toList();
+    final attributeJsons = res['attributes'] as List<dynamic>;
+    final attributes = attributeJsons
+        .map((dynamic json) => Attribute.fromJson(json as Map<String, dynamic>))
+        .toList();
+    final dashboardJsons = res['dashboards'] as List<dynamic>;
+    final dashboards = dashboardJsons
+        .map((dynamic json) => Dashboard.fromJson(json as Map<String, dynamic>))
+        .toList();
+    final tileJsons = res['tiles'] as List<dynamic>;
+    final tiles = tileJsons
+        .map((dynamic json) => Tile.fromJson(json as Map<String, dynamic>))
+        .toList();
+
+    List<User>? users;
+    List<UserProject>? userProjects;
+
+    if (res.containsKey('users')) {
+      final userJsons = res['users'] as List<dynamic>;
+      users = userJsons
+          .map((dynamic json) => User.fromJson(json as Map<String, dynamic>))
+          .toList();
+    }
+    if (res.containsKey('user-projects')) {
+      final userProjectJsons = res['user-projects'] as List<dynamic>;
+      userProjects = userProjectJsons
+          .map(
+            (dynamic json) =>
+                UserProject.fromJson(json as Map<String, dynamic>),
+          )
+          .toList();
+    }
+    _projectStreamController.add(projects);
+    if (users != null) {
+      _userStreamController.add(users);
+    }
+    if (userProjects != null) {
+      _userProjectStreamController.add(userProjects);
+    }
+    _brokerStreamController.add(brokers);
+    _groupStreamController.add(groups);
+    _deviceStreamController.add(devices);
+    _attributeStreamController.add(attributes);
+    _dashboardStreamController.add(dashboards);
+    _tileStreamController.add(tiles);
   }
 
   // ================== PROJECT REST API ========================
@@ -139,7 +275,11 @@ class UserRepository {
       projects.removeAt(idx);
       // update groups and device as well
       await getGroups();
+      await getBrokers();
+      await getDashboards();
+      await getTiles();
       await getDevices();
+      await getAttributes();
       _projectStreamController.add(projects);
     }
   }
@@ -189,6 +329,7 @@ class UserRepository {
     if (idx > -1) {
       await _apiClient.deleteUser(token: _token!, userID: userID);
       users.removeAt(idx);
+      await getUserProjects();
       _userStreamController.add(users);
     }
   }
@@ -292,6 +433,9 @@ class UserRepository {
     if (idx > -1) {
       await _apiClient.deleteBroker(token: _token!, brokerID: brokerID);
       brokers.removeAt(idx);
+      await getDevices();
+      await getAttributes();
+      await getTiles();
       _brokerStreamController.add(brokers);
     }
   }
@@ -343,6 +487,8 @@ class UserRepository {
       // update groups and device as well
       await getGroups();
       await getDevices();
+      await getAttributes();
+      await getTiles();
     }
   }
   // ================== GROUP REST API ========================
@@ -391,6 +537,8 @@ class UserRepository {
     if (idx > -1) {
       await _apiClient.deleteDevice(token: _token!, deviceID: deviceID);
       devices.removeAt(idx);
+      await getAttributes();
+      await getTiles();
       _deviceStreamController.add(devices);
     }
   }
@@ -446,8 +594,120 @@ class UserRepository {
         attributeID: attributeID,
       );
       attributes.removeAt(idx);
+      await getTiles();
       _attributeStreamController.add(attributes);
     }
   }
   // ================== ATTRIBUTE REST API ========================
+
+  // ================== DASHBOARD REST API ========================
+  ///
+  Stream<List<Dashboard>> subscribeDashboardStream() {
+    return _dashboardStreamController.asBroadcastStream();
+  }
+
+  /// create or update dashboard
+  Future<void> saveDashboard(Dashboard dashboard) async {
+    if (_token == null) throw Exception('Token not found');
+    final dashboards = [..._dashboardStreamController.value];
+    final idx = dashboards.indexWhere((t) => t.id == dashboard.id);
+    if (idx == -1) {
+      await _apiClient.createDashboard(
+        token: _token!,
+        dashboard: dashboard.toJson(),
+      );
+      dashboards.add(dashboard);
+    } else {
+      await _apiClient.updateDashboard(
+        token: _token!,
+        dashboardID: dashboard.id,
+        dashboard: dashboard.toJson(),
+      );
+      dashboards
+        ..removeAt(idx)
+        ..insertAll(idx, [dashboard]);
+    }
+    _dashboardStreamController.add(dashboards);
+  }
+
+  /// get dashboard list
+  Future<void> getDashboards() async {
+    if (_token == null) throw Exception('Token not found');
+    final data = await _apiClient.getDashboards(_token!);
+    final dashboards = data
+        .map((dynamic json) => Dashboard.fromJson(json as Map<String, dynamic>))
+        .toList();
+    _dashboardStreamController.add(dashboards);
+  }
+
+  /// delete dashboard by ID
+  Future<void> deleteDashboard(String dashboardID) async {
+    final dashboards = [..._dashboardStreamController.value];
+    final idx = dashboards.indexWhere((t) => t.id == dashboardID);
+    if (idx > -1) {
+      await _apiClient.deleteDashboard(
+        token: _token!,
+        dashboardID: dashboardID,
+      );
+      dashboards.removeAt(idx);
+      await getTiles();
+      _dashboardStreamController.add(dashboards);
+    }
+  }
+  // ================== DASHBOARD REST API ========================
+
+  // ================== TILE REST API ========================
+  ///
+  Stream<List<Tile>> subscribeTileStream() {
+    return _tileStreamController.asBroadcastStream();
+  }
+
+  /// create or update tile
+  Future<void> saveTile(Tile tile) async {
+    if (_token == null) throw Exception('Token not found');
+    final tiles = [..._tileStreamController.value];
+    final idx = tiles.indexWhere((t) => t.id == tile.id);
+    if (idx == -1) {
+      await _apiClient.createTile(
+        token: _token!,
+        tile: tile.toJson(),
+      );
+      tiles.add(tile);
+    } else {
+      await _apiClient.updateTile(
+        token: _token!,
+        tileID: tile.id,
+        tile: tile.toJson(),
+      );
+      tiles
+        ..removeAt(idx)
+        ..insertAll(idx, [tile]);
+    }
+    _tileStreamController.add(tiles);
+  }
+
+  /// get tile list
+  Future<void> getTiles() async {
+    if (_token == null) throw Exception('Token not found');
+    final data = await _apiClient.getTiles(_token!);
+    final tiles = data
+        .map((dynamic json) => Tile.fromJson(json as Map<String, dynamic>))
+        .toList();
+    _tileStreamController.add(tiles);
+  }
+
+  /// delete tile by ID
+  Future<void> deleteTile(String tileID) async {
+    final tiles = [..._tileStreamController.value];
+    final idx = tiles.indexWhere((t) => t.id == tileID);
+    if (idx > -1) {
+      await _apiClient.deleteTile(
+        token: _token!,
+        tileID: tileID,
+      );
+      tiles.removeAt(idx);
+      _tileStreamController.add(tiles);
+    }
+  }
+  // ================== TILE REST API ========================
 }

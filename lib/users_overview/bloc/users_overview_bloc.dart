@@ -6,25 +6,40 @@ part 'users_overview_event.dart';
 part 'users_overview_state.dart';
 
 class UsersOverviewBloc extends Bloc<UsersOverviewEvent, UsersOverviewState> {
-  UsersOverviewBloc(this._userRepository, {required Project? parentProject})
-      : super(UsersOverviewState(parentProject: parentProject)) {
-    on<UserAdded>(_onUserAdded);
+  UsersOverviewBloc(
+    this._userRepository, {
+    required Project? parentProject,
+    required bool isAdmin,
+  }) : super(
+          UsersOverviewState(
+            parentProject: parentProject,
+            isAdmin: isAdmin,
+          ),
+        ) {
     on<UserSubscriptionRequested>(_onUserSubscriptionRequested);
     on<UserProjectSubscriptionRequested>(_onUserProjectSubscriptionRequested);
+    on<ProjectSubscriptionRequested>(_onProjectSubscriptionRequested);
+    on<DeletionRequested>(_onDeleted);
   }
 
   final UserRepository _userRepository;
 
-  Future<void> _onUserAdded(
-    UserAdded event,
+  Future<void> _onDeleted(
+    DeletionRequested event,
     Emitter<UsersOverviewState> emit,
   ) async {
     try {
-      final usPr =
-          UserProject(projectID: event.project.id, userID: event.user.id);
-      await _userRepository.saveUserProject(usPr);
-    } catch (err) {
-      emit(state.copyWith(error: err.toString()));
+      emit(state.copyWith(status: UsersOverviewStatus.processing));
+      await _userRepository.deleteUser(event.userID);
+      emit(state.copyWith(status: UsersOverviewStatus.success));
+    } catch (error) {
+      final err = error.toString().split(':').last.trim();
+      emit(
+        state.copyWith(status: UsersOverviewStatus.failure, error: () => err),
+      );
+      emit(
+        state.copyWith(status: UsersOverviewStatus.normal, error: () => null),
+      );
     }
   }
 
@@ -36,6 +51,18 @@ class UsersOverviewBloc extends Bloc<UsersOverviewEvent, UsersOverviewState> {
       _userRepository.subscribeUserStream(),
       onData: (users) {
         return state.copyWith(users: users);
+      },
+    );
+  }
+
+  Future<void> _onProjectSubscriptionRequested(
+    ProjectSubscriptionRequested event,
+    Emitter<UsersOverviewState> emit,
+  ) async {
+    await emit.forEach<List<Project>>(
+      _userRepository.subscribeProjectStream(),
+      onData: (projects) {
+        return state.copyWith(projects: projects);
       },
     );
   }

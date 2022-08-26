@@ -2,27 +2,37 @@ part of 'groups_overview_bloc.dart';
 
 class GroupsOverviewState extends Equatable {
   const GroupsOverviewState({
-    required this.project,
+    required this.isAdmin,
+    required this.parentProject,
     this.groups = const [],
+    this.devices = const [],
   });
 
-  final Project project;
+  // immutate
+  final bool isAdmin;
+  final Project parentProject;
+
+  // listen
   final List<Group> groups;
+  final List<Device> devices;
 
-  List<Group> get rootGroup =>
-      groups.where((gr) => gr.projectID == project.id).toList();
-
+  List<Group> get showedGroup =>
+      groups.where((gr) => gr.projectID == parentProject.id).toList();
 
   GroupsOverviewState copyWith({
-    Project? project,
+    bool? isAdmin,
+    Project? parentProject,
     List<Group>? groups,
+    List<Device>? devices,
   }) {
     return GroupsOverviewState(
-      project: project ?? this.project,
+      isAdmin: isAdmin ?? this.isAdmin,
+      parentProject: parentProject ?? this.parentProject,
       groups: groups ?? this.groups,
+      devices: devices ?? this.devices,
     );
   }
 
   @override
-  List<Object> get props => [project, groups];
+  List<Object> get props => [isAdmin, parentProject, groups, devices];
 }

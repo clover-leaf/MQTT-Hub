@@ -1,26 +1,46 @@
 import 'package:bee/edit_user/edit_user.dart';
-import 'package:bee/gen/assets.gen.dart';
 import 'package:bee/gen/colors.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:user_repository/user_repository.dart';
+import 'package:uuid/uuid.dart';
 
 class EditUserPage extends StatelessWidget {
-  const EditUserPage({super.key});
+  const EditUserPage({
+    super.key,
+    required this.userID,
+    required this.initialUser,
+    required this.initialProjects,
+    required this.userProjects,
+  });
+
+  final String userID;
+  final User? initialUser;
+  final List<Project> initialProjects;
+  final List<UserProject> userProjects;
 
   static PageRoute<void> route({
-    required Project? initProject,
-    required List<UserProject> initUserProjects,
+    required List<Project> initialProjects,
+    required List<UserProject> initialUserProjects,
+    required User? initialUser,
   }) {
+    final userID = initialUser?.id ?? const Uuid().v4();
     return PageRouteBuilder<void>(
       transitionDuration: const Duration(milliseconds: 400),
       pageBuilder: (context, animation, secondaryAnimation) => BlocProvider(
         create: (context) => EditUserBloc(
           context.read<UserRepository>(),
-          initProject: initProject,
-          initUserProjects: initUserProjects,
-        )..add(const ProjectSubscriptionRequested()),
-        child: const EditUserPage(),
+          initialProjects: initialProjects,
+          initialUserProjects: initialUserProjects,
+          initialUser: initialUser,
+          userID: userID,
+        ),
+        child: EditUserPage(
+          userID: userID,
+          initialUser: initialUser,
+          initialProjects: initialProjects,
+          userProjects: initialUserProjects,
+        ),
       ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(0, 1);
@@ -39,65 +59,14 @@ class EditUserPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final username = context.select((EditUserBloc bloc) => bloc.state.username);
-    final password = context.select((EditUserBloc bloc) => bloc.state.password);
-    final selectedProjectIDs =
-        context.select((EditUserBloc bloc) => bloc.state.selectedProjectIDs);
-
     return Scaffold(
-      backgroundColor: theme.backgroundColor,
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: ColorName.blue,
-        splashColor: ColorName.darkBlue,
-        foregroundColor: ColorName.darkBlue,
-        onPressed: () => context.read<EditUserBloc>().add(
-              EditSubmitted(
-                username: username.value,
-                password: password.value,
-                selectedProjectIDs: selectedProjectIDs,
-              ),
-            ),
-        child: Assets.icons.folderAdd.svg(color: ColorName.white),
+      backgroundColor: ColorName.white,
+      body: EditUserView(
+        userID: userID,
+        initialUser: initialUser,
+        initialProjects: initialProjects,
+        userProjects: userProjects,
       ),
-      bottomNavigationBar: BottomAppBar(
-        color: theme.backgroundColor,
-        elevation: 24,
-        child: SizedBox(
-          height: 64,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              ElevatedButton(
-                onPressed: () => Navigator.of(context).pop(),
-                style: ElevatedButton.styleFrom(
-                  elevation: 0,
-                  shape: const CircleBorder(),
-                  primary: ColorName.white,
-                  onPrimary: ColorName.blue,
-                  shadowColor: Colors.transparent,
-                  padding: const EdgeInsets.all(16),
-                ),
-                child: Assets.icons.arrowLeft.svg(),
-              ),
-              ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  elevation: 0,
-                  shape: const CircleBorder(),
-                  primary: ColorName.white,
-                  onPrimary: ColorName.blue,
-                  shadowColor: Colors.transparent,
-                  padding: const EdgeInsets.all(16),
-                ),
-                child: Assets.icons.lock.svg(),
-              ),
-            ],
-          ),
-        ),
-      ),
-      body: const EditUserView(),
     );
   }
 }

@@ -7,22 +7,15 @@ class EditProjectEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class EditSubmitted extends EditProjectEvent {
-  const EditSubmitted({
-    required this.projectName,
-  });
-
-  final String projectName;
-
-  @override
-  List<Object> get props => [projectName];
+class Submitted extends EditProjectEvent {
+  const Submitted();
 }
 
-class EditProjectNameChanged extends EditProjectEvent {
-  const EditProjectNameChanged(this.projectName);
+class NameChanged extends EditProjectEvent {
+  const NameChanged(this.name);
 
-  final String projectName;
+  final String name;
 
   @override
-  List<Object> get props => [projectName];
+  List<Object> get props => [name];
 }

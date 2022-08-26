@@ -1,36 +1,50 @@
 part of 'edit_project_bloc.dart';
 
+enum EditProjectStatus {
+  normal,
+  processing,
+  success,
+  failure,
+}
+
+extension EditProjectStatusX on EditProjectStatus {
+  bool isProcessing() => this == EditProjectStatus.processing;
+  bool isSuccess() => this == EditProjectStatus.success;
+  bool isFailure() => this == EditProjectStatus.failure;
+}
+
 class EditProjectState extends Equatable {
   const EditProjectState({
-    this.projectName = const ProjectName.pure(),
-    this.status = FormzStatus.pure,
-    this.valid = false,
-    this.initProject,
+    this.status = EditProjectStatus.normal,
+    this.name = '',
+    this.initialProject,
     this.error,
   });
 
-  final ProjectName projectName;
-  final FormzStatus status;
-  final bool valid;
-  final Project? initProject;
+  // input
+  final String name;
+
+  // initial
+  final Project? initialProject;
+
+  // status
+  final EditProjectStatus status;
   final String? error;
 
   @override
-  List<Object?> get props => [projectName, initProject, status, valid, error];
+  List<Object?> get props => [name, initialProject, status, error];
 
   EditProjectState copyWith({
-    ProjectName? projectName,
-    FormzStatus? status,
-    bool? valid,
-    Project? initProject,
-    String? error,
+    String? name,
+    EditProjectStatus? status,
+    Project? initialProject,
+    String? Function()? error,
   }) {
     return EditProjectState(
-      projectName: projectName ?? this.projectName,
+      name: name ?? this.name,
       status: status ?? this.status,
-      valid: valid ?? this.valid,
-      initProject: initProject ?? this.initProject,
-      error: error ?? this.error,
+      initialProject: initialProject ?? this.initialProject,
+      error: error != null ? error() : this.error,
     );
   }
 }

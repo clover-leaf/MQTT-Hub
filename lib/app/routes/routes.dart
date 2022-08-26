@@ -11,7 +11,10 @@ List<Page<dynamic>> onGenerateAppViewPages(
     case AppStatus.unauthenticated:
       return [LoginPage.page()];
 
-    case AppStatus.authenticated:
-      return [TilesOverviewPage.page()];
+    case AppStatus.userAuthenticated:
+      return [TilesOverviewPage.page(isAdmin: false)];
+
+    case AppStatus.adminAuthenticated:
+      return [TilesOverviewPage.page(isAdmin: true)];
   }
 }

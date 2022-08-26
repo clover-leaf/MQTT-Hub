@@ -1,4 +1,3 @@
-import 'package:bee/gen/assets.gen.dart';
 import 'package:bee/gen/colors.gen.dart';
 import 'package:bee/project_detail/project_detail.dart';
 import 'package:flutter/material.dart';
@@ -8,11 +7,22 @@ import 'package:user_repository/user_repository.dart';
 class ProjectDetailPage extends StatelessWidget {
   const ProjectDetailPage({super.key});
 
-  static PageRoute<void> route(Project project) {
+  static PageRoute<void> route({
+    required bool isAdmin,
+    required Project project,
+  }) {
     return PageRouteBuilder<void>(
       transitionDuration: const Duration(milliseconds: 400),
       pageBuilder: (context, animation, secondaryAnimation) => BlocProvider(
-        create: (context) => ProjectDetailBloc(project),
+        create: (context) => ProjectDetailBloc(
+          context.read<UserRepository>(),
+          project: project,
+          isAdmin: isAdmin,
+        )
+          ..add(const GroupSubscriptionRequested())
+          ..add(const BrokerSubscriptionRequested())
+          ..add(const UserProjectSubscriptionRequested())
+          ..add(const DashboardSubscriptionRequested()),
         child: const ProjectDetailPage(),
       ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -21,7 +31,6 @@ class ProjectDetailPage extends StatelessWidget {
         const curve = Curves.ease;
         final tween =
             Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
         return SlideTransition(
           position: animation.drive(tween),
           child: child,
@@ -32,47 +41,9 @@ class ProjectDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Scaffold(
-      backgroundColor: theme.backgroundColor,
-      bottomNavigationBar: BottomAppBar(
-        color: theme.backgroundColor,
-        elevation: 24,
-        child: SizedBox(
-          height: 64,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              ElevatedButton(
-                onPressed: () => Navigator.of(context).pop(),
-                style: ElevatedButton.styleFrom(
-                  elevation: 0,
-                  shape: const CircleBorder(),
-                  primary: ColorName.white,
-                  onPrimary: ColorName.blue,
-                  shadowColor: Colors.transparent,
-                  padding: const EdgeInsets.all(16),
-                ),
-                child: Assets.icons.arrowLeft.svg(),
-              ),
-              ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  elevation: 0,
-                  shape: const CircleBorder(),
-                  primary: ColorName.white,
-                  onPrimary: ColorName.blue,
-                  shadowColor: Colors.transparent,
-                  padding: const EdgeInsets.all(16),
-                ),
-                child: Assets.icons.lock.svg(),
-              ),
-            ],
-          ),
-        ),
-      ),
-      body: const ProjectDetailView(),
+    return const Scaffold(
+      backgroundColor: ColorName.white,
+      body: ProjectDetailView(),
     );
   }
 }

@@ -7,23 +7,12 @@ class EditUserEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class EditSubmitted extends EditUserEvent {
-  const EditSubmitted({
-    required this.username,
-    required this.password,
-    required this.selectedProjectIDs,
-  });
-
-  final String username;
-  final String password;
-  final List<FieldId> selectedProjectIDs;
-
-  @override
-  List<Object> get props => [username, password, selectedProjectIDs];
+class Submitted extends EditUserEvent {
+  const Submitted();
 }
 
-class EditUsernameChanged extends EditUserEvent {
-  const EditUsernameChanged(this.username);
+class UsernameChanged extends EditUserEvent {
+  const UsernameChanged(this.username);
 
   final String username;
 
@@ -31,8 +20,8 @@ class EditUsernameChanged extends EditUserEvent {
   List<Object> get props => [username];
 }
 
-class EditPasswordChanged extends EditUserEvent {
-  const EditPasswordChanged(this.password);
+class PasswordChanged extends EditUserEvent {
+  const PasswordChanged(this.password);
 
   final String password;
 
@@ -40,24 +29,11 @@ class EditPasswordChanged extends EditUserEvent {
   List<Object> get props => [password];
 }
 
-class EditProjectAdded extends EditUserEvent {
-  const EditProjectAdded(this.projectID);
+class UserProjectsChanged extends EditUserEvent {
+  const UserProjectsChanged(this.userProjects);
 
-  final FieldId projectID;
-
-  @override
-  List<Object> get props => [projectID];
-}
-
-class EditProjectDeleted extends EditUserEvent {
-  const EditProjectDeleted(this.projectID);
-
-  final FieldId projectID;
+  final List<UserProject> userProjects;
 
   @override
-  List<Object> get props => [projectID];
-}
-
-class ProjectSubscriptionRequested extends EditUserEvent {
-  const ProjectSubscriptionRequested();
+  List<Object> get props => [userProjects];
 }

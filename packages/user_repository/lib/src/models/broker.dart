@@ -4,7 +4,7 @@ import 'package:meta/meta.dart';
 import 'package:user_repository/src/models/typedef.dart';
 import 'package:uuid/uuid.dart';
 
-part 'broker.g.dart';
+part 'generated/broker.g.dart';
 
 @immutable
 @JsonSerializable()
@@ -17,6 +17,7 @@ class Broker extends Equatable {
     required this.projectID,
     required this.name,
     required this.url,
+    required this.port,
     required this.account,
     required this.password,
   })  : assert(
@@ -38,6 +39,9 @@ class Broker extends Equatable {
   /// The url of broker
   final String url;
 
+  /// The port of broker
+  final int port;
+
   /// The account of broker
   final String? account;
 
@@ -58,6 +62,7 @@ class Broker extends Equatable {
     FieldId? projectID,
     String? name,
     String? url,
+    int? port,
     String? account,
     String? password,
   }) {
@@ -66,11 +71,13 @@ class Broker extends Equatable {
       projectID: projectID ?? this.projectID,
       name: name ?? this.name,
       url: url ?? this.url,
+      port: port ?? this.port,
       account: account ?? this.account,
       password: password ?? this.password,
     );
   }
 
   @override
-  List<Object?> get props => [id, projectID, name, url, account, password];
+  List<Object?> get props =>
+      [id, projectID, name, url, port, account, password];
 }

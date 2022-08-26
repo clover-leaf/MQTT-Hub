@@ -10,3 +10,12 @@ class BrokersOverviewEvent extends Equatable {
 class BrokerSubscriptionRequested extends BrokersOverviewEvent {
   const BrokerSubscriptionRequested();
 }
+
+class DeletionRequested extends BrokersOverviewEvent {
+  const DeletionRequested(this.brokerID);
+
+  final String brokerID;
+
+  @override
+  List<Object?> get props => [brokerID];
+}

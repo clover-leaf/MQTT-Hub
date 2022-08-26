@@ -10,3 +10,15 @@ class DeviceDetailEvent extends Equatable {
 class AttributeSubscriptionRequested extends DeviceDetailEvent {
   const AttributeSubscriptionRequested();
 }
+
+class BrokerSubscriptionRequested extends DeviceDetailEvent {
+  const BrokerSubscriptionRequested();
+}
+
+class DeviceSubscriptionRequested extends DeviceDetailEvent {
+  const DeviceSubscriptionRequested();
+}
+
+class DeletionRequested extends DeviceDetailEvent {
+  const DeletionRequested();
+}

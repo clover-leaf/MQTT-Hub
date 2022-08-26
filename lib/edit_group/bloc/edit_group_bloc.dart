@@ -1,7 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:form_inputs/form_inputs.dart';
-import 'package:formz/formz.dart';
 import 'package:user_repository/user_repository.dart';
 
 part 'edit_group_event.dart';
@@ -10,69 +8,49 @@ part 'edit_group_state.dart';
 class EditGroupBloc extends Bloc<EditGroupEvent, EditGroupState> {
   EditGroupBloc(
     this._userRepository, {
-    required String path,
-    required Project? project,
-    required Group? group,
-    Group? initGroup,
+    required String? parentProjetID,
+    required String? parentGroupID,
+    Group? initialGroup,
   })  : assert(
-          (project == null) || (group == null),
+          (parentProjetID == null) || (parentGroupID == null),
           'Either project or group must be null',
         ),
         super(
           EditGroupState(
-            path: path,
-            project: project,
-            group: group,
-            initGroup: initGroup,
-            groupName: initGroup != null
-                ? GroupName.dirty(initGroup.name)
-                : const GroupName.pure(),
+            parentProjetID: parentProjetID,
+            parentGroupID: parentGroupID,
+            initialGroup: initialGroup,
+            name: initialGroup?.name ?? '',
           ),
         ) {
-    on<EditSubmitted>(_onSubmitted);
-    on<EditGroupNameChanged>(_onGroupNameChanged);
+    on<Submitted>(_onSubmitted);
+    on<NameChanged>(_onNameChanged);
   }
 
   final UserRepository _userRepository;
 
-  void _onGroupNameChanged(
-    EditGroupNameChanged event,
-    Emitter<EditGroupState> emit,
-  ) {
-    final groupName = GroupName.dirty(event.groupName);
-    emit(
-      state.copyWith(
-        groupName: groupName,
-        valid: Formz.validate([groupName]).isValid,
-      ),
-    );
+  void _onNameChanged(NameChanged event, Emitter<EditGroupState> emit) {
+    emit(state.copyWith(name: event.name));
   }
 
   Future<void> _onSubmitted(
-    EditSubmitted event,
+    Submitted event,
     Emitter<EditGroupState> emit,
   ) async {
     try {
-      if (state.status.isSubmissionInProgress || !state.valid) {
-        emit(state.copyWith(error: 'Please fill infomation'));
-        return;
-      }
-      emit(state.copyWith(status: FormzStatus.submissionInProgress));
-      final group = state.initGroup?.copyWith(name: event.groupName) ??
+      emit(state.copyWith(status: EditGroupStatus.processing));
+      final group = state.initialGroup?.copyWith(name: state.name) ??
           Group(
-            projectID: state.project?.id,
-            groupID: state.group?.id,
-            name: event.groupName,
+            projectID: state.parentProjetID,
+            groupID: state.parentGroupID,
+            name: state.name,
           );
       await _userRepository.saveGroup(group);
-      emit(state.copyWith(status: FormzStatus.submissionSuccess));
+      emit(state.copyWith(status: EditGroupStatus.success));
     } catch (error) {
-      emit(
-        state.copyWith(
-          status: FormzStatus.submissionFailure,
-          error: error.toString(),
-        ),
-      );
+      final err = error.toString().split(':').last.trim();
+      emit(state.copyWith(status: EditGroupStatus.failure, error: () => err));
+      emit(state.copyWith(status: EditGroupStatus.normal, error: () => null));
     }
   }
 }

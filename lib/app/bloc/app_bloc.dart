@@ -18,7 +18,11 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     Emitter<AppState> emit,
   ) async {
     await _userRepository.setToken(event.token, toWrite: event.toWrite);
-    emit(state.copyWith(status: AppStatus.authenticated));
+    if (event.isAdmin) {
+      emit(state.copyWith(status: AppStatus.adminAuthenticated));
+    } else {
+      emit(state.copyWith(status: AppStatus.userAuthenticated));
+    }
   }
 
   Future<void> _onAppUnauthenticated(

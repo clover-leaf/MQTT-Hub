@@ -7,70 +7,42 @@ class EditDeviceEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class EditSubmitted extends EditDeviceEvent {
-  const EditSubmitted({
-    required this.deviceName,
-    required this.topicName,
-    required this.selectedBrokerID,
-  });
-
-  final String deviceName;
-  final String topicName;
-  final FieldId? selectedBrokerID;
-
-  @override
-  List<Object?> get props => [deviceName, topicName, selectedBrokerID];
+class Submitted extends EditDeviceEvent {
+  const Submitted();
 }
 
-class EditDeviceNameChanged extends EditDeviceEvent {
-  const EditDeviceNameChanged(this.deviceName);
+class NameChanged extends EditDeviceEvent {
+  const NameChanged(this.name);
 
-  final String deviceName;
-
-  @override
-  List<Object> get props => [deviceName];
-}
-
-class EditTopicNameChanged extends EditDeviceEvent {
-  const EditTopicNameChanged(this.topicName);
-
-  final String topicName;
+  final String name;
 
   @override
-  List<Object> get props => [topicName];
+  List<Object> get props => [name];
 }
 
-class EditSelectedBrokerIDChanged extends EditDeviceEvent {
-  const EditSelectedBrokerIDChanged(this.selectedBrokerID);
+class TopicChanged extends EditDeviceEvent {
+  const TopicChanged(this.topic);
 
-  final FieldId? selectedBrokerID;
+  final String topic;
+
+  @override
+  List<Object> get props => [topic];
+}
+
+class SelectedBrokerIDChanged extends EditDeviceEvent {
+  const SelectedBrokerIDChanged(this.selectedBrokerID);
+
+  final FieldId selectedBrokerID;
 
   @override
   List<Object?> get props => [selectedBrokerID];
 }
 
-class EditTempAttributeNameChanged extends EditDeviceEvent {
-  const EditTempAttributeNameChanged(this.tempAttributeName);
+class AttributesChanged extends EditDeviceEvent {
+  const AttributesChanged(this.attributes);
 
-  final String? tempAttributeName;
-
-  @override
-  List<Object?> get props => [tempAttributeName];
-}
-
-class EditTempAttributeJsonPathChanged extends EditDeviceEvent {
-  const EditTempAttributeJsonPathChanged(this.tempAttributeJsonPath);
-
-  final String? tempAttributeJsonPath;
+  final List<Attribute> attributes;
 
   @override
-  List<Object?> get props => [tempAttributeJsonPath];
-}
-
-class EditTempAttributeSaved extends EditDeviceEvent {
-  const EditTempAttributeSaved();
-}
-
-class BrokerSubscriptionRequested extends EditDeviceEvent {
-  const BrokerSubscriptionRequested();
+  List<Object?> get props => [attributes];
 }

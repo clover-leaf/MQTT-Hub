@@ -1,9 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:form_inputs/form_inputs.dart';
-import 'package:formz/formz.dart';
 import 'package:user_repository/user_repository.dart';
-import 'package:uuid/uuid.dart';
 
 part 'edit_device_event.dart';
 part 'edit_device_state.dart';
@@ -11,163 +8,109 @@ part 'edit_device_state.dart';
 class EditDeviceBloc extends Bloc<EditDeviceEvent, EditDeviceState> {
   EditDeviceBloc(
     this._userRepository, {
-    required String path,
-    required Project rootProject,
-    required Group parentGroup,
-    required List<Attribute> initAttributes,
-    required Device? initDevice,
+    required String initialID,
+    required String parentGroupID,
+    required List<Attribute> initialAttributes,
+    required List<Broker> brokers,
+    required Device? initialDevice,
   }) : super(
           EditDeviceState(
-            id: initDevice?.id ?? const Uuid().v4(),
-            path: path,
-            rootProject: rootProject,
-            parentGroup: parentGroup,
-            initAttributes: initAttributes,
-            selectedAttributes: initAttributes,
-            initDevice: initDevice,
-            deviceName: initDevice != null
-                ? DeviceName.dirty(initDevice.name)
-                : const DeviceName.pure(),
-            topicName: initDevice != null
-                ? TopicName.dirty(initDevice.topic)
-                : const TopicName.pure(),
-            selectedBrokerID: initDevice?.brokerID,
+            id: initialID,
+            parentGroupID: parentGroupID,
+            brokers: brokers,
+            initialAttributes: initialAttributes,
+            attributes: initialAttributes,
+            initialDevice: initialDevice,
+            name: initialDevice?.name ?? '',
+            topic: initialDevice?.topic ?? '',
+            selectedBrokerID: initialDevice?.brokerID,
           ),
         ) {
-    on<EditSubmitted>(_onSubmitted);
-    on<EditDeviceNameChanged>(_onDeviceNameChanged);
-    on<EditTopicNameChanged>(_onTopicNameChanged);
-    on<EditSelectedBrokerIDChanged>(_onSelectedBrokerIDChanged);
-    on<EditTempAttributeNameChanged>(_onTempAttributeNameChanged);
-    on<EditTempAttributeJsonPathChanged>(_onTempAttributeJsonPathChanged);
-    on<EditTempAttributeSaved>(_onTempAttributeSaved);
-    on<BrokerSubscriptionRequested>(_onBrokerSubscriptionRequested);
+    on<Submitted>(_onSubmitted);
+    on<NameChanged>(_onNameChanged);
+    on<TopicChanged>(_onTopicChanged);
+    on<SelectedBrokerIDChanged>(_onSelectedBrokerIDChanged);
+    on<AttributesChanged>(_onAttributesChanged);
   }
 
   final UserRepository _userRepository;
 
-  Future<void> _onBrokerSubscriptionRequested(
-    BrokerSubscriptionRequested event,
-    Emitter<EditDeviceState> emit,
-  ) async {
-    await emit.forEach<List<Broker>>(
-      _userRepository.subscribeBrokerStream(),
-      onData: (brokers) {
-        return state.copyWith(brokers: brokers);
-      },
-    );
+  void _onNameChanged(NameChanged event, Emitter<EditDeviceState> emit) {
+    emit(state.copyWith(name: event.name));
   }
 
-  void _onDeviceNameChanged(
-    EditDeviceNameChanged event,
-    Emitter<EditDeviceState> emit,
-  ) {
-    final deviceName = DeviceName.dirty(event.deviceName);
-    emit(
-      state.copyWith(
-        deviceName: deviceName,
-        valid: Formz.validate([deviceName]).isValid,
-      ),
-    );
-  }
-
-  void _onTopicNameChanged(
-    EditTopicNameChanged event,
-    Emitter<EditDeviceState> emit,
-  ) {
-    final topicName = TopicName.dirty(event.topicName);
-    emit(
-      state.copyWith(
-        topicName: topicName,
-        valid: Formz.validate([topicName]).isValid,
-      ),
-    );
+  void _onTopicChanged(TopicChanged event, Emitter<EditDeviceState> emit) {
+    emit(state.copyWith(topic: event.topic));
   }
 
   void _onSelectedBrokerIDChanged(
-    EditSelectedBrokerIDChanged event,
+    SelectedBrokerIDChanged event,
     Emitter<EditDeviceState> emit,
   ) {
     emit(state.copyWith(selectedBrokerID: event.selectedBrokerID));
   }
 
-  void _onTempAttributeNameChanged(
-    EditTempAttributeNameChanged event,
+  void _onAttributesChanged(
+    AttributesChanged event,
     Emitter<EditDeviceState> emit,
   ) {
-    emit(state.copyWith(tempAttributeName: event.tempAttributeName));
-  }
-
-  void _onTempAttributeJsonPathChanged(
-    EditTempAttributeJsonPathChanged event,
-    Emitter<EditDeviceState> emit,
-  ) {
-    emit(state.copyWith(tempAttributeJsonPath: event.tempAttributeJsonPath));
-  }
-
-  Future<void> _onTempAttributeSaved(
-    EditTempAttributeSaved event,
-    Emitter<EditDeviceState> emit,
-  ) async {
-    try {
-      final attributeName = state.tempAttributeName;
-      final attributeJsonPath = state.tempAttributeJsonPath;
-      final attribute = Attribute(
-        deviceID: state.id,
-        name: attributeName,
-        jsonPath: attributeJsonPath,
-      );
-      emit(
-        state.copyWith(
-          selectedAttributes: [...state.selectedAttributes, attribute],
-        ),
-      );
-    } catch (err) {
-      emit(
-        state.copyWith(
-          status: FormzStatus.submissionFailure,
-          error: err.toString(),
-        ),
-      );
-    }
+    emit(state.copyWith(attributes: event.attributes));
   }
 
   Future<void> _onSubmitted(
-    EditSubmitted event,
+    Submitted event,
     Emitter<EditDeviceState> emit,
   ) async {
     try {
-      if (state.status.isSubmissionInProgress ||
-          !state.valid ||
-          event.selectedBrokerID == null) {
-        emit(state.copyWith(error: 'Please fill all infomation'));
-        return;
-      }
-      emit(state.copyWith(status: FormzStatus.submissionInProgress));
-      final device = state.initDevice?.copyWith(
-            brokerID: event.selectedBrokerID,
-            name: event.deviceName,
-            topic: event.topicName,
+      emit(state.copyWith(status: EditDeviceStatus.processing));
+      final device = state.initialDevice?.copyWith(
+            brokerID: state.selectedBrokerID,
+            name: state.name,
+            topic: state.topic,
           ) ??
           Device(
             id: state.id,
-            groupID: state.parentGroup.id,
-            brokerID: event.selectedBrokerID!,
-            name: event.deviceName,
-            topic: event.topicName,
+            groupID: state.parentGroupID,
+            brokerID: state.selectedBrokerID!,
+            name: state.name,
+            topic: state.topic,
           );
       await _userRepository.saveDevice(device);
-      for (final attr in state.selectedAttributes) {
-        await _userRepository.saveAttribute(attr);
+      final initialAttributeIDs =
+          state.initialAttributes.map((att) => att.id).toList();
+      final initialAttributeView = {
+        for (final att in state.initialAttributes) att.id: att
+      };
+      final attributesIDs = state.attributes.map((att) => att.id).toList();
+      // handle new attribute
+      final newAttributes = state.attributes
+          .where((att) => !initialAttributeIDs.contains(att.id));
+      for (final att in newAttributes) {
+        await _userRepository.saveAttribute(att);
       }
-      emit(state.copyWith(status: FormzStatus.submissionSuccess));
+      // handle editted attribute
+      final edittedAttributes = state.attributes
+          .where(
+            (att) =>
+                initialAttributeIDs.contains(att.id) &&
+                att != initialAttributeView[att.id],
+          )
+          .toList();
+      for (final att in edittedAttributes) {
+        await _userRepository.saveAttribute(att);
+      }
+      // handle deleted attribute
+      final deletedAttributes = state.initialAttributes
+          .where((att) => !attributesIDs.contains(att.id))
+          .toList();
+      for (final att in deletedAttributes) {
+        await _userRepository.deleteAttribute(att.id);
+      }
+      emit(state.copyWith(status: EditDeviceStatus.success));
     } catch (error) {
-      emit(
-        state.copyWith(
-          status: FormzStatus.submissionFailure,
-          error: error.toString(),
-        ),
-      );
+      final err = error.toString().split(':').last.trim();
+      emit(state.copyWith(status: EditDeviceStatus.failure, error: () => err));
+      emit(state.copyWith(status: EditDeviceStatus.normal, error: () => null));
     }
   }
 }

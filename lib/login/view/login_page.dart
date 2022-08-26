@@ -1,3 +1,4 @@
+import 'package:bee/gen/colors.gen.dart';
 import 'package:bee/login/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -35,6 +36,7 @@ class LoginPage extends StatelessWidget {
     return BlocProvider(
       create: (context) => LoginBloc(context.read<UserRepository>()),
       child: const Scaffold(
+        backgroundColor: ColorName.white,
         resizeToAvoidBottomInset: true,
         body: LoginView(),
       ),

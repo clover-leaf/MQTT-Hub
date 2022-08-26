@@ -1,7 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:form_inputs/form_inputs.dart';
-import 'package:formz/formz.dart';
 import 'package:user_repository/user_repository.dart';
 
 part 'login_event.dart';
@@ -13,7 +11,6 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     on<LoginDomainNameChanged>(_onDomainNameChanged);
     on<LoginUsernameChanged>(_onUsernameChanged);
     on<LoginPasswordChanged>(_onPasswordChanged);
-    on<LoginPasswordVisibleChanged>(_onPasswordVisibleChanged);
   }
 
   final UserRepository _userRepository;
@@ -22,46 +19,21 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     LoginDomainNameChanged event,
     Emitter<LoginState> emit,
   ) {
-    final domainName = DomainName.dirty(event.domainName);
-    emit(
-      state.copyWith(
-        domainName: domainName,
-        valid: Formz.validate([domainName]).isValid,
-      ),
-    );
+    emit(state.copyWith(domainName: event.domainName));
   }
 
   void _onUsernameChanged(
     LoginUsernameChanged event,
     Emitter<LoginState> emit,
   ) {
-    final username = Username.dirty(event.username);
-    emit(
-      state.copyWith(
-        username: username,
-        valid: Formz.validate([username]).isValid,
-      ),
-    );
+    emit(state.copyWith(username: event.username));
   }
 
   void _onPasswordChanged(
     LoginPasswordChanged event,
     Emitter<LoginState> emit,
   ) {
-    final password = Password.dirty(event.password);
-    emit(
-      state.copyWith(
-        password: password,
-        valid: Formz.validate([password]).isValid,
-      ),
-    );
-  }
-
-  void _onPasswordVisibleChanged(
-    LoginPasswordVisibleChanged event,
-    Emitter<LoginState> emit,
-  ) {
-    emit(state.copyWith(passwordVisible: event.passwordVisible));
+    emit(state.copyWith(password: event.password));
   }
 
   Future<void> _onLogin(
@@ -69,24 +41,25 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     Emitter<LoginState> emit,
   ) async {
     try {
-      if (state.status.isSubmissionInProgress || !state.valid) {
-        emit(state.copyWith(error: 'Please fill infomation'));
-        return;
-      }
-      emit(state.copyWith(status: FormzStatus.submissionInProgress));
-      final token = await _userRepository.login(
-        event.domainName,
-        event.username,
-        event.password,
+      emit(state.copyWith(status: LoginStatus.processing));
+      final res = await _userRepository.login(
+        state.domainName,
+        state.username,
+        state.password,
       );
-      emit(state.copyWith(status: FormzStatus.submissionSuccess, token: token));
-    } catch (error) {
+      final token = res['token'] as String;
+      final isAdmin = res['isAdmin'] as bool;
       emit(
         state.copyWith(
-          status: FormzStatus.submissionFailure,
-          error: error.toString(),
+          status: LoginStatus.success,
+          token: token,
+          isAdmin: isAdmin,
         ),
       );
+    } catch (error) {
+      final err = error.toString().split(':').last.trim();
+      emit(state.copyWith(status: LoginStatus.failure, error: () => err));
+      emit(state.copyWith(status: LoginStatus.normal, error: () => null));
     }
   }
 }

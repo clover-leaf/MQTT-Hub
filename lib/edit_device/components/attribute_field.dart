@@ -1,0 +1,225 @@
+import 'package:bee/components/component.dart';
+import 'package:bee/edit_device/bloc/bloc.dart';
+import 'package:bee/gen/assets.gen.dart';
+import 'package:bee/gen/colors.gen.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:user_repository/user_repository.dart';
+import 'package:uuid/uuid.dart';
+
+class AttributeField extends StatefulWidget {
+  const AttributeField({
+    super.key,
+    required this.initialAttributes,
+    required this.deviceID,
+  });
+
+  final List<Attribute> initialAttributes;
+  final String deviceID;
+
+  @override
+  State<AttributeField> createState() => _AttributeFieldState();
+}
+
+class _AttributeFieldState extends State<AttributeField> {
+  late List<Attribute> _attributes;
+
+  @override
+  void initState() {
+    _attributes = widget.initialAttributes;
+    super.initState();
+  }
+
+  void updateBloc(BuildContext context, List<Attribute> attributes) {
+    context.read<EditDeviceBloc>().add(AttributesChanged(attributes));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // get text theme of context
+    final textTheme = Theme.of(context).textTheme;
+
+    return FormField(
+      initialValue: _attributes,
+      validator: (_) {
+        if (_attributes.isEmpty) {
+          return 'Device must have at least one attribute';
+        } else {
+          final expressions = <String>[];
+          for (final att in _attributes) {
+            if (expressions.contains(att.jsonPath)) {
+              return 'Each attribute must have different expression';
+            } else {
+              expressions.add(att.jsonPath);
+            }
+          }
+        }
+        return null;
+      },
+      builder: (attributeFormFieldState) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'ATTRIBUTE LIST',
+                style:
+                    textTheme.bodySmall!.copyWith(color: ColorName.neural600),
+              ),
+              TAddButton(
+                label: 'ADD ATTRIBUTE',
+                onPressed: () {
+                  final att = Attribute(
+                    id: const Uuid().v4(),
+                    deviceID: widget.deviceID,
+                    name: '',
+                    jsonPath: '',
+                    unit: '',
+                  );
+                  final attributes = [..._attributes, att];
+                  updateBloc(context, attributes);
+                  setState(() {
+                    _attributes = attributes;
+                  });
+                },
+              )
+            ],
+          ),
+          const SizedBox(height: 8),
+          ...List.generate(_attributes.length, (index) {
+            final att = _attributes[index];
+            final name = att.name;
+            final expression = att.jsonPath;
+            final unit = att.unit;
+            return Column(
+              children: [
+                _AttributeItem(
+                  index: index,
+                  name: name,
+                  expression: expression,
+                  unit: unit,
+                  attributes: _attributes,
+                  onSaved: (attributes) {
+                    updateBloc(context, attributes);
+                    setState(() {
+                      _attributes = attributes;
+                    });
+                  },
+                ),
+                const SizedBox(height: 12)
+              ],
+            );
+          }),
+          // List ranges error line
+          if (attributeFormFieldState.hasError)
+            Text(
+              attributeFormFieldState.errorText!,
+              style: textTheme.labelMedium!.copyWith(
+                color: ColorName.wine300,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AttributeItem extends StatelessWidget {
+  const _AttributeItem({
+    required this.index,
+    required this.attributes,
+    required this.name,
+    required this.expression,
+    required this.unit,
+    required this.onSaved,
+  });
+
+  final int index;
+  final List<Attribute> attributes;
+  final String name;
+  final String expression;
+  final String? unit;
+  final void Function(List<Attribute>) onSaved;
+
+  @override
+  Widget build(BuildContext context) {
+    final id = attributes[index].id;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Flexible(
+          child: TVanillaText(
+            key: ValueKey(id),
+            initText: name,
+            hintText: 'Name',
+            onChanged: (name) {
+              if (index >= 0 && index < attributes.length) {
+                final att = attributes[index];
+                final updatedAtt = att.copyWith(name: name);
+                attributes[index] = updatedAtt;
+                onSaved(attributes);
+              }
+            },
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Invalid';
+              }
+              return null;
+            },
+          ),
+        ),
+        const SizedBox(width: 12),
+        Flexible(
+          child: TVanillaText(
+            key: ValueKey(id),
+            initText: expression,
+            hintText: 'Expression',
+            onChanged: (jsonPath) {
+              if (index >= 0 && index < attributes.length) {
+                final att = attributes[index];
+                final updatedAtt =  att.copyWith(jsonPath: jsonPath);
+                attributes[index] = updatedAtt;
+                onSaved(attributes);
+              }
+            },
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Invalid';
+              }
+              return null;
+            },
+          ),
+        ),
+        const SizedBox(width: 12),
+        Flexible(
+          child: TVanillaText(
+            key: ValueKey(id),
+            initText: unit,
+            hintText: 'Unit',
+            onChanged: (unit) {
+              if (index >= 0 && index < attributes.length) {
+                final att = attributes[index];
+                final updatedAtt = att.copyWith(unit: unit);
+                attributes[index] = updatedAtt;
+                onSaved(attributes);
+              }
+            },
+            validator: (value) => null,
+          ),
+        ),
+        TCircleButton(
+          picture: Assets.icons.trash
+              .svg(color: ColorName.neural600, fit: BoxFit.scaleDown),
+          onPressed: () {
+            if (index >= 0 && index < attributes.length) {
+              attributes.removeAt(index);
+              onSaved(attributes);
+            }
+          },
+        )
+      ],
+    );
+  }
+}

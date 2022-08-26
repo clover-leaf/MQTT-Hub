@@ -7,22 +7,15 @@ class EditGroupEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class EditSubmitted extends EditGroupEvent {
-  const EditSubmitted({
-    required this.groupName,
-  });
-
-  final String groupName;
-
-  @override
-  List<Object> get props => [groupName];
+class Submitted extends EditGroupEvent {
+  const Submitted();
 }
 
-class EditGroupNameChanged extends EditGroupEvent {
-  const EditGroupNameChanged(this.groupName);
+class NameChanged extends EditGroupEvent {
+  const NameChanged(this.name);
 
-  final String groupName;
+  final String name;
 
   @override
-  List<Object> get props => [groupName];
+  List<Object> get props => [name];
 }

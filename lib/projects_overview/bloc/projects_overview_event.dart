@@ -10,3 +10,15 @@ class ProjectsOverviewEvent extends Equatable {
 class ProjectSubscriptionRequested extends ProjectsOverviewEvent {
   const ProjectSubscriptionRequested();
 }
+
+class BrokerSubscriptionRequested extends ProjectsOverviewEvent {
+  const BrokerSubscriptionRequested();
+}
+
+class UserProjectSubscriptionRequested extends ProjectsOverviewEvent {
+  const UserProjectSubscriptionRequested();
+}
+
+class DashboardSubscriptionRequested extends ProjectsOverviewEvent {
+  const DashboardSubscriptionRequested();
+}

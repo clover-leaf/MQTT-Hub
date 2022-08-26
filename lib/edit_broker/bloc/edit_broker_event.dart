@@ -7,56 +7,51 @@ class EditBrokerEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class EditSubmitted extends EditBrokerEvent {
-  const EditSubmitted({
-    required this.brokerName,
-    required this.urlName,
-    required this.brokerAccount,
-    required this.brokerPassword,
-  });
-
-  final String brokerName;
-  final String urlName;
-  final String? brokerAccount;
-  final String? brokerPassword;
-
-  @override
-  List<Object?> get props =>
-      [brokerName, urlName, brokerAccount, brokerPassword];
+class Submitted extends EditBrokerEvent {
+  const Submitted();
 }
 
-class EditBrokerNameChanged extends EditBrokerEvent {
-  const EditBrokerNameChanged(this.brokerName);
+class NameChanged extends EditBrokerEvent {
+  const NameChanged(this.name);
 
-  final String brokerName;
+  final String name;
 
   @override
-  List<Object> get props => [brokerName];
+  List<Object> get props => [name];
 }
 
-class EditUrlNameChanged extends EditBrokerEvent {
-  const EditUrlNameChanged(this.urlName);
+class UrlChanged extends EditBrokerEvent {
+  const UrlChanged(this.url);
 
-  final String urlName;
+  final String url;
 
   @override
-  List<Object> get props => [urlName];
+  List<Object> get props => [url];
 }
 
-class EditBrokerAccountChanged extends EditBrokerEvent {
-  const EditBrokerAccountChanged(this.brokerAccount);
+class PortChanged extends EditBrokerEvent {
+  const PortChanged(this.port);
 
-  final String brokerAccount;
+  final String port;
 
   @override
-  List<Object> get props => [brokerAccount];
+  List<Object> get props => [port];
 }
 
-class EditBrokerPasswordChanged extends EditBrokerEvent {
-  const EditBrokerPasswordChanged(this.brokerPassword);
+class AccountChanged extends EditBrokerEvent {
+  const AccountChanged(this.account);
 
-  final String brokerPassword;
+  final String account;
 
   @override
-  List<Object> get props => [brokerPassword];
+  List<Object> get props => [account];
+}
+
+class PasswordChanged extends EditBrokerEvent {
+  const PasswordChanged(this.password);
+
+  final String password;
+
+  @override
+  List<Object> get props => [password];
 }
