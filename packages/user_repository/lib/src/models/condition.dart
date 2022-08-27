@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:meta/meta.dart';
-import 'package:user_repository/src/models/comparation.dart';
+import 'package:user_repository/src/models/comparison.dart';
 import 'package:user_repository/src/models/typedef.dart';
 import 'package:uuid/uuid.dart';
 
@@ -17,7 +17,7 @@ class Condition extends Equatable {
     FieldId? id,
     required this.alertID,
     required this.attributeID,
-    required this.comparation,
+    required this.comparison,
     required this.value,
   })  : assert(
           id == null || id.isNotEmpty,
@@ -37,7 +37,7 @@ class Condition extends Equatable {
   final FieldId attributeID;
 
   /// The name of condition
-  final Comparation comparation;
+  final Comparison comparison;
 
   /// The value
   final String value;
@@ -55,18 +55,18 @@ class Condition extends Equatable {
     FieldId? id,
     FieldId? alertID,
     FieldId? attributeID,
-    Comparation? comparation,
+    Comparison? comparison,
     String? value,
   }) {
     return Condition(
       id: id ?? this.id,
       alertID: alertID ?? this.alertID,
       attributeID: attributeID ?? this.attributeID,
-      comparation: comparation ?? this.comparation,
+      comparison: comparison ?? this.comparison,
       value: value ?? this.value,
     );
   }
 
   @override
-  List<Object?> get props => [id, alertID, attributeID, comparation, value];
+  List<Object?> get props => [id, alertID, attributeID, comparison, value];
 }

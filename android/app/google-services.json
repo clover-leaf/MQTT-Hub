@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "441892589835",
+    "project_id": "bee1903",
+    "storage_bucket": "bee1903.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:441892589835:android:97b5ba3c8d2b7e7e6e920e",
+        "android_client_info": {
+          "package_name": "com.example.verygoodcore.bee.dev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "441892589835-aiu7n102503ibsisqgr5eq1cu830dccb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBEdjGQu5dOVwNDWGCFwJgLMHMq0aUhh74"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "441892589835-aiu7n102503ibsisqgr5eq1cu830dccb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

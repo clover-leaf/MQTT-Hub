@@ -1,34 +1,19 @@
+import 'package:bee/components/component.dart';
 import 'package:bee/gen/colors.gen.dart';
 import 'package:flutter/material.dart';
+import 'package:user_repository/user_repository.dart';
 
-class ColorSheet extends StatelessWidget {
-  const ColorSheet({
+class ComparisonSheet extends StatelessWidget {
+  const ComparisonSheet({
     super.key,
-    required this.initialColor,
-    required this.onColorChanged,
+    required this.onComparisonSelected,
   });
 
-  final Color initialColor;
-  final void Function(Color) onColorChanged;
+  final void Function(Comparison) onComparisonSelected;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final colors = [
-      ColorName.iColor1,
-      ColorName.iColor2,
-      ColorName.iColor3,
-      ColorName.iColor4,
-      ColorName.iColor5,
-      ColorName.iColor6,
-      ColorName.iColor7,
-      ColorName.iColor8,
-      ColorName.iColor9,
-      ColorName.iColor10,
-      ColorName.iColor11,
-      ColorName.iColor12,
-    ];
-
     return Container(
       padding: const EdgeInsets.fromLTRB(32, 16, 32, 32),
       decoration: const BoxDecoration(
@@ -43,20 +28,20 @@ class ColorSheet extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
+            padding: const EdgeInsets.fromLTRB(0, 8, 0, 16),
             child: Text(
-              'COLORS',
+              'COMPARISON',
               style: textTheme.titleSmall,
             ),
           ),
           Wrap(
-            spacing: 8,
-            runSpacing: 8,
+            spacing: 4,
+            runSpacing: 4,
             children: [
-              ...colors.map(
-                (color) => GestureDetector(
-                  onTap: () => onColorChanged(color),
-                  child: CircleAvatar(backgroundColor: color, radius: 24),
+              ...Comparison.values.map(
+                (comparison) => TComparisonItem(
+                  comparison: comparison,
+                  onPressed: () => onComparisonSelected(comparison),
                 ),
               )
             ],

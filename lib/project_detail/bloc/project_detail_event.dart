@@ -23,6 +23,14 @@ class DashboardSubscriptionRequested extends ProjectDetailEvent {
   const DashboardSubscriptionRequested();
 }
 
+class DeviceSubscriptionRequested extends ProjectDetailEvent {
+  const DeviceSubscriptionRequested();
+}
+
+class AlertSubscriptionRequested extends ProjectDetailEvent {
+  const AlertSubscriptionRequested();
+}
+
 class DeletionRequested extends ProjectDetailEvent {
   const DeletionRequested();
 }

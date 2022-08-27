@@ -619,4 +619,217 @@ class ApiClient {
   }
   // ================== TILE REST API ========================
 
+  // ================== ALERT REST API ========================
+  /// POST: create alert
+  Future<Map<String, dynamic>> createAlert({
+    required String token,
+    required Map<String, dynamic> alert,
+  }) async {
+    final res = await httpWrapper.post(
+      Uri.http(API_URL, 'v1/domain/alerts'),
+      body: alert,
+      header: {'Authorization': 'Bearer $token'},
+    );
+    return res;
+  }
+
+  /// GET: get alerts list
+  Future<List<dynamic>> getAlerts(String token) async {
+    final res = await httpWrapper.get(
+      Uri.http(API_URL, 'v1/domain/alerts'),
+      header: {'Authorization': 'Bearer $token'},
+    );
+    final projects = res['alerts'] as List<dynamic>;
+    return projects;
+  }
+
+  /// GET: get alert by ID
+  Future<Map<String, dynamic>> getAlert({
+    required String token,
+    required String alertID,
+  }) async {
+    final res = await httpWrapper.get(
+      Uri.http(API_URL, 'v1/domain/alerts/$alertID'),
+      header: {'Authorization': 'Bearer $token'},
+    );
+    return res;
+  }
+
+  /// PUT: update alert by ID
+  Future<Map<String, dynamic>> updateAlert({
+    required String token,
+    required String alertID,
+    required Map<String, dynamic> alert,
+  }) async {
+    final res = await httpWrapper.put(
+      Uri.http(API_URL, 'v1/domain/alerts/$alertID'),
+      body: alert,
+      header: {'Authorization': 'Bearer $token'},
+    );
+    return res;
+  }
+
+  /// DELETE: delete tile by ID
+  Future<Map<String, dynamic>> deleteAlert({
+    required String token,
+    required String alertID,
+  }) async {
+    final res = await httpWrapper.delete(
+      Uri.http(API_URL, 'v1/domain/alerts/$alertID'),
+      header: {'Authorization': 'Bearer $token'},
+    );
+    return res;
+  }
+  // ================== ALERT REST API ========================
+
+  // ================== CONDITION REST API ========================
+  /// POST: create condition
+  Future<Map<String, dynamic>> createCondition({
+    required String token,
+    required Map<String, dynamic> condition,
+  }) async {
+    final res = await httpWrapper.post(
+      Uri.http(API_URL, 'v1/domain/conditions'),
+      body: condition,
+      header: {'Authorization': 'Bearer $token'},
+    );
+    return res;
+  }
+
+  /// GET: get conditions list
+  Future<List<dynamic>> getConditions(String token) async {
+    final res = await httpWrapper.get(
+      Uri.http(API_URL, 'v1/domain/conditions'),
+      header: {'Authorization': 'Bearer $token'},
+    );
+    final projects = res['conditions'] as List<dynamic>;
+    return projects;
+  }
+
+  /// GET: get condition by ID
+  Future<Map<String, dynamic>> getCondition({
+    required String token,
+    required String conditionID,
+  }) async {
+    final res = await httpWrapper.get(
+      Uri.http(API_URL, 'v1/domain/conditions/$conditionID'),
+      header: {'Authorization': 'Bearer $token'},
+    );
+    return res;
+  }
+
+  /// PUT: update condition by ID
+  Future<Map<String, dynamic>> updateCondition({
+    required String token,
+    required String conditionID,
+    required Map<String, dynamic> condition,
+  }) async {
+    final res = await httpWrapper.put(
+      Uri.http(API_URL, 'v1/domain/conditions/$conditionID'),
+      body: condition,
+      header: {'Authorization': 'Bearer $token'},
+    );
+    return res;
+  }
+
+  /// DELETE: delete tile by ID
+  Future<Map<String, dynamic>> deleteCondition({
+    required String token,
+    required String conditionID,
+  }) async {
+    final res = await httpWrapper.delete(
+      Uri.http(API_URL, 'v1/domain/conditions/$conditionID'),
+      header: {'Authorization': 'Bearer $token'},
+    );
+    return res;
+  }
+  // ================== CONDITION REST API ========================
+
+  // ================== ACTION REST API ========================
+  /// POST: create action
+  Future<Map<String, dynamic>> createAction({
+    required String token,
+    required Map<String, dynamic> action,
+  }) async {
+    final res = await httpWrapper.post(
+      Uri.http(API_URL, 'v1/domain/actions'),
+      body: action,
+      header: {'Authorization': 'Bearer $token'},
+    );
+    return res;
+  }
+
+  /// GET: get actions list
+  Future<List<dynamic>> getActions(String token) async {
+    final res = await httpWrapper.get(
+      Uri.http(API_URL, 'v1/domain/actions'),
+      header: {'Authorization': 'Bearer $token'},
+    );
+    final projects = res['actions'] as List<dynamic>;
+    return projects;
+  }
+
+  /// GET: get action by ID
+  Future<Map<String, dynamic>> getAction({
+    required String token,
+    required String actionID,
+  }) async {
+    final res = await httpWrapper.get(
+      Uri.http(API_URL, 'v1/domain/actions/$actionID'),
+      header: {'Authorization': 'Bearer $token'},
+    );
+    return res;
+  }
+
+  /// PUT: update action by ID
+  Future<Map<String, dynamic>> updateAction({
+    required String token,
+    required String actionID,
+    required Map<String, dynamic> action,
+  }) async {
+    final res = await httpWrapper.put(
+      Uri.http(API_URL, 'v1/domain/actions/$actionID'),
+      body: action,
+      header: {'Authorization': 'Bearer $token'},
+    );
+    return res;
+  }
+
+  /// DELETE: delete tile by ID
+  Future<Map<String, dynamic>> deleteAction({
+    required String token,
+    required String actionID,
+  }) async {
+    final res = await httpWrapper.delete(
+      Uri.http(API_URL, 'v1/domain/alerts/$actionID'),
+      header: {'Authorization': 'Bearer $token'},
+    );
+    return res;
+  }
+  // ================== ACTION REST API ========================
+
+  // ================== LOG REST API ========================
+
+  /// GET: get logs list
+  Future<List<dynamic>> getLogs(String token) async {
+    final res = await httpWrapper.get(
+      Uri.http(API_URL, 'v1/domain/logs'),
+      header: {'Authorization': 'Bearer $token'},
+    );
+    final projects = res['logs'] as List<dynamic>;
+    return projects;
+  }
+
+  /// GET: get log by ID
+  Future<Map<String, dynamic>> getLog({
+    required String token,
+    required String logID,
+  }) async {
+    final res = await httpWrapper.get(
+      Uri.http(API_URL, 'v1/domain/logs/$logID'),
+      header: {'Authorization': 'Bearer $token'},
+    );
+    return res;
+  }
+  // ================== LOG REST API ========================
 }

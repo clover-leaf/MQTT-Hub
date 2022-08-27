@@ -22,6 +22,8 @@ class ProjectDetailState extends Equatable {
     this.brokers = const [],
     this.userProjects = const [],
     this.dashboards = const [],
+    this.devices = const [],
+    this.alerts = const [],
     this.error,
   });
 
@@ -34,6 +36,8 @@ class ProjectDetailState extends Equatable {
   final List<Broker> brokers;
   final List<UserProject> userProjects;
   final List<Dashboard> dashboards;
+  final List<Device> devices;
+  final List<Alert> alerts;
 
   // status
   final ProjectDetailStatus status;
@@ -44,10 +48,12 @@ class ProjectDetailState extends Equatable {
     return _groups.length;
   }
 
-  int get brokerNumber {
-    final _brokers = brokers.where((br) => br.projectID == project.id).toList();
-    return _brokers.length;
-  }
+  List<Broker> get brokerInProject =>
+      brokers.where((br) => br.projectID == project.id).toList();
+
+  int get brokerNumber => brokerInProject.length;
+
+  Map<String, Device> get deviceView => {for (final dv in devices) dv.id: dv};
 
   int get dashboardNumber {
     final _dashboards =
@@ -61,6 +67,15 @@ class ProjectDetailState extends Equatable {
     return _users.length;
   }
 
+  int get alertNumber {
+    final brokerIdInProject = brokerInProject.map((br) => br.id);
+    final _alerts = alerts.where((al) {
+      final device = deviceView[al.deviceID];
+      return brokerIdInProject.contains(device?.brokerID);
+    }).toList();
+    return _alerts.length;
+  }
+
   @override
   List<Object?> get props => [
         isAdmin,
@@ -70,6 +85,8 @@ class ProjectDetailState extends Equatable {
         brokers,
         userProjects,
         dashboards,
+        devices,
+        alerts,
         error
       ];
 
@@ -81,6 +98,8 @@ class ProjectDetailState extends Equatable {
     List<Broker>? brokers,
     List<UserProject>? userProjects,
     List<Dashboard>? dashboards,
+    List<Device>? devices,
+    List<Alert>? alerts,
     String? Function()? error,
   }) {
     return ProjectDetailState(
@@ -91,6 +110,8 @@ class ProjectDetailState extends Equatable {
       brokers: brokers ?? this.brokers,
       userProjects: userProjects ?? this.userProjects,
       dashboards: dashboards ?? this.dashboards,
+      devices: devices ?? this.devices,
+      alerts: alerts ?? this.alerts,
       error: error != null ? error() : this.error,
     );
   }

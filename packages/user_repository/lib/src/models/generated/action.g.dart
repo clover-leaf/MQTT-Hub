@@ -6,7 +6,7 @@ part of '../action.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-Action _$ActionFromJson(Map<String, dynamic> json) => Action(
+TAction _$TActionFromJson(Map<String, dynamic> json) => TAction(
       id: json['id'] as String?,
       alertID: json['alert_id'] as String,
       deviceID: json['device_id'] as String,
@@ -14,7 +14,7 @@ Action _$ActionFromJson(Map<String, dynamic> json) => Action(
       value: json['value'] as String,
     );
 
-Map<String, dynamic> _$ActionToJson(Action instance) => <String, dynamic>{
+Map<String, dynamic> _$TActionToJson(TAction instance) => <String, dynamic>{
       'id': instance.id,
       'alert_id': instance.alertID,
       'device_id': instance.deviceID,

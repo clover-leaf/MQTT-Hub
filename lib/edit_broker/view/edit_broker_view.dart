@@ -168,14 +168,14 @@ class EditBrokerView extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.only(bottom: 8),
                           child: Text(
-                            'ACOUNT',
+                            'ACOUNT (optional)',
                             style: textTheme.bodySmall!
                                 .copyWith(color: ColorName.neural600),
                           ),
                         ),
                         TTextField(
                           initText: initialAccount,
-                          labelText: 'Broker Account - Optional',
+                          labelText: 'Broker Account',
                           picture: Assets.icons.frame,
                           onChanged: (account) => context
                               .read<EditBrokerBloc>()
@@ -186,14 +186,14 @@ class EditBrokerView extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.only(bottom: 8),
                           child: Text(
-                            'PASSWORD',
+                            'PASSWORD (optional)',
                             style: textTheme.bodySmall!
                                 .copyWith(color: ColorName.neural600),
                           ),
                         ),
                         TTextField(
                           initText: initialPassword,
-                          labelText: 'Broker Password - Optional',
+                          labelText: 'Broker Password',
                           picture: Assets.icons.key,
                           onChanged: (password) => context
                               .read<EditBrokerBloc>()

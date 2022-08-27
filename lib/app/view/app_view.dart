@@ -15,7 +15,7 @@ class AppView extends StatefulWidget {
 
 class _AppViewState extends State<AppView> {
   bool isInit = true;
-
+  
   @override
   Future<void> didChangeDependencies() async {
     if (isInit) {

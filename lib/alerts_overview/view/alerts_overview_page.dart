@@ -1,38 +1,39 @@
+import 'package:bee/alerts_overview/alerts_overview.dart';
 import 'package:bee/gen/colors.gen.dart';
-import 'package:bee/project_detail/project_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:user_repository/user_repository.dart';
 
-class ProjectDetailPage extends StatelessWidget {
-  const ProjectDetailPage({super.key});
+class AlertsOverviewPage extends StatelessWidget {
+  const AlertsOverviewPage({super.key});
 
   static PageRoute<void> route({
     required bool isAdmin,
-    required Project project,
+    required Project parentProject,
   }) {
     return PageRouteBuilder<void>(
       transitionDuration: const Duration(milliseconds: 400),
       pageBuilder: (context, animation, secondaryAnimation) => BlocProvider(
-        create: (context) => ProjectDetailBloc(
+        create: (context) => AlertsOverviewBloc(
           context.read<UserRepository>(),
-          project: project,
           isAdmin: isAdmin,
+          parentProject: parentProject,
         )
-          ..add(const GroupSubscriptionRequested())
+          ..add(const AlertSubscriptionRequested())
+          ..add(const ConditionSubscriptionRequested())
+          ..add(const ActionSubscriptionRequested())
           ..add(const BrokerSubscriptionRequested())
-          ..add(const UserProjectSubscriptionRequested())
-          ..add(const DashboardSubscriptionRequested())
           ..add(const DeviceSubscriptionRequested())
-          ..add(const AlertSubscriptionRequested()),
-        child: const ProjectDetailPage(),
+          ..add(const AttributeSubscriptionRequested()),
+        child: const AlertsOverviewPage(),
       ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const begin = Offset(1, 0);
+        const begin = Offset(0, 1);
         const end = Offset.zero;
         const curve = Curves.ease;
         final tween =
             Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
         return SlideTransition(
           position: animation.drive(tween),
           child: child,
@@ -45,7 +46,7 @@ class ProjectDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       backgroundColor: ColorName.white,
-      body: ProjectDetailView(),
+      body: AlertsOverviewView(),
     );
   }
 }

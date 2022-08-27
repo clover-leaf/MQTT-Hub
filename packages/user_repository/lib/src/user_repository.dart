@@ -103,6 +103,16 @@ class UserRepository {
   /// the controller of [Stream] of [Tile]
   final _tileStreamController = BehaviorSubject<List<Tile>>.seeded([]);
 
+  /// the controller of [Stream] of [Alert]
+  final _alertStreamController = BehaviorSubject<List<Alert>>.seeded([]);
+
+  /// the controller of [Stream] of [Condition]
+  final _conditionStreamController =
+      BehaviorSubject<List<Condition>>.seeded([]);
+
+  /// the controller of [Stream] of [TAction]
+  final _actionStreamController = BehaviorSubject<List<TAction>>.seeded([]);
+
   /// read secure-storage if it contains token
   Future<String> recoverSession() async {
     final token = await _secureStorageClient.readSecureData(_tokenKey);
@@ -132,7 +142,7 @@ class UserRepository {
     String password,
   ) async {
     return _apiClient.login(domain, username, password);
-  }
+  } 
 
   /// set token
   Future<void> setToken(String token, {bool toWrite = true}) async {
@@ -159,6 +169,9 @@ class UserRepository {
     _tileStreamController.add([]);
     _userStreamController.add([]);
     _userProjectStreamController.add([]);
+    _alertStreamController.add([]);
+    _conditionStreamController.add([]);
+    _actionStreamController.add([]);
   }
 
   /// get initial data for both admin and user
@@ -194,6 +207,18 @@ class UserRepository {
     final tiles = tileJsons
         .map((dynamic json) => Tile.fromJson(json as Map<String, dynamic>))
         .toList();
+    final alertJsons = res['alerts'] as List<dynamic>;
+    final alerts = alertJsons
+        .map((dynamic json) => Alert.fromJson(json as Map<String, dynamic>))
+        .toList();
+    final conditionJsons = res['conditions'] as List<dynamic>;
+    final conditions = conditionJsons
+        .map((dynamic json) => Condition.fromJson(json as Map<String, dynamic>))
+        .toList();
+    final actionJsons = res['actions'] as List<dynamic>;
+    final actions = actionJsons
+        .map((dynamic json) => TAction.fromJson(json as Map<String, dynamic>))
+        .toList();
 
     List<User>? users;
     List<UserProject>? userProjects;
@@ -226,6 +251,9 @@ class UserRepository {
     _attributeStreamController.add(attributes);
     _dashboardStreamController.add(dashboards);
     _tileStreamController.add(tiles);
+    _alertStreamController.add(alerts);
+    _conditionStreamController.add(conditions);
+    _actionStreamController.add(actions);
   }
 
   // ================== PROJECT REST API ========================
@@ -710,4 +738,171 @@ class UserRepository {
     }
   }
   // ================== TILE REST API ========================
+
+  // ================== ALERT REST API ========================
+  ///
+  Stream<List<Alert>> subscribeAlertStream() {
+    return _alertStreamController.asBroadcastStream();
+  }
+
+  /// create or update alert
+  Future<void> saveAlert(Alert alert) async {
+    if (_token == null) throw Exception('Token not found');
+    final alerts = [..._alertStreamController.value];
+    final idx = alerts.indexWhere((t) => t.id == alert.id);
+    if (idx == -1) {
+      await _apiClient.createAlert(
+        token: _token!,
+        alert: alert.toJson(),
+      );
+      alerts.add(alert);
+    } else {
+      await _apiClient.updateAlert(
+        token: _token!,
+        alertID: alert.id,
+        alert: alert.toJson(),
+      );
+      alerts
+        ..removeAt(idx)
+        ..insertAll(idx, [alert]);
+    }
+    _alertStreamController.add(alerts);
+  }
+
+  /// get alert list
+  Future<void> getAlerts() async {
+    if (_token == null) throw Exception('Token not found');
+    final data = await _apiClient.getAlerts(_token!);
+    final alerts = data
+        .map((dynamic json) => Alert.fromJson(json as Map<String, dynamic>))
+        .toList();
+    _alertStreamController.add(alerts);
+  }
+
+  /// delete alert by ID
+  Future<void> deleteAlert(String alertID) async {
+    final alerts = [..._alertStreamController.value];
+    final idx = alerts.indexWhere((t) => t.id == alertID);
+    if (idx > -1) {
+      await _apiClient.deleteAlert(
+        token: _token!,
+        alertID: alertID,
+      );
+      alerts.removeAt(idx);
+      await getConditions();
+      await getActions();
+      _alertStreamController.add(alerts);
+    }
+  }
+  // ================== ALERT REST API ========================
+
+  // ================== CONDITION REST API ========================
+  ///
+  Stream<List<Condition>> subscribeConditionStream() {
+    return _conditionStreamController.asBroadcastStream();
+  }
+
+  /// create or update condition
+  Future<void> saveCondition(Condition condition) async {
+    if (_token == null) throw Exception('Token not found');
+    final conditions = [..._conditionStreamController.value];
+    final idx = conditions.indexWhere((t) => t.id == condition.id);
+    if (idx == -1) {
+      await _apiClient.createCondition(
+        token: _token!,
+        condition: condition.toJson(),
+      );
+      conditions.add(condition);
+    } else {
+      await _apiClient.updateCondition(
+        token: _token!,
+        conditionID: condition.id,
+        condition: condition.toJson(),
+      );
+      conditions
+        ..removeAt(idx)
+        ..insertAll(idx, [condition]);
+    }
+    _conditionStreamController.add(conditions);
+  }
+
+  /// get condition list
+  Future<void> getConditions() async {
+    if (_token == null) throw Exception('Token not found');
+    final data = await _apiClient.getConditions(_token!);
+    final conditions = data
+        .map((dynamic json) => Condition.fromJson(json as Map<String, dynamic>))
+        .toList();
+    _conditionStreamController.add(conditions);
+  }
+
+  /// delete condition by ID
+  Future<void> deleteCondition(String conditionID) async {
+    final conditions = [..._conditionStreamController.value];
+    final idx = conditions.indexWhere((t) => t.id == conditionID);
+    if (idx > -1) {
+      await _apiClient.deleteCondition(
+        token: _token!,
+        conditionID: conditionID,
+      );
+      conditions.removeAt(idx);
+      _conditionStreamController.add(conditions);
+    }
+  }
+  // ================== CONDITION REST API ========================
+
+  // ================== ACTION REST API ========================
+  ///
+  Stream<List<TAction>> subscribeActionStream() {
+    return _actionStreamController.asBroadcastStream();
+  }
+
+  /// create or update action
+  Future<void> saveAction(TAction action) async {
+    if (_token == null) throw Exception('Token not found');
+    final actions = [..._actionStreamController.value];
+    final idx = actions.indexWhere((t) => t.id == action.id);
+    if (idx == -1) {
+      await _apiClient.createAction(
+        token: _token!,
+        action: action.toJson(),
+      );
+      actions.add(action);
+    } else {
+      await _apiClient.updateAction(
+        token: _token!,
+        actionID: action.id,
+        action: action.toJson(),
+      );
+      actions
+        ..removeAt(idx)
+        ..insertAll(idx, [action]);
+    }
+    _actionStreamController.add(actions);
+  }
+
+  /// get action list
+  Future<void> getActions() async {
+    if (_token == null) throw Exception('Token not found');
+    final data = await _apiClient.getActions(_token!);
+    final actions = data
+        .map((dynamic json) => TAction.fromJson(json as Map<String, dynamic>))
+        .toList();
+    _actionStreamController.add(actions);
+  }
+
+  /// delete action by ID
+  Future<void> deleteAction(String actionID) async {
+    final actions = [..._actionStreamController.value];
+    final idx = actions.indexWhere((t) => t.id == actionID);
+    if (idx > -1) {
+      await _apiClient.deleteAction(
+        token: _token!,
+        actionID: actionID,
+      );
+      actions.removeAt(idx);
+      _actionStreamController.add(actions);
+    }
+  }
+  // ================== ACTION REST API ========================
 }

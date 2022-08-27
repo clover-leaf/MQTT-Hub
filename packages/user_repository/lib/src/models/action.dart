@@ -9,10 +9,10 @@ part 'generated/action.g.dart';
 @immutable
 @JsonSerializable()
 
-/// Action model for an API providing to access condition
-class Action extends Equatable {
-  /// {macro Action}
-  Action({
+/// TAction model for an API providing to access condition
+class TAction extends Equatable {
+  /// {macro TAction}
+  TAction({
     FieldId? id,
     required this.alertID,
     required this.deviceID,
@@ -42,22 +42,22 @@ class Action extends Equatable {
   /// The name of condition
   final String value;
 
-  /// Deserializes the given [JsonMap] into a [Action].
-  static Action fromJson(JsonMap json) {
-    return _$ActionFromJson(json);
+  /// Deserializes the given [JsonMap] into a [TAction].
+  static TAction fromJson(JsonMap json) {
+    return _$TActionFromJson(json);
   }
 
-  /// Converts this [Action] into a [JsonMap].
-  JsonMap toJson() => _$ActionToJson(this);
+  /// Converts this [TAction] into a [JsonMap].
+  JsonMap toJson() => _$TActionToJson(this);
 
-  /// Returns a copy of [Action] with given parameters
-  Action copyWith(
+  /// Returns a copy of [TAction] with given parameters
+  TAction copyWith(
       {FieldId? id,
       FieldId? alertID,
       FieldId? deviceID,
       FieldId? attributeID,
       String? value,}) {
-    return Action(
+    return TAction(
       id: id ?? this.id,
       alertID: alertID ?? this.alertID,
       deviceID: deviceID ?? this.deviceID,

@@ -1,3 +1,4 @@
+import 'package:bee/alerts_overview/view/alerts_overview_page.dart';
 import 'package:bee/brokers_overview/view/brokers_overview_page.dart';
 import 'package:bee/components/component.dart';
 import 'package:bee/dashboards_overview/view/view.dart';
@@ -28,6 +29,8 @@ class ProjectDetailView extends StatelessWidget {
         context.select((ProjectDetailBloc bloc) => bloc.state.brokerNumber);
     final userNumber =
         context.select((ProjectDetailBloc bloc) => bloc.state.userNumber);
+    final alertNumber =
+        context.select((ProjectDetailBloc bloc) => bloc.state.alertNumber);
     final isAdmin =
         context.select((ProjectDetailBloc bloc) => bloc.state.isAdmin);
 
@@ -118,7 +121,19 @@ class ProjectDetailView extends StatelessWidget {
                       parentProject: project,
                     ),
                   ),
-                )
+                ),
+                const SizedBox(height: 16),
+                OptionItem(
+                  title: 'Alerts',
+                  number: alertNumber,
+                  unit: 'alert',
+                  onPressed: () => Navigator.of(context).push(
+                    AlertsOverviewPage.route(
+                      isAdmin: isAdmin,
+                      parentProject: project,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),

@@ -6,13 +6,17 @@ part 'project_detail_event.dart';
 part 'project_detail_state.dart';
 
 class ProjectDetailBloc extends Bloc<ProjectDetailEvent, ProjectDetailState> {
-  ProjectDetailBloc(this._userRepository,
-      {required Project project, required bool isAdmin,})
-      : super(ProjectDetailState(project: project, isAdmin: isAdmin)) {
+  ProjectDetailBloc(
+    this._userRepository, {
+    required Project project,
+    required bool isAdmin,
+  }) : super(ProjectDetailState(project: project, isAdmin: isAdmin)) {
     on<GroupSubscriptionRequested>(_onGroupSubscribed);
     on<BrokerSubscriptionRequested>(_onBrokerSubscribed);
     on<UserProjectSubscriptionRequested>(_onUserProjectSubscribed);
-    on<DashboardSubscriptionRequested>(_onDashboadSubscribed);
+    on<DashboardSubscriptionRequested>(_onDashboardSubscribed);
+    on<DeviceSubscriptionRequested>(_onDeviceSubscribed);
+    on<AlertSubscriptionRequested>(_onAlertSubscribed);
     on<DeletionRequested>(_onDeleted);
   }
 
@@ -79,7 +83,7 @@ class ProjectDetailBloc extends Bloc<ProjectDetailEvent, ProjectDetailState> {
     );
   }
 
-  Future<void> _onDashboadSubscribed(
+  Future<void> _onDashboardSubscribed(
     DashboardSubscriptionRequested event,
     Emitter<ProjectDetailState> emit,
   ) async {
@@ -87,6 +91,30 @@ class ProjectDetailBloc extends Bloc<ProjectDetailEvent, ProjectDetailState> {
       _userRepository.subscribeDashboardStream(),
       onData: (dashboards) {
         return state.copyWith(dashboards: dashboards);
+      },
+    );
+  }
+
+  Future<void> _onDeviceSubscribed(
+    DeviceSubscriptionRequested event,
+    Emitter<ProjectDetailState> emit,
+  ) async {
+    await emit.forEach<List<Device>>(
+      _userRepository.subscribeDeviceStream(),
+      onData: (devices) {
+        return state.copyWith(devices: devices);
+      },
+    );
+  }
+
+  Future<void> _onAlertSubscribed(
+    AlertSubscriptionRequested event,
+    Emitter<ProjectDetailState> emit,
+  ) async {
+    await emit.forEach<List<Alert>>(
+      _userRepository.subscribeAlertStream(),
+      onData: (alerts) {
+        return state.copyWith(alerts: alerts);
       },
     );
   }

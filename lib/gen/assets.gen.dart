@@ -23,6 +23,14 @@ class $AssetsIconsGen {
   /// File path: assets/icons/arrow-down.svg
   SvgGenImage get arrowDown => const SvgGenImage('assets/icons/arrow-down.svg');
 
+  /// File path: assets/icons/arrow-left-2.svg
+  SvgGenImage get arrowLeft2 =>
+      const SvgGenImage('assets/icons/arrow-left-2.svg');
+
+  /// File path: assets/icons/arrow-left-3.svg
+  SvgGenImage get arrowLeft3 =>
+      const SvgGenImage('assets/icons/arrow-left-3.svg');
+
   /// File path: assets/icons/arrow-left.svg
   SvgGenImage get arrowLeft => const SvgGenImage('assets/icons/arrow-left.svg');
 
@@ -30,9 +38,17 @@ class $AssetsIconsGen {
   SvgGenImage get arrowRight2 =>
       const SvgGenImage('assets/icons/arrow-right-2.svg');
 
+  /// File path: assets/icons/arrow-right-3.svg
+  SvgGenImage get arrowRight3 =>
+      const SvgGenImage('assets/icons/arrow-right-3.svg');
+
   /// File path: assets/icons/arrow-right.svg
   SvgGenImage get arrowRight =>
       const SvgGenImage('assets/icons/arrow-right.svg');
+
+  /// File path: assets/icons/arrow-swap-horizontal.svg
+  SvgGenImage get arrowSwapHorizontal =>
+      const SvgGenImage('assets/icons/arrow-swap-horizontal.svg');
 
   /// File path: assets/icons/autobrightness.svg
   SvgGenImage get autobrightness =>

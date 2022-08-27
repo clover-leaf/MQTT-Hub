@@ -13,6 +13,8 @@ dependencies:
   bloc: ^8.1.0
   bloc_concurrency: ^0.2.0
   equatable: ^2.0.3
+  firebase_core: ^1.21.1
+  firebase_messaging: ^13.0.0
   fl_chart: ^0.55.1
   flow_builder: ^0.0.9
   flutter:
@@ -30,6 +32,7 @@ dependencies:
   intl: ^0.17.0
   loader_overlay: ^2.0.10
   modal_bottom_sheet: ^2.1.0
+  onesignal_flutter: ^3.4.1
   rfc_6901: ^0.1.1
   secure_storage_client:
     path: ./packages/secure_storage_client
