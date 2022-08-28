@@ -78,6 +78,10 @@ class _ConditionFieldState extends State<ConditionField> {
               )
             ],
           ),
+          Text(
+            'The relationship between conditions is AND',
+            style: textTheme.bodySmall!.copyWith(color: ColorName.neural500),
+          ),
           const SizedBox(height: 8),
           ...List.generate(_conditions.length, (index) {
             final cd = _conditions[index];
@@ -216,7 +220,7 @@ class _CondtionItem extends StatelessWidget {
             validator: (value) {
               if (value == null ||
                   value.isEmpty ||
-                  int.tryParse(value) == null) {
+                  double.tryParse(value) == null) {
                 return 'Invalid';
               }
               return null;

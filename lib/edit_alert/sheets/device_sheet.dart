@@ -8,9 +8,11 @@ import 'package:user_repository/user_repository.dart';
 class DeviceSheet extends StatelessWidget {
   const DeviceSheet({
     super.key,
+    required this.selectedDeviceID,
     required this.onDeviceSelected,
   });
 
+  final String? selectedDeviceID;
   final void Function(Device) onDeviceSelected;
 
   @override
@@ -18,8 +20,6 @@ class DeviceSheet extends StatelessWidget {
     return BlocBuilder<EditAlertBloc, EditAlertState>(
       builder: (context, state) {
         final textTheme = Theme.of(context).textTheme;
-
-        final selectedDeviceID = state.selectedDeviceID;
         final devices = state.devices;
 
         return Container(
@@ -35,6 +35,14 @@ class DeviceSheet extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 8, horizontal: 28),
+                child: Text(
+                  'DEVICES',
+                  style: textTheme.titleSmall,
+                ),
+              ),
               if (devices.isEmpty)
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 32),

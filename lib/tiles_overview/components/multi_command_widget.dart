@@ -78,7 +78,7 @@ class _CommandItem extends StatelessWidget {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         padding: EdgeInsets.zero,
-        primary: ColorName.white,
+        primary: Colors.transparent,
         onPrimary: ColorName.sky300,
         shadowColor: Colors.transparent,
         shape: const RoundedRectangleBorder(

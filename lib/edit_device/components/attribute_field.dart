@@ -4,6 +4,7 @@ import 'package:bee/gen/assets.gen.dart';
 import 'package:bee/gen/colors.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import 'package:user_repository/user_repository.dart';
 import 'package:uuid/uuid.dart';
 
@@ -32,6 +33,15 @@ class _AttributeFieldState extends State<AttributeField> {
 
   void updateBloc(BuildContext context, List<Attribute> attributes) {
     context.read<EditDeviceBloc>().add(AttributesChanged(attributes));
+  }
+
+  /// lauch given url
+  Future<void> _launchUrl(String url) async {
+    if (await canLaunchUrlString(url)) {
+      await launchUrlString(url);
+    } else {
+      throw Exception('Could not launch $url');
+    }
   }
 
   @override
@@ -85,6 +95,35 @@ class _AttributeFieldState extends State<AttributeField> {
                 },
               )
             ],
+          ),
+          RichText(
+            text: TextSpan(
+              style: Theme.of(context).textTheme.bodySmall,
+              children: [
+                const TextSpan(
+                  text: 'An expression is used for extracting attribute '
+                      'from the payload using JSON Pointer (RFC 6091). Visit',
+                ),
+                WidgetSpan(
+                  baseline: TextBaseline.alphabetic,
+                  alignment: PlaceholderAlignment.baseline,
+                  child: InkWell(
+                    onTap: () =>
+                        _launchUrl('https://www.rfc-editor.org/rfc/rfc6901'),
+                    child: Text(
+                      ' this link ',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodySmall!
+                          .merge(const TextStyle(color: ColorName.sky500)),
+                    ),
+                  ),
+                ),
+                const TextSpan(
+                  text: 'for in-depth instructions.',
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 8),
           ...List.generate(_attributes.length, (index) {
@@ -179,7 +218,7 @@ class _AttributeItem extends StatelessWidget {
             onChanged: (jsonPath) {
               if (index >= 0 && index < attributes.length) {
                 final att = attributes[index];
-                final updatedAtt =  att.copyWith(jsonPath: jsonPath);
+                final updatedAtt = att.copyWith(jsonPath: jsonPath);
                 attributes[index] = updatedAtt;
                 onSaved(attributes);
               }

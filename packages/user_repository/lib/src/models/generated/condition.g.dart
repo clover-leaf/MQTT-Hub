@@ -23,9 +23,9 @@ Map<String, dynamic> _$ConditionToJson(Condition instance) => <String, dynamic>{
     };
 
 const _$ComparisonEnumMap = {
-  Comparison.geq: 'geq',
   Comparison.g: 'g',
+  Comparison.geq: 'geq',
   Comparison.eq: 'eq',
-  Comparison.l: 'l',
   Comparison.leq: 'leq',
+  Comparison.l: 'l',
 };

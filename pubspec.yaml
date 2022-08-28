@@ -36,6 +36,7 @@ dependencies:
   rfc_6901: ^0.1.1
   secure_storage_client:
     path: ./packages/secure_storage_client
+  url_launcher: ^6.1.5
   user_repository:
     path: ./packages/user_repository
   uuid: ^3.0.6

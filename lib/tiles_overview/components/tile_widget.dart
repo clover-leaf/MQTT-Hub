@@ -124,7 +124,7 @@ class TileWidget extends StatelessWidget {
             if (value == null)
               const SizedBox.shrink()
             else if (tile.type.isText)
-              TextWidget(value: value, unit: unit)
+              TextWidget(value: value!, unit: unit)
             else if (tile.type.isRadialGauge)
               RadialGaugeWidget(
                 lob: tile.lob,
@@ -133,6 +133,10 @@ class TileWidget extends StatelessWidget {
               )
             else if (tile.type.isLinearGauge)
               LinearGaugeWidget(lob: tile.lob, value: value!, unit: unit)
+            else if (tile.type.isLine)
+              LineWidget(lob: tile.lob, value: value!, unit: unit)
+            else if (tile.type.isBar)
+              BarWidget(lob: tile.lob, value: value!, unit: unit)
             else if (tile.type.isToggle)
               ToggleWidget(tile: tile, value: value!)
             else if (tile.type.isMultiCommand)

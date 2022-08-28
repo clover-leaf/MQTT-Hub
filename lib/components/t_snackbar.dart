@@ -17,18 +17,20 @@ class TSnackbar {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 32,
-              vertical: 16,
-            ),
-            decoration: const ShapeDecoration(
-              shape: StadiumBorder(),
-              color: ColorName.pine100,
-            ),
-            child: Text(
-              content,
-              style: textTheme.labelLarge!.copyWith(color: ColorName.pine500,),
+          Flexible(
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 32,
+                vertical: 16,
+              ),
+              decoration: const ShapeDecoration(
+                shape: StadiumBorder(),
+                color: ColorName.pine100,
+              ),
+              child: Text(
+                content,
+                style: textTheme.labelLarge!.copyWith(color: ColorName.pine500,),
+              ),
             ),
           ),
         ],

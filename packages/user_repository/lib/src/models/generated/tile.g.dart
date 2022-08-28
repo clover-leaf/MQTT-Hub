@@ -34,6 +34,8 @@ const _$TileTypeEnumMap = {
   TileType.text: 'text',
   TileType.radialGauge: 'radialGauge',
   TileType.linearGauge: 'linearGauge',
+  TileType.line: 'line',
+  TileType.bar: 'bar',
   TileType.toggle: 'toggle',
   TileType.multiCommand: 'multiCommand',
 };

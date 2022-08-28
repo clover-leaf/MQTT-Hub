@@ -832,4 +832,28 @@ class ApiClient {
     return res;
   }
   // ================== LOG REST API ========================
+
+  // ================== CONDITION LOG REST API ========================
+  /// GET: get logs list
+  Future<List<dynamic>> getConditionLogs(String token) async {
+    final res = await httpWrapper.get(
+      Uri.http(API_URL, 'v1/domain/condition-logs'),
+      header: {'Authorization': 'Bearer $token'},
+    );
+    final projects = res['logs'] as List<dynamic>;
+    return projects;
+  }
+
+  /// GET: get log by ID
+  Future<Map<String, dynamic>> getConditionLog({
+    required String token,
+    required String logID,
+  }) async {
+    final res = await httpWrapper.get(
+      Uri.http(API_URL, 'v1/domain/condition-logs/$logID'),
+      header: {'Authorization': 'Bearer $token'},
+    );
+    return res;
+  }
+  // ================== CONDITION LOG REST API ========================
 }

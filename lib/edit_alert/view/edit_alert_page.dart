@@ -11,6 +11,7 @@ class EditAlertPage extends StatelessWidget {
     required this.initialID,
     required this.initialAlert,
     required this.initialSelectedDevice,
+    required this.devices,
     required this.attributes,
     required this.initialConditions,
     required this.initialActions,
@@ -19,6 +20,7 @@ class EditAlertPage extends StatelessWidget {
   final String initialID;
   final Alert? initialAlert;
   final Device? initialSelectedDevice;
+  final List<Device> devices;
   final List<Attribute> attributes;
   final List<Condition> initialConditions;
   final List<TAction> initialActions;
@@ -52,6 +54,7 @@ class EditAlertPage extends StatelessWidget {
             initialID: initialID,
             initialAlert: initialAlert,
             initialSelectedDevice: initialSelectedDevice,
+            devices: devices,
             attributes: attributes,
             initialConditions: initialConditions,
             initialActions: initialActions,
@@ -82,6 +85,7 @@ class EditAlertPage extends StatelessWidget {
         initialID: initialID,
         initialAlert: initialAlert,
         initialSelectedDevice: initialSelectedDevice,
+        devices: devices,
         attributes: attributes,
         initialConditions: initialConditions,
         initialActions: initialActions,

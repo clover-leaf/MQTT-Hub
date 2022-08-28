@@ -93,7 +93,8 @@ class TileDialog extends StatelessWidget {
                           height: 24,
                           width: 24,
                           child: CircularProgressIndicator(
-                              color: ColorName.iColor1,),
+                            color: ColorName.iColor1,
+                          ),
                         ),
                       ),
                     ],
@@ -115,8 +116,20 @@ class TileDialog extends StatelessWidget {
                     value: value,
                     unit: attribute?.unit,
                   )
+                else if (tile.type.isLine)
+                  LineWidget(lob: tile.lob, value: value, unit: attribute?.unit)
+                else if (tile.type.isBar)
+                  BarWidget(lob: tile.lob, value: value, unit: attribute?.unit)
+                else if (tile.type.isLinearGauge)
+                  LinearGaugeWidget(
+                    lob: tile.lob,
+                    value: value,
+                    unit: attribute?.unit,
+                  )
                 else if (tile.type.isToggle)
-                  ToggleWidget(tile: tile, value: value),
+                  ToggleWidget(tile: tile, value: value)
+                else if (tile.type.isMultiCommand)
+                  MultiCommandWidget(tile: tile, value: value),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [

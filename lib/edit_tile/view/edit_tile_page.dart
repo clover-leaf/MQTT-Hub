@@ -75,6 +75,12 @@ class EditTilePage extends StatelessWidget {
       body: EditTileView(
         tileType: tileType,
         initialLob: initialTile?.lob ?? tileType.getInitialLob(),
+        initialColor: initialTile != null
+            ? TileHelper.stringToColor(initialTile!.color)
+            : null,
+        initialIcon: initialTile != null
+            ? TileHelper.stringToSvg(initialTile!.icon)
+            : null,
         initialName: initialTile?.name,
         devices: devices,
         attributes: attributes,

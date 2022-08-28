@@ -20,6 +20,10 @@ class $AssetsIconsGen {
   /// File path: assets/icons/airdrop.svg
   SvgGenImage get airdrop => const SvgGenImage('assets/icons/airdrop.svg');
 
+  /// File path: assets/icons/arrow-down-2.svg
+  SvgGenImage get arrowDown2 =>
+      const SvgGenImage('assets/icons/arrow-down-2.svg');
+
   /// File path: assets/icons/arrow-down.svg
   SvgGenImage get arrowDown => const SvgGenImage('assets/icons/arrow-down.svg');
 
@@ -50,6 +54,9 @@ class $AssetsIconsGen {
   SvgGenImage get arrowSwapHorizontal =>
       const SvgGenImage('assets/icons/arrow-swap-horizontal.svg');
 
+  /// File path: assets/icons/arrow-up.svg
+  SvgGenImage get arrowUp => const SvgGenImage('assets/icons/arrow-up.svg');
+
   /// File path: assets/icons/autobrightness.svg
   SvgGenImage get autobrightness =>
       const SvgGenImage('assets/icons/autobrightness.svg');
@@ -67,12 +74,18 @@ class $AssetsIconsGen {
   /// File path: assets/icons/category-2.svg
   SvgGenImage get category2 => const SvgGenImage('assets/icons/category-2.svg');
 
+  /// File path: assets/icons/chart.svg
+  SvgGenImage get chart => const SvgGenImage('assets/icons/chart.svg');
+
   /// File path: assets/icons/cloud.svg
   SvgGenImage get cloud => const SvgGenImage('assets/icons/cloud.svg');
 
   /// File path: assets/icons/code-circle.svg
   SvgGenImage get codeCircle =>
       const SvgGenImage('assets/icons/code-circle.svg');
+
+  /// File path: assets/icons/diagram.svg
+  SvgGenImage get diagram => const SvgGenImage('assets/icons/diagram.svg');
 
   /// File path: assets/icons/edit.svg
   SvgGenImage get edit => const SvgGenImage('assets/icons/edit.svg');
@@ -144,6 +157,9 @@ class $AssetsIconsGen {
 
   /// File path: assets/icons/setting.svg
   SvgGenImage get setting => const SvgGenImage('assets/icons/setting.svg');
+
+  /// File path: assets/icons/smallcaps.svg
+  SvgGenImage get smallcaps => const SvgGenImage('assets/icons/smallcaps.svg');
 
   /// File path: assets/icons/sms.svg
   SvgGenImage get sms => const SvgGenImage('assets/icons/sms.svg');

@@ -1,6 +1,7 @@
 import 'package:bee/components/t_selected_box.dart';
 import 'package:bee/edit_alert/edit_alert.dart';
 import 'package:bee/gen/assets.gen.dart';
+import 'package:bee/gen/colors.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -29,6 +30,7 @@ class _DeviceConditionFieldState extends State<DeviceConditionField> {
   late Device? _selectedDevice;
   late List<Condition> _conditions;
   late List<Attribute> _attributesInDevice;
+  late Map<String, Attribute> _attributeView;
 
   @override
   void initState() {
@@ -38,6 +40,7 @@ class _DeviceConditionFieldState extends State<DeviceConditionField> {
     _attributesInDevice = widget.attributes
         .where((att) => att.deviceID == _selectedDevice?.id)
         .toList();
+    _attributeView = {for (final att in widget.attributes) att.id: att};
     super.initState();
   }
 
@@ -51,10 +54,19 @@ class _DeviceConditionFieldState extends State<DeviceConditionField> {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return FormField(
       initialValue: [_selectedDevice, _conditions],
-      validator: (_) => null,
-      builder: (dvattFormFieldState) => Column(
+      validator: (_) {
+        for (final cd in _conditions) {
+          final attributeOfCondition = _attributeView[cd.attributeID];
+          if (attributeOfCondition?.deviceID != _selectedDevice?.id) {
+            return 'All attributes must belong to device';
+          }
+        }
+        return null;
+      },
+      builder: (dvcdFormFieldState) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TSelectedField(
@@ -67,6 +79,7 @@ class _DeviceConditionFieldState extends State<DeviceConditionField> {
               builder: (bContext) => BlocProvider.value(
                 value: BlocProvider.of<EditAlertBloc>(context),
                 child: DeviceSheet(
+                  selectedDeviceID: _selectedDevice?.id,
                   // when select device, return device
                   onDeviceSelected: (device) =>
                       Navigator.of(bContext).pop(device),
@@ -80,7 +93,6 @@ class _DeviceConditionFieldState extends State<DeviceConditionField> {
                   _attributesInDevice = widget.attributes
                       .where((att) => att.deviceID == device.id)
                       .toList();
-                  _conditions = [];
                 });
                 return device.name;
               }
@@ -104,7 +116,17 @@ class _DeviceConditionFieldState extends State<DeviceConditionField> {
                 _conditions = conditions;
               });
             },
-          )
+          ),
+          // List ranges error line
+          if (dvcdFormFieldState.hasError) const SizedBox(height: 8),
+          if (dvcdFormFieldState.hasError)
+            Text(
+              dvcdFormFieldState.errorText!,
+              style: textTheme.labelMedium!.copyWith(
+                color: ColorName.wine300,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
         ],
       ),
     );

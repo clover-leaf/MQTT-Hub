@@ -32,6 +32,13 @@ class AttributeSheet extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 28),
+            child: Text(
+              'ATTRIBUTES',
+              style: textTheme.titleSmall,
+            ),
+          ),
           if (attributes.isEmpty)
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 32),

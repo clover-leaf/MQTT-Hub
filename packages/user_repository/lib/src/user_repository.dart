@@ -113,6 +113,13 @@ class UserRepository {
   /// the controller of [Stream] of [TAction]
   final _actionStreamController = BehaviorSubject<List<TAction>>.seeded([]);
 
+  /// the controller of [Stream] of [Log]
+  final _logStreamController = BehaviorSubject<List<Log>>.seeded([]);
+
+  /// the controller of [Stream] of [ConditionLog]
+  final _conditionLogStreamController =
+      BehaviorSubject<List<ConditionLog>>.seeded([]);
+
   /// read secure-storage if it contains token
   Future<String> recoverSession() async {
     final token = await _secureStorageClient.readSecureData(_tokenKey);
@@ -142,7 +149,7 @@ class UserRepository {
     String password,
   ) async {
     return _apiClient.login(domain, username, password);
-  } 
+  }
 
   /// set token
   Future<void> setToken(String token, {bool toWrite = true}) async {
@@ -903,6 +910,41 @@ class UserRepository {
       actions.removeAt(idx);
       _actionStreamController.add(actions);
     }
+  }
+  // ================== ACTION REST API ========================
+
+  // ================== LOG REST API ========================
+  ///
+  Stream<List<Log>> subscribeLogStream() {
+    return _logStreamController.asBroadcastStream();
+  }
+
+  /// get log list
+  Future<void> getLogs() async {
+    if (_token == null) throw Exception('Token not found');
+    final data = await _apiClient.getLogs(_token!);
+    final logs = data
+        .map((dynamic json) => Log.fromJson(json as Map<String, dynamic>))
+        .toList();
+    _logStreamController.add(logs);
+  }
+  // ================== LOG REST API ========================
+
+  // ================== CONDITION LOG REST API ========================
+  ///
+  Stream<List<ConditionLog>> subscribeConditionLogStream() {
+    return _conditionLogStreamController.asBroadcastStream();
+  }
+
+  /// get conditionLog list
+  Future<void> getConditionLogs() async {
+    if (_token == null) throw Exception('Token not found');
+    final data = await _apiClient.getConditionLogs(_token!);
+    final conditionLogs = data
+        .map((dynamic json) =>
+            ConditionLog.fromJson(json as Map<String, dynamic>),)
+        .toList();
+    _conditionLogStreamController.add(conditionLogs);
   }
   // ================== ACTION REST API ========================
 }

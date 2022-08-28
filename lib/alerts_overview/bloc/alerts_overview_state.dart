@@ -43,17 +43,18 @@ class AlertsOverviewState extends Equatable {
   final AlertsOverviewStatus status;
   final String? error;
 
-  List<Broker> get brokerInProject => brokers.where((br) => br.projectID == parentProject.id).toList();
+  List<Broker> get brokerInProject =>
+      brokers.where((br) => br.projectID == parentProject.id).toList();
 
   List<Device> get deviceInProject => devices.where((dv) {
-    final brokerIdInProject = brokerInProject.map((br) => br.id);
-    return brokerIdInProject.contains(dv.brokerID);    
-  }).toList();
+        final brokerIdInProject = brokerInProject.map((br) => br.id);
+        return brokerIdInProject.contains(dv.brokerID);
+      }).toList();
 
   List<Attribute> get attributeInProject => attributes.where((att) {
-    final deviceIdInProject = deviceInProject.map((dv) => dv.id);
-    return deviceIdInProject.contains(att.deviceID);    
-  }).toList();
+        final deviceIdInProject = deviceInProject.map((dv) => dv.id);
+        return deviceIdInProject.contains(att.deviceID);
+      }).toList();
 
   List<Alert> get showedAlerts {
     final brokerIDinProjet = brokers

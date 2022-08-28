@@ -14,6 +14,7 @@ class EditAlertView extends StatelessWidget {
     required this.initialAlert,
     required this.initialSelectedDevice,
     required this.attributes,
+    required this.devices,
     required this.initialConditions,
     required this.initialActions,
   });
@@ -22,6 +23,7 @@ class EditAlertView extends StatelessWidget {
   final Alert? initialAlert;
   final Device? initialSelectedDevice;
   final List<Attribute> attributes;
+  final List<Device> devices;
   final List<Condition> initialConditions;
   final List<TAction> initialActions;
 
@@ -111,6 +113,13 @@ class EditAlertView extends StatelessWidget {
                           attributes: attributes,
                           initialDevice: initialSelectedDevice,
                           initialConditions: initialConditions,
+                        ),
+                        const SizedBox(height: 24),
+                        ActionListField(
+                          alertID: initialID,
+                          initialActions: initialActions,
+                          devices: devices,
+                          attributes: attributes,
                         )
                       ],
                     ),

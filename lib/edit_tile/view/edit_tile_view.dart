@@ -14,6 +14,8 @@ class EditTileView extends StatelessWidget {
   const EditTileView({
     super.key,
     required this.tileType,
+    required this.initialColor,
+    required this.initialIcon,
     required this.initialLob,
     required this.initialName,
     required this.devices,
@@ -23,6 +25,8 @@ class EditTileView extends StatelessWidget {
   });
 
   final TileType tileType;
+  final Color? initialColor;
+  final SvgGenImage? initialIcon;
   final String initialLob;
   final String? initialName;
   final List<Device> devices;
@@ -99,11 +103,11 @@ class EditTileView extends StatelessWidget {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Padding(
-                              padding: EdgeInsets.only(right: 16),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 16),
                               child: IconItem(
-                                initialColor: null,
-                                initialIcon: null,
+                                initialColor: initialColor,
+                                initialIcon: initialIcon,
                               ),
                             ),
                             Expanded(
@@ -134,6 +138,8 @@ class EditTileView extends StatelessWidget {
                         const SizedBox(height: 24),
                         if (tileType.isLinearGauge || tileType.isRadialGauge)
                           GaugeTileField(initialLob)
+                        else if (tileType.isLine || tileType.isBar)
+                          LineField(initialLob)
                         else if (tileType.isToggle)
                           ToggleTileField(initialLob)
                         else if (tileType.isMultiCommand)

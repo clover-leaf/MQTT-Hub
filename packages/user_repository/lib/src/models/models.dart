@@ -6,6 +6,7 @@ export 'broker.dart';
 export 'command.dart';
 export 'comparison.dart';
 export 'condition.dart';
+export 'condition_log.dart';
 export 'dashboard.dart';
 export 'device.dart';
 export 'gauge_range.dart';

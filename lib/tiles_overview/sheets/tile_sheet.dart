@@ -53,7 +53,7 @@ class TileSheet extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'CONTROLLER',
+            'COMMAND',
             style: textTheme.bodySmall!.copyWith(color: ColorName.neural600),
           ),
           const SizedBox(height: 12),
@@ -98,9 +98,15 @@ class _TileItem extends StatelessWidget {
       picture = Assets.icons.speedometer;
     } else if (type.isLinearGauge) {
       picture = Assets.icons.passwordCheck;
+    } else if (type.isLine) {
+      picture = Assets.icons.diagram;
+    } else if (type.isBar) {
+      picture = Assets.icons.chart;
     } else if (type.isToggle) {
       picture = Assets.icons.toggleOnCircle;
     } else if (type.isMultiCommand) {
+      picture = Assets.icons.category2;
+    } else {
       picture = Assets.icons.category2;
     }
 

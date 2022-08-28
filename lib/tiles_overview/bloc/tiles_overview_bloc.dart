@@ -210,7 +210,13 @@ class TilesOverviewBloc extends Bloc<TilesOverviewEvent, TilesOverviewState> {
               expression: att.jsonPath,
               payload: payload,
             );
-            tileValueView[tile.id] = value;
+            if (value == '?') {
+              if (tileValueView[tile.id] == null) {
+                tileValueView[tile.id] = value;
+              }
+            } else {
+              tileValueView[tile.id] = value;
+            }
           }
         }
         return state.copyWith(
