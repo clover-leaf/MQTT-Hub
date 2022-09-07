@@ -2,6 +2,7 @@ import 'package:bee/components/t_snackbar.dart';
 import 'package:bee/edit_tile/view/view.dart';
 import 'package:bee/gen/assets.gen.dart';
 import 'package:bee/gen/colors.gen.dart';
+import 'package:bee/logs_overview/logs_overview.dart';
 import 'package:bee/projects_overview/view/projects_overview_page.dart';
 import 'package:bee/tiles_overview/tiles_overview.dart';
 import 'package:bee/users_overview/users_overview.dart';
@@ -73,6 +74,8 @@ class TilesOverviewPage extends StatelessWidget {
                         devices: devicesInSelectedProject,
                         attributes: attributes,
                         initialTile: null,
+                        isEdit: true,
+                        isAdmin: isAdmin,
                       ),
                     );
                   }
@@ -144,12 +147,9 @@ class TilesOverviewPage extends StatelessWidget {
                 child: Assets.icons.textalignLeft.svg(),
               ),
               ElevatedButton(
-                onPressed: () async {
-                  await showMaterialModalBottomSheet<void>(
-                    context: context,
-                    builder: (context) => Container(),
-                  );
-                },
+                onPressed: () => Navigator.of(context).push(
+                  LogsOverviewPage.route(),
+                ),
                 style: ElevatedButton.styleFrom(
                   elevation: 0,
                   shape: const CircleBorder(),
@@ -158,7 +158,7 @@ class TilesOverviewPage extends StatelessWidget {
                   shadowColor: Colors.transparent,
                   padding: const EdgeInsets.all(16),
                 ),
-                child: Assets.icons.lock.svg(),
+                child: Assets.icons.notification.svg(),
               ),
             ],
           ),

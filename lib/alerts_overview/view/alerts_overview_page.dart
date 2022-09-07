@@ -28,7 +28,7 @@ class AlertsOverviewPage extends StatelessWidget {
         child: const AlertsOverviewPage(),
       ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const begin = Offset(0, 1);
+        const begin = Offset(1, 0);
         const end = Offset.zero;
         const curve = Curves.ease;
         final tween =

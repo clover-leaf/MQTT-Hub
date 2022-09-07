@@ -23,7 +23,6 @@ class BrokerSubscriptionRequested extends AlertsOverviewEvent {
   const BrokerSubscriptionRequested();
 }
 
-
 class DeviceSubscriptionRequested extends AlertsOverviewEvent {
   const DeviceSubscriptionRequested();
 }

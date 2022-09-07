@@ -16,6 +16,8 @@ extension EditAlertStatusX on EditAlertStatus {
 class EditAlertState extends Equatable {
   const EditAlertState({
     this.status = EditAlertStatus.normal,
+    required this.isEdit,
+    required this.isAdmin,
     required this.id,
     required this.devices,
     required this.attributes,
@@ -46,6 +48,8 @@ class EditAlertState extends Equatable {
 
   // status
   final EditAlertStatus status;
+  final bool isEdit;
+  final bool isAdmin;
   final String? error;
 
   // initial
@@ -62,6 +66,8 @@ class EditAlertState extends Equatable {
   @override
   List<Object?> get props => [
         id,
+        isAdmin,
+        isEdit,
         devices,
         initialConditions,
         initialActions,
@@ -87,10 +93,14 @@ class EditAlertState extends Equatable {
     List<TAction>? actions,
     EditAlertStatus? status,
     Alert? initialAlert,
+    bool? isEdit,
+    bool? isAdmin,
     String? Function()? error,
   }) {
     return EditAlertState(
       id: id ?? this.id,
+      isEdit: isEdit ?? this.isEdit,
+      isAdmin: isAdmin ?? this.isAdmin,
       devices: devices ?? this.devices,
       attributes: attributes ?? this.attributes,
       initialConditions: initialConditions ?? this.initialConditions,

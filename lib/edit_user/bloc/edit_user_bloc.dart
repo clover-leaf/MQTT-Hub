@@ -12,8 +12,10 @@ class EditUserBloc extends Bloc<EditUserEvent, EditUserState> {
     required List<Project> initialProjects,
     required List<UserProject> initialUserProjects,
     required User? initialUser,
+    required bool isEdit,
   }) : super(
           EditUserState(
+            isEdit: isEdit,
             initialUserProjects: initialUserProjects,
             initialProjects: initialProjects,
             initialUser: initialUser,
@@ -26,10 +28,15 @@ class EditUserBloc extends Bloc<EditUserEvent, EditUserState> {
     on<Submitted>(_onSubmitted);
     on<UsernameChanged>(_onUsernameChanged);
     on<PasswordChanged>(_onPasswordChanged);
+    on<IsEditChanged>(_onIsEditChanged);
     on<UserProjectsChanged>(_onUserProjectsChanged);
   }
 
   final UserRepository _userRepository;
+
+  void _onIsEditChanged(IsEditChanged event, Emitter<EditUserState> emit) {
+    emit(state.copyWith(isEdit: event.isEdit));
+  }
 
   void _onUsernameChanged(UsernameChanged event, Emitter<EditUserState> emit) {
     emit(state.copyWith(username: event.username));

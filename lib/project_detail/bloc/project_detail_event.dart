@@ -27,8 +27,16 @@ class DeviceSubscriptionRequested extends ProjectDetailEvent {
   const DeviceSubscriptionRequested();
 }
 
+class DeviceTypeSubscriptionRequested extends ProjectDetailEvent {
+  const DeviceTypeSubscriptionRequested();
+}
+
 class AlertSubscriptionRequested extends ProjectDetailEvent {
   const AlertSubscriptionRequested();
+}
+
+class ScheduleSubscriptionRequested extends ProjectDetailEvent {
+  const ScheduleSubscriptionRequested();
 }
 
 class DeletionRequested extends ProjectDetailEvent {

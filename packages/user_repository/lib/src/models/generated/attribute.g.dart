@@ -8,7 +8,8 @@ part of '../attribute.dart';
 
 Attribute _$AttributeFromJson(Map<String, dynamic> json) => Attribute(
       id: json['id'] as String?,
-      deviceID: json['device_id'] as String,
+      deviceID: json['device_id'] as String?,
+      deviceTypeID: json['device_type_id'] as String?,
       name: json['name'] as String,
       jsonPath: json['json_path'] as String,
       unit: json['unit'] as String?,
@@ -17,6 +18,7 @@ Attribute _$AttributeFromJson(Map<String, dynamic> json) => Attribute(
 Map<String, dynamic> _$AttributeToJson(Attribute instance) => <String, dynamic>{
       'id': instance.id,
       'device_id': instance.deviceID,
+      'device_type_id': instance.deviceTypeID,
       'name': instance.name,
       'json_path': instance.jsonPath,
       'unit': instance.unit,

@@ -15,6 +15,7 @@ class TileWidget extends StatelessWidget {
     required this.value,
     required this.status,
     required this.unit,
+    required this.isAdmin,
   });
 
   final Tile tile;
@@ -22,6 +23,7 @@ class TileWidget extends StatelessWidget {
   final String? value;
   final String? unit;
   final ConnectionStatus? status;
+  final bool isAdmin;
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +63,7 @@ class TileWidget extends StatelessWidget {
             dashboardID: selectedDashboardID,
             attributes: attributes,
             tile: tile,
+            isAdmin: isAdmin,
           ),
         ),
       ).then((callback) => callback?.call()),

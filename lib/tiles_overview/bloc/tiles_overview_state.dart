@@ -3,10 +3,14 @@ part of 'tiles_overview_bloc.dart';
 enum TilesOverviewStatus {
   processing,
   normal,
+  success,
+  failure,
 }
 
 extension TilesOverviewStatusX on TilesOverviewStatus {
   bool isProcessing() => this == TilesOverviewStatus.processing;
+  bool isSuccess() => this == TilesOverviewStatus.success;
+  bool isFailure() => this == TilesOverviewStatus.failure;
 }
 
 class TilesOverviewState extends Equatable {
@@ -14,6 +18,7 @@ class TilesOverviewState extends Equatable {
     required this.isAdmin,
     this.isLogout = false,
     this.status = TilesOverviewStatus.normal,
+    this.error,
     this.selectedProjectID,
     this.projectDashboardView = const {},
     this.gatewayClientView = const {},
@@ -24,6 +29,9 @@ class TilesOverviewState extends Equatable {
     this.projects = const [],
     this.dashboards = const [],
     this.tiles = const [],
+    this.actions = const [],
+    this.actionTiles = const [],
+    this.deviceTypes = const [],
     this.devices = const [],
     this.attributes = const [],
   });
@@ -36,6 +44,7 @@ class TilesOverviewState extends Equatable {
   // === Update manually ===
   /// trạng thái của trang
   final TilesOverviewStatus status;
+  final String? error;
 
   /// ID của project đang chọn
   final FieldId? selectedProjectID;
@@ -67,6 +76,9 @@ class TilesOverviewState extends Equatable {
   final List<Project> projects;
   final List<Dashboard> dashboards;
   final List<Tile> tiles;
+  final List<TAction> actions;
+  final List<ActionTile> actionTiles;
+  final List<DeviceType> deviceTypes;
   final List<Device> devices;
   final List<Attribute> attributes;
 
@@ -121,14 +133,19 @@ class TilesOverviewState extends Equatable {
         projects,
         dashboards,
         tiles,
+        actions,
+        actionTiles,
         devices,
+        deviceTypes,
         attributes,
+        error
       ];
 
   TilesOverviewState copyWith({
     bool? isAdmin,
     bool? isLogout,
     TilesOverviewStatus? status,
+    String? Function()? error,
     FieldId? Function()? selectedProjectID,
     Map<FieldId, FieldId?>? projectDashboardView,
     Map<FieldId, GatewayClient>? gatewayClientView,
@@ -139,6 +156,9 @@ class TilesOverviewState extends Equatable {
     List<Project>? projects,
     List<Dashboard>? dashboards,
     List<Tile>? tiles,
+    List<TAction>? actions,
+    List<ActionTile>? actionTiles,
+    List<DeviceType>? deviceTypes,
     List<Device>? devices,
     List<Attribute>? attributes,
   }) {
@@ -146,6 +166,7 @@ class TilesOverviewState extends Equatable {
       isAdmin: isAdmin ?? this.isAdmin,
       isLogout: isLogout ?? this.isLogout,
       status: status ?? this.status,
+      error: error != null ? error() : this.error,
       selectedProjectID: selectedProjectID != null
           ? selectedProjectID()
           : this.selectedProjectID,
@@ -158,6 +179,9 @@ class TilesOverviewState extends Equatable {
       projects: projects ?? this.projects,
       dashboards: dashboards ?? this.dashboards,
       tiles: tiles ?? this.tiles,
+      actions: actions ?? this.actions,
+      actionTiles: actionTiles ?? this.actionTiles,
+      deviceTypes: deviceTypes ?? this.deviceTypes,
       devices: devices ?? this.devices,
       attributes: attributes ?? this.attributes,
     );

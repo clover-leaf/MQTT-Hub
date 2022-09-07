@@ -22,8 +22,8 @@ class AlertsOverviewView extends StatelessWidget {
         context.select((AlertsOverviewBloc bloc) => bloc.state.actions);
     final deviceInProject =
         context.select((AlertsOverviewBloc bloc) => bloc.state.deviceInProject);
-    final attributeInProject = context
-        .select((AlertsOverviewBloc bloc) => bloc.state.attributeInProject);
+    final attributes = context
+        .select((AlertsOverviewBloc bloc) => bloc.state.attributes);
     final paddingTop = MediaQuery.of(context).viewPadding.top;
 
     return BlocListener<AlertsOverviewBloc, AlertsOverviewState>(
@@ -81,11 +81,13 @@ class AlertsOverviewView extends StatelessWidget {
                               .toList();
                           Navigator.of(context).push(
                             EditAlertPage.route(
-                              attributes: attributeInProject,
+                              attributes: attributes,
                               devices: deviceInProject,
                               initialConditions: conditionOfAlert,
                               initialActions: actionOfAlert,
                               initialAlert: al,
+                              isAdmin: isAdmin,
+                              isEdit: false,
                             ),
                           );
                         },
@@ -116,8 +118,8 @@ class _Header extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final deviceInProject =
         context.select((AlertsOverviewBloc bloc) => bloc.state.deviceInProject);
-    final attributeInProject = context
-        .select((AlertsOverviewBloc bloc) => bloc.state.attributeInProject);
+    final attributes = context
+        .select((AlertsOverviewBloc bloc) => bloc.state.attributes);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -134,11 +136,13 @@ class _Header extends StatelessWidget {
               label: 'ADD ALERT',
               onPressed: () => Navigator.of(context).push(
                 EditAlertPage.route(
-                  attributes: attributeInProject,
+                  attributes: attributes,
                   devices: deviceInProject,
                   initialConditions: [],
                   initialActions: [],
                   initialAlert: null,
+                  isAdmin: isAdmin,
+                  isEdit: true,
                 ),
               ),
               enabled: true,
@@ -168,7 +172,7 @@ class _Title extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'alerts'.toUpperCase(),
+          'ALERTS',
           style: textTheme.titleMedium!.copyWith(
             fontWeight: FontWeight.w500,
             letterSpacing: 1.05,

@@ -1,6 +1,5 @@
-import 'package:bee/components/t_item_box.dart';
+import 'package:bee/components/component.dart';
 import 'package:bee/edit_tile/bloc/edit_tile_bloc.dart';
-import 'package:bee/gen/assets.gen.dart';
 import 'package:bee/gen/colors.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -35,6 +34,14 @@ class AttributeSheet extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 8, horizontal: 28),
+                child: Text(
+                  'ATTRIBUTES',
+                  style: textTheme.titleSmall,
+                ),
+              ),
               if (showedAttributes.isEmpty)
                 Container(
                   alignment: Alignment.center,
@@ -46,16 +53,13 @@ class AttributeSheet extends StatelessWidget {
                 )
               else
                 ...showedAttributes.map(
-                  (att) => TItemBox(
+                  (att) => TBrokerItem(
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                     title: att.name,
                     subtitle: att.jsonPath,
-                    prefix: Assets.icons.add.svg(),
-                    postfix: att.id == selectedAttributeID
-                        ? Assets.icons.eye.svg()
-                        : null,
-                    onPressed: () =>
-                        onAttributeSeleted(att),
-                    enabled: true,
+                    isSelected: att.id == selectedAttributeID,
+                    onPressed: () => onAttributeSeleted(att),
                   ),
                 )
             ],

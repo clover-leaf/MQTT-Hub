@@ -20,6 +20,16 @@ class UsernameChanged extends EditUserEvent {
   List<Object> get props => [username];
 }
 
+class IsEditChanged extends EditUserEvent {
+  const IsEditChanged({required this.isEdit});
+
+  final bool isEdit;
+
+  @override
+  List<Object> get props => [isEdit];
+}
+
+
 class PasswordChanged extends EditUserEvent {
   const PasswordChanged(this.password);
 

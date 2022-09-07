@@ -11,6 +11,15 @@ class InitializationRequested extends TilesOverviewEvent {
   const InitializationRequested();
 }
 
+class TileDeletedRequested extends TilesOverviewEvent {
+  const TileDeletedRequested(this.tileID);
+
+  final String tileID;
+
+  @override
+  List<Object?> get props => [tileID];
+}
+
 class BrokerConnectionRequested extends TilesOverviewEvent {
   const BrokerConnectionRequested(this.gatewayClient);
 
@@ -76,6 +85,18 @@ class DashboardSubscriptionRequested extends TilesOverviewEvent {
 
 class TileSubscriptionRequested extends TilesOverviewEvent {
   const TileSubscriptionRequested();
+}
+
+class ActionSubscriptionRequested extends TilesOverviewEvent {
+  const ActionSubscriptionRequested();
+}
+
+class ActionTileSubscriptionRequested extends TilesOverviewEvent {
+  const ActionTileSubscriptionRequested();
+}
+
+class DeviceTypeSubscriptionRequested extends TilesOverviewEvent {
+  const DeviceTypeSubscriptionRequested();
 }
 
 class DeviceSubscriptionRequested extends TilesOverviewEvent {

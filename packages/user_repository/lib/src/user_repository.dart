@@ -58,9 +58,10 @@ class UserRepository {
     GatewayClient client, {
     required String payload,
     required String topic,
+    required int qos,
     bool retain = true,
   }) {
-    client.published(payload: payload, topic: topic, retain: retain);
+    client.published(payload: payload, topic: topic, retain: retain, qos: qos);
   }
 
   /// Gets a [Stream] of [ConnectionStatus] from given [GatewayClient]
@@ -92,6 +93,10 @@ class UserRepository {
   /// the controller of [Stream] of [Device]
   final _deviceStreamController = BehaviorSubject<List<Device>>.seeded([]);
 
+  /// the controller of [Stream] of [DeviceType]
+  final _deviceTypeStreamController =
+      BehaviorSubject<List<DeviceType>>.seeded([]);
+
   /// the controller of [Stream] of [Attribute]
   final _attributeStreamController =
       BehaviorSubject<List<Attribute>>.seeded([]);
@@ -119,6 +124,13 @@ class UserRepository {
   /// the controller of [Stream] of [ConditionLog]
   final _conditionLogStreamController =
       BehaviorSubject<List<ConditionLog>>.seeded([]);
+
+  /// the controller of [Stream] of [ActionTile]
+  final _actionTileStreamController =
+      BehaviorSubject<List<ActionTile>>.seeded([]);
+
+  /// the controller of [Stream] of [Schedule]
+  final _scheduleStreamController = BehaviorSubject<List<Schedule>>.seeded([]);
 
   /// read secure-storage if it contains token
   Future<String> recoverSession() async {
@@ -171,6 +183,7 @@ class UserRepository {
     _brokerStreamController.add([]);
     _groupStreamController.add([]);
     _deviceStreamController.add([]);
+    _deviceTypeStreamController.add([]);
     _attributeStreamController.add([]);
     _dashboardStreamController.add([]);
     _tileStreamController.add([]);
@@ -179,6 +192,9 @@ class UserRepository {
     _alertStreamController.add([]);
     _conditionStreamController.add([]);
     _actionStreamController.add([]);
+    _logStreamController.add([]);
+    _actionTileStreamController.add([]);
+    _scheduleStreamController.add([]);
   }
 
   /// get initial data for both admin and user
@@ -201,6 +217,12 @@ class UserRepository {
     final deviceJsons = res['devices'] as List<dynamic>;
     final devices = deviceJsons
         .map((dynamic json) => Device.fromJson(json as Map<String, dynamic>))
+        .toList();
+    final deviceTypeJsons = res['device-types'] as List<dynamic>;
+    final deviceTypes = deviceTypeJsons
+        .map(
+          (dynamic json) => DeviceType.fromJson(json as Map<String, dynamic>),
+        )
         .toList();
     final attributeJsons = res['attributes'] as List<dynamic>;
     final attributes = attributeJsons
@@ -225,6 +247,28 @@ class UserRepository {
     final actionJsons = res['actions'] as List<dynamic>;
     final actions = actionJsons
         .map((dynamic json) => TAction.fromJson(json as Map<String, dynamic>))
+        .toList();
+    final logJsons = res['logs'] as List<dynamic>;
+    final logs = logJsons
+        .map((dynamic json) => Log.fromJson(json as Map<String, dynamic>))
+        .toList();
+    final conditionLogJsons = res['condition-logs'] as List<dynamic>;
+    final conditionLogs = conditionLogJsons
+        .map(
+          (dynamic json) => ConditionLog.fromJson(json as Map<String, dynamic>),
+        )
+        .toList();
+    final actionTileJsons = res['action-tiles'] as List<dynamic>;
+    final actionTiles = actionTileJsons
+        .map(
+          (dynamic json) => ActionTile.fromJson(json as Map<String, dynamic>),
+        )
+        .toList();
+    final scheduleJsons = res['schedules'] as List<dynamic>;
+    final schedules = scheduleJsons
+        .map(
+          (dynamic json) => Schedule.fromJson(json as Map<String, dynamic>),
+        )
         .toList();
 
     List<User>? users;
@@ -255,12 +299,17 @@ class UserRepository {
     _brokerStreamController.add(brokers);
     _groupStreamController.add(groups);
     _deviceStreamController.add(devices);
+    _deviceTypeStreamController.add(deviceTypes);
     _attributeStreamController.add(attributes);
     _dashboardStreamController.add(dashboards);
     _tileStreamController.add(tiles);
     _alertStreamController.add(alerts);
     _conditionStreamController.add(conditions);
     _actionStreamController.add(actions);
+    _logStreamController.add(logs);
+    _conditionLogStreamController.add(conditionLogs);
+    _actionTileStreamController.add(actionTiles);
+    _scheduleStreamController.add(schedules);
   }
 
   // ================== PROJECT REST API ========================
@@ -575,6 +624,65 @@ class UserRepository {
       await getAttributes();
       await getTiles();
       _deviceStreamController.add(devices);
+    }
+  }
+  // ================== DEVICE REST API ========================
+
+  // ================== DEVICE TYPE REST API ========================
+  ///
+  Stream<List<DeviceType>> subscribeDeviceTypeStream() {
+    return _deviceTypeStreamController.asBroadcastStream();
+  }
+
+  /// create or update deviceType
+  Future<void> saveDeviceType(DeviceType deviceType) async {
+    if (_token == null) throw Exception('Token not found');
+    final deviceTypes = [..._deviceTypeStreamController.value];
+    final idx = deviceTypes.indexWhere((t) => t.id == deviceType.id);
+    if (idx == -1) {
+      await _apiClient.createDeviceType(
+        token: _token!,
+        deviceType: deviceType.toJson(),
+      );
+      deviceTypes.add(deviceType);
+    } else {
+      await _apiClient.updateDeviceType(
+        token: _token!,
+        deviceTypeID: deviceType.id,
+        deviceType: deviceType.toJson(),
+      );
+      deviceTypes
+        ..removeAt(idx)
+        ..insertAll(idx, [deviceType]);
+    }
+    _deviceTypeStreamController.add(deviceTypes);
+  }
+
+  /// get deviceType list
+  Future<void> getDeviceTypes() async {
+    if (_token == null) throw Exception('Token not found');
+    final data = await _apiClient.getDeviceTypes(_token!);
+    final deviceTypes = data
+        .map(
+          (dynamic json) => DeviceType.fromJson(json as Map<String, dynamic>),
+        )
+        .toList();
+    _deviceTypeStreamController.add(deviceTypes);
+  }
+
+  /// delete deviceType by ID
+  Future<void> deleteDeviceType(String deviceTypeID) async {
+    final deviceTypes = [..._deviceTypeStreamController.value];
+    final idx = deviceTypes.indexWhere((t) => t.id == deviceTypeID);
+    if (idx > -1) {
+      await _apiClient.deleteDeviceType(
+        token: _token!,
+        deviceTypeID: deviceTypeID,
+      );
+      deviceTypes.removeAt(idx);
+      await getAttributes();
+      await getTiles();
+      _deviceTypeStreamController.add(deviceTypes);
     }
   }
   // ================== DEVICE REST API ========================
@@ -913,6 +1021,118 @@ class UserRepository {
   }
   // ================== ACTION REST API ========================
 
+  // ================== SCHEDULE REST API ========================
+  ///
+  Stream<List<Schedule>> subscribeScheduleStream() {
+    return _scheduleStreamController.asBroadcastStream();
+  }
+
+  /// create or update schedule
+  Future<void> saveSchedule(Schedule schedule) async {
+    if (_token == null) throw Exception('Token not found');
+    final schedules = [..._scheduleStreamController.value];
+    final idx = schedules.indexWhere((t) => t.id == schedule.id);
+    if (idx == -1) {
+      await _apiClient.createSchedule(
+        token: _token!,
+        schedule: schedule.toJson(),
+      );
+      schedules.add(schedule);
+    } else {
+      await _apiClient.updateSchedule(
+        token: _token!,
+        scheduleID: schedule.id,
+        schedule: schedule.toJson(),
+      );
+      schedules
+        ..removeAt(idx)
+        ..insertAll(idx, [schedule]);
+    }
+    _scheduleStreamController.add(schedules);
+  }
+
+  /// get schedule list
+  Future<void> getSchedules() async {
+    if (_token == null) throw Exception('Token not found');
+    final data = await _apiClient.getSchedules(_token!);
+    final schedules = data
+        .map((dynamic json) => Schedule.fromJson(json as Map<String, dynamic>))
+        .toList();
+    _scheduleStreamController.add(schedules);
+  }
+
+  /// delete schedule by ID
+  Future<void> deleteSchedule(String scheduleID) async {
+    final schedules = [..._scheduleStreamController.value];
+    final idx = schedules.indexWhere((t) => t.id == scheduleID);
+    if (idx > -1) {
+      await _apiClient.deleteSchedule(
+        token: _token!,
+        scheduleID: scheduleID,
+      );
+      schedules.removeAt(idx);
+      _scheduleStreamController.add(schedules);
+    }
+  }
+  // ================== ACTION REST API ========================
+
+  // ================== ACTION TILE REST API ========================
+  ///
+  Stream<List<ActionTile>> subscribeActionTileStream() {
+    return _actionTileStreamController.asBroadcastStream();
+  }
+
+  /// create or update action
+  Future<void> saveActionTile(ActionTile action) async {
+    if (_token == null) throw Exception('Token not found');
+    final actionTiles = [..._actionTileStreamController.value];
+    final idx = actionTiles.indexWhere((t) => t.id == action.id);
+    if (idx == -1) {
+      await _apiClient.createAction(
+        token: _token!,
+        action: action.toJson(),
+      );
+      actionTiles.add(action);
+    } else {
+      await _apiClient.updateAction(
+        token: _token!,
+        actionID: action.id,
+        action: action.toJson(),
+      );
+      actionTiles
+        ..removeAt(idx)
+        ..insertAll(idx, [action]);
+    }
+    _actionTileStreamController.add(actionTiles);
+  }
+
+  /// get action list
+  Future<void> getActionTiles() async {
+    if (_token == null) throw Exception('Token not found');
+    final data = await _apiClient.getActions(_token!);
+    final actionTiles = data
+        .map(
+          (dynamic json) => ActionTile.fromJson(json as Map<String, dynamic>),
+        )
+        .toList();
+    _actionTileStreamController.add(actionTiles);
+  }
+
+  /// delete action by ID
+  Future<void> deleteActionTile(String actionID) async {
+    final actionTiles = [..._actionTileStreamController.value];
+    final idx = actionTiles.indexWhere((t) => t.id == actionID);
+    if (idx > -1) {
+      await _apiClient.deleteAction(
+        token: _token!,
+        actionID: actionID,
+      );
+      actionTiles.removeAt(idx);
+      _actionTileStreamController.add(actionTiles);
+    }
+  }
+  // ================== ACTION TILE REST API ========================
+
   // ================== LOG REST API ========================
   ///
   Stream<List<Log>> subscribeLogStream() {
@@ -941,10 +1161,22 @@ class UserRepository {
     if (_token == null) throw Exception('Token not found');
     final data = await _apiClient.getConditionLogs(_token!);
     final conditionLogs = data
-        .map((dynamic json) =>
-            ConditionLog.fromJson(json as Map<String, dynamic>),)
+        .map(
+          (dynamic json) => ConditionLog.fromJson(json as Map<String, dynamic>),
+        )
         .toList();
     _conditionLogStreamController.add(conditionLogs);
   }
-  // ================== ACTION REST API ========================
+  // ================== CONDITION LOG REST API ========================
+
+  // ================== RECORD REST API ========================
+  ///
+  /// get conditionLog list
+  Future<Map<String, dynamic>> getRecords(String deviceID) async {
+    if (_token == null) throw Exception('Token not found');
+    final data =
+        await _apiClient.getRecords(token: _token!, deviceID: deviceID);
+    return data;
+  }
+  // ================== RECORD REST API ========================
 }

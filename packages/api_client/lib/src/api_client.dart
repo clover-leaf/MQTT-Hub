@@ -430,6 +430,69 @@ class ApiClient {
   }
   // ================== DEVICE REST API ========================
 
+  // ================== DEVICE TYPE REST API ========================
+  /// POST: create device
+  Future<Map<String, dynamic>> createDeviceType({
+    required String token,
+    required Map<String, dynamic> deviceType,
+  }) async {
+    final res = await httpWrapper.post(
+      Uri.http(API_URL, 'v1/domain/device-types'),
+      body: deviceType,
+      header: {'Authorization': 'Bearer $token'},
+    );
+    return res;
+  }
+
+  /// GET: get devices list
+  Future<List<dynamic>> getDeviceTypes(String token) async {
+    final res = await httpWrapper.get(
+      Uri.http(API_URL, 'v1/domain/device-types'),
+      header: {'Authorization': 'Bearer $token'},
+    );
+    final projects = res['device-types'] as List<dynamic>;
+    return projects;
+  }
+
+  /// GET: get device by ID
+  Future<Map<String, dynamic>> getDeviceType({
+    required String token,
+    required String deviceTypeID,
+  }) async {
+    final res = await httpWrapper.get(
+      Uri.http(API_URL, 'v1/domain/device-types/$deviceTypeID'),
+      header: {'Authorization': 'Bearer $token'},
+    );
+    return res;
+  }
+
+  /// PUT: update device by ID
+  Future<Map<String, dynamic>> updateDeviceType({
+    required String token,
+    required String deviceTypeID,
+    required Map<String, dynamic> deviceType,
+  }) async {
+    final res = await httpWrapper.put(
+      Uri.http(API_URL, 'v1/domain/device-types/$deviceTypeID'),
+      body: deviceType,
+      header: {'Authorization': 'Bearer $token'},
+    );
+    return res;
+  }
+
+  /// DELETE: delete device by ID
+  Future<Map<String, dynamic>> deleteDeviceType({
+    required String token,
+    required String deviceTypeID,
+  }) async {
+    final res = await httpWrapper.delete(
+      Uri.http(API_URL, 'v1/domain/device-types/$deviceTypeID'),
+      header: {'Authorization': 'Bearer $token'},
+    );
+    return res;
+  }
+  // ================== DEVICE TYPE REST API ========================
+
   // ================== ATTRIBUTE REST API ========================
   /// POST: create attribute
   Future<Map<String, dynamic>> createAttribute({
@@ -801,12 +864,138 @@ class ApiClient {
     required String actionID,
   }) async {
     final res = await httpWrapper.delete(
-      Uri.http(API_URL, 'v1/domain/alerts/$actionID'),
+      Uri.http(API_URL, 'v1/domain/actions/$actionID'),
       header: {'Authorization': 'Bearer $token'},
     );
     return res;
   }
   // ================== ACTION REST API ========================
+
+  // ================== SCHEDULE REST API ========================
+  /// POST: create schedule
+  Future<Map<String, dynamic>> createSchedule({
+    required String token,
+    required Map<String, dynamic> schedule,
+  }) async {
+    final res = await httpWrapper.post(
+      Uri.http(API_URL, 'v1/domain/schedules'),
+      body: schedule,
+      header: {'Authorization': 'Bearer $token'},
+    );
+    return res;
+  }
+
+  /// GET: get schedules list
+  Future<List<dynamic>> getSchedules(String token) async {
+    final res = await httpWrapper.get(
+      Uri.http(API_URL, 'v1/domain/schedules'),
+      header: {'Authorization': 'Bearer $token'},
+    );
+    final projects = res['schedules'] as List<dynamic>;
+    return projects;
+  }
+
+  /// GET: get schedule by ID
+  Future<Map<String, dynamic>> getSchedule({
+    required String token,
+    required String scheduleID,
+  }) async {
+    final res = await httpWrapper.get(
+      Uri.http(API_URL, 'v1/domain/schedules/$scheduleID'),
+      header: {'Authorization': 'Bearer $token'},
+    );
+    return res;
+  }
+
+  /// PUT: update schedule by ID
+  Future<Map<String, dynamic>> updateSchedule({
+    required String token,
+    required String scheduleID,
+    required Map<String, dynamic> schedule,
+  }) async {
+    final res = await httpWrapper.put(
+      Uri.http(API_URL, 'v1/domain/schedules/$scheduleID'),
+      body: schedule,
+      header: {'Authorization': 'Bearer $token'},
+    );
+    return res;
+  }
+
+  /// DELETE: delete tile by ID
+  Future<Map<String, dynamic>> deleteSchedule({
+    required String token,
+    required String scheduleID,
+  }) async {
+    final res = await httpWrapper.delete(
+      Uri.http(API_URL, 'v1/domain/schedules/$scheduleID'),
+      header: {'Authorization': 'Bearer $token'},
+    );
+    return res;
+  }
+  // ================== SCHEDULE REST API ========================
+
+  // ================== ACTION TILE REST API ========================
+  /// POST: create action tile
+  Future<Map<String, dynamic>> createActionTile({
+    required String token,
+    required Map<String, dynamic> actionTile,
+  }) async {
+    final res = await httpWrapper.post(
+      Uri.http(API_URL, 'v1/domain/action-tiles'),
+      body: actionTile,
+      header: {'Authorization': 'Bearer $token'},
+    );
+    return res;
+  }
+
+  /// GET: get actions list
+  Future<List<dynamic>> getActionTiles(String token) async {
+    final res = await httpWrapper.get(
+      Uri.http(API_URL, 'v1/domain/action-tiles'),
+      header: {'Authorization': 'Bearer $token'},
+    );
+    final projects = res['action-tiles'] as List<dynamic>;
+    return projects;
+  }
+
+  /// GET: get action by ID
+  Future<Map<String, dynamic>> getActionTile({
+    required String token,
+    required String actionTileID,
+  }) async {
+    final res = await httpWrapper.get(
+      Uri.http(API_URL, 'v1/domain/action-tiles/$actionTileID'),
+      header: {'Authorization': 'Bearer $token'},
+    );
+    return res;
+  }
+
+  /// PUT: update action by ID
+  Future<Map<String, dynamic>> updateActionTile({
+    required String token,
+    required String actionID,
+    required Map<String, dynamic> actionTile,
+  }) async {
+    final res = await httpWrapper.put(
+      Uri.http(API_URL, 'v1/domain/action-tiles/$actionID'),
+      body: actionTile,
+      header: {'Authorization': 'Bearer $token'},
+    );
+    return res;
+  }
+
+  /// DELETE: delete tile by ID
+  Future<Map<String, dynamic>> deleteActionTile({
+    required String token,
+    required String actionTileID,
+  }) async {
+    final res = await httpWrapper.delete(
+      Uri.http(API_URL, 'v1/domain/action-tiles/$actionTileID'),
+      header: {'Authorization': 'Bearer $token'},
+    );
+    return res;
+  }
+  // ================== ACTION TILE REST API ========================
 
   // ================== LOG REST API ========================
 
@@ -840,7 +1029,7 @@ class ApiClient {
       Uri.http(API_URL, 'v1/domain/condition-logs'),
       header: {'Authorization': 'Bearer $token'},
     );
-    final projects = res['logs'] as List<dynamic>;
+    final projects = res['condition-logs'] as List<dynamic>;
     return projects;
   }
 
@@ -856,4 +1045,18 @@ class ApiClient {
     return res;
   }
   // ================== CONDITION LOG REST API ========================
+
+  // ================== RECORD REST API ========================
+  /// GET: get record by ID
+  Future<Map<String, dynamic>> getRecords({
+    required String token,
+    required String deviceID,
+  }) async {
+    final res = await httpWrapper.get(
+      Uri.http(API_URL, 'v1/domain/storages/$deviceID'),
+      header: {'Authorization': 'Bearer $token'},
+    );
+    return res;
+  }
+  // ================== RECORD REST API ========================
 }

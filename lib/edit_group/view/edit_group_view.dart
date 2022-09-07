@@ -14,6 +14,8 @@ class EditGroupView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // get text theme
+    final textTheme = Theme.of(context).textTheme;
     // create form key
     final _formKey = GlobalKey<FormState>();
     // get padding top
@@ -69,6 +71,12 @@ class EditGroupView extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Text(
+                          'NAME',
+                          style: textTheme.bodySmall!
+                              .copyWith(color: ColorName.neural600),
+                        ),
+                        const SizedBox(height: 8),
                         TTextField(
                           initText: initialGroup?.name,
                           labelText: 'Group Name',
@@ -82,6 +90,22 @@ class EditGroupView extends StatelessWidget {
                             }
                             return null;
                           },
+                        ),
+                        const SizedBox(height: 24),
+                        Text(
+                          'DESCRIPTION',
+                          style: textTheme.bodySmall!
+                              .copyWith(color: ColorName.neural600),
+                        ),
+                        const SizedBox(height: 8),
+                        TTextField(
+                          initText: initialGroup?.description,
+                          labelText: 'Group Description',
+                          picture: Assets.icons.documentText,
+                          onChanged: (description) => context
+                              .read<EditGroupBloc>()
+                              .add(DescriptionChanged(description)),
+                          validator: (value) => null,
                         ),
                       ],
                     ),
@@ -143,12 +167,15 @@ class _Title extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final initialGroup =
+        context.select((EditGroupBloc bloc) => bloc.state.initialGroup);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Group'.toUpperCase(),
+          initialGroup != null ?
+          'EDIT GROUP' : 'NEW GROUP',
           style: textTheme.titleMedium!.copyWith(
             fontWeight: FontWeight.w500,
             letterSpacing: 1.05,

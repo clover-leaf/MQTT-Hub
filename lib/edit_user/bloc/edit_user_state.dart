@@ -20,6 +20,7 @@ class EditUserState extends Equatable {
     required this.initialProjects,
     required this.userProjects,
     required this.userID,
+    required this.isEdit,
     this.username = '',
     this.password = '',
     this.initialUser,
@@ -45,6 +46,7 @@ class EditUserState extends Equatable {
 
   // status
   final EditUserStatus status;
+  final bool isEdit;
   final String? error;
 
   @override
@@ -52,6 +54,7 @@ class EditUserState extends Equatable {
         initialUserProjects,
         initialProjects,
         userID,
+        isEdit,
         username,
         password,
         userProjects,
@@ -66,12 +69,14 @@ class EditUserState extends Equatable {
     String? userID,
     String? username,
     String? password,
+    bool? isEdit,
     List<UserProject>? userProjects,
     EditUserStatus? status,
     User? initialUser,
     String? Function()? error,
   }) {
     return EditUserState(
+      isEdit: isEdit ?? this.isEdit,
       initialUserProjects: initialUserProjects ?? this.initialUserProjects,
       initialProjects: initialProjects ?? this.initialProjects,
       userID: userID ?? this.userID,

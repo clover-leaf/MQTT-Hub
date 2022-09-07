@@ -23,7 +23,9 @@ class ProjectDetailState extends Equatable {
     this.userProjects = const [],
     this.dashboards = const [],
     this.devices = const [],
+    this.deviceTypes = const [],
     this.alerts = const [],
+    this.schedules = const [],
     this.error,
   });
 
@@ -37,7 +39,9 @@ class ProjectDetailState extends Equatable {
   final List<UserProject> userProjects;
   final List<Dashboard> dashboards;
   final List<Device> devices;
+  final List<DeviceType> deviceTypes;
   final List<Alert> alerts;
+  final List<Schedule> schedules;
 
   // status
   final ProjectDetailStatus status;
@@ -76,6 +80,18 @@ class ProjectDetailState extends Equatable {
     return _alerts.length;
   }
 
+  int get deviceTypeNumber {
+    final _dvT =
+        deviceTypes.where((dT) => dT.projectID == project.id).toList();
+    return _dvT.length;
+  }
+
+  int get scheduleNumber {
+    final _sc =
+        schedules.where((sc) => sc.projectID == project.id).toList();
+    return _sc.length;
+  }
+
   @override
   List<Object?> get props => [
         isAdmin,
@@ -86,7 +102,9 @@ class ProjectDetailState extends Equatable {
         userProjects,
         dashboards,
         devices,
+        deviceTypes,
         alerts,
+        schedules,
         error
       ];
 
@@ -99,7 +117,9 @@ class ProjectDetailState extends Equatable {
     List<UserProject>? userProjects,
     List<Dashboard>? dashboards,
     List<Device>? devices,
+    List<DeviceType>? deviceTypes,
     List<Alert>? alerts,
+    List<Schedule>? schedules,
     String? Function()? error,
   }) {
     return ProjectDetailState(
@@ -111,7 +131,9 @@ class ProjectDetailState extends Equatable {
       userProjects: userProjects ?? this.userProjects,
       dashboards: dashboards ?? this.dashboards,
       devices: devices ?? this.devices,
+      deviceTypes: deviceTypes ?? this.deviceTypes,
       alerts: alerts ?? this.alerts,
+      schedules: schedules ?? this.schedules,
       error: error != null ? error() : this.error,
     );
   }

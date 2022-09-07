@@ -29,6 +29,15 @@ class UrlChanged extends EditBrokerEvent {
   List<Object> get props => [url];
 }
 
+class IsEditChanged extends EditBrokerEvent {
+  const IsEditChanged({required this.isEdit});
+
+  final bool isEdit;
+
+  @override
+  List<Object> get props => [isEdit];
+}
+
 class PortChanged extends EditBrokerEvent {
   const PortChanged(this.port);
 

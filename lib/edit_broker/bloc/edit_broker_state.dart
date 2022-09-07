@@ -13,11 +13,12 @@ extension EditBrokerStatusX on EditBrokerStatus {
   bool isFailure() => this == EditBrokerStatus.failure;
 }
 
-
 class EditBrokerState extends Equatable {
   const EditBrokerState({
     this.status = EditBrokerStatus.normal,
     required this.parentProject,
+    required this.isEdit,
+    required this.isAdmin,
     this.name = '',
     this.url = '',
     this.port = '',
@@ -42,6 +43,8 @@ class EditBrokerState extends Equatable {
 
   // status
   final EditBrokerStatus status;
+  final bool isEdit;
+  final bool isAdmin;
   final String? error;
 
   @override
@@ -54,6 +57,8 @@ class EditBrokerState extends Equatable {
         password,
         initialBroker,
         status,
+        isEdit,
+        isAdmin,
         error
       ];
 
@@ -66,9 +71,13 @@ class EditBrokerState extends Equatable {
     String? password,
     EditBrokerStatus? status,
     Broker? initialBroker,
+    bool? isEdit,
+    bool? isAdmin,
     String? Function()? error,
   }) {
     return EditBrokerState(
+      isEdit: isEdit ?? this.isEdit,
+      isAdmin: isAdmin ?? this.isAdmin,
       parentProject: parentProject ?? this.parentProject,
       name: name ?? this.name,
       url: url ?? this.url,

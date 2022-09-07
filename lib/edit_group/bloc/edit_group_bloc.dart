@@ -25,6 +25,7 @@ class EditGroupBloc extends Bloc<EditGroupEvent, EditGroupState> {
         ) {
     on<Submitted>(_onSubmitted);
     on<NameChanged>(_onNameChanged);
+    on<DescriptionChanged>(_onDescriptionChanged);
   }
 
   final UserRepository _userRepository;
@@ -33,17 +34,28 @@ class EditGroupBloc extends Bloc<EditGroupEvent, EditGroupState> {
     emit(state.copyWith(name: event.name));
   }
 
+  void _onDescriptionChanged(
+    DescriptionChanged event,
+    Emitter<EditGroupState> emit,
+  ) {
+    emit(state.copyWith(description: event.description));
+  }
+
   Future<void> _onSubmitted(
     Submitted event,
     Emitter<EditGroupState> emit,
   ) async {
     try {
       emit(state.copyWith(status: EditGroupStatus.processing));
-      final group = state.initialGroup?.copyWith(name: state.name) ??
+      final group = state.initialGroup?.copyWith(
+            name: state.name,
+            description: state.description,
+          ) ??
           Group(
             projectID: state.parentProjetID,
             groupID: state.parentGroupID,
             name: state.name,
+            description: state.description,
           );
       await _userRepository.saveGroup(group);
       emit(state.copyWith(status: EditGroupStatus.success));

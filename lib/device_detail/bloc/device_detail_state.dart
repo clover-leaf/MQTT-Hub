@@ -21,8 +21,12 @@ class DeviceDetailState extends Equatable {
     required this.device,
     this.attributes = const [],
     this.brokers = const [],
+    this.deviceTypes = const [],
     this.devices = const [],
+    this.trackingDevices = const [],
+    this.trackingAttributes = const [],
     this.error,
+    this.isDeleted = false,
   });
 
   // immutate
@@ -33,17 +37,29 @@ class DeviceDetailState extends Equatable {
   // listen
   final List<Attribute> attributes;
   final List<Broker> brokers;
+  final List<DeviceType> deviceTypes;
   final List<Device> devices;
+  final List<TrackingDevice> trackingDevices;
+  final List<TrackingAttribute> trackingAttributes;
 
   // status
   final DeviceDetailStatus status;
+  final bool isDeleted;
   final String? error;
 
-  List<Attribute> get showedAttributes =>
-      attributes.where((attr) => attr.deviceID == device.id).toList();
+  List<Attribute> get showedAttributes => attributes.where((attr) {
+        if (device.deviceTypeID != null) {
+          return attr.deviceTypeID == device.deviceTypeID;
+        } else {
+          return attr.deviceID == device.id;
+        }
+      }).toList();
 
   List<Broker> get brokerInProjects =>
       brokers.where((br) => br.projectID == rootProject.id).toList();
+
+  List<DeviceType> get deviceTypeInProjects =>
+      deviceTypes.where((dT) => dT.projectID == rootProject.id).toList();
 
   @override
   List<Object?> get props => [
@@ -51,10 +67,14 @@ class DeviceDetailState extends Equatable {
         rootProject,
         device,
         attributes,
+        trackingDevices,
+        trackingAttributes,
         brokers,
+        deviceTypes,
         devices,
         status,
-        error
+        error,
+        isDeleted,
       ];
 
   DeviceDetailState copyWith({
@@ -62,20 +82,28 @@ class DeviceDetailState extends Equatable {
     Project? rootProject,
     Device? device,
     List<Attribute>? attributes,
+    List<TrackingDevice>? trackingDevices,
+    List<TrackingAttribute>? trackingAttributes,
     List<Broker>? brokers,
+    List<DeviceType>? deviceTypes,
     List<Device>? devices,
     DeviceDetailStatus? status,
     String? Function()? error,
+    bool? isDeleted,
   }) {
     return DeviceDetailState(
       isAdmin: isAdmin ?? this.isAdmin,
       rootProject: rootProject ?? this.rootProject,
       status: status ?? this.status,
+      deviceTypes: deviceTypes ?? this.deviceTypes,
       device: device ?? this.device,
       attributes: attributes ?? this.attributes,
+      trackingDevices: trackingDevices ?? this.trackingDevices,
+      trackingAttributes: trackingAttributes ?? this.trackingAttributes,
       brokers: brokers ?? this.brokers,
       devices: devices ?? this.devices,
       error: error != null ? error() : this.error,
+      isDeleted: isDeleted ?? this.isDeleted,
     );
   }
 }

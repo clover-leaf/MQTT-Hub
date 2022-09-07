@@ -28,6 +28,8 @@ class EditTilePage extends StatelessWidget {
     required List<Device> devices,
     required List<Attribute> attributes,
     required Tile? initialTile,
+    required bool isAdmin,
+    required bool isEdit,
   }) {
     final deviceView = {for (final dv in devices) dv.id: dv};
     final selectedDevice = deviceView[initialTile?.deviceID];
@@ -38,6 +40,8 @@ class EditTilePage extends StatelessWidget {
       pageBuilder: (context, animation, secondaryAnimation) => BlocProvider(
         create: (context) => EditTileBloc(
           context.read<UserRepository>(),
+          isAdmin: isAdmin,
+          isEdit: isEdit,
           dashboardID: dashboardID,
           devices: devices,
           attributes: attributes,

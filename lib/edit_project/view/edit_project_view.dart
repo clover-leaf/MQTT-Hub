@@ -80,7 +80,7 @@ class EditProjectView extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.only(bottom: 8),
                           child: Text(
-                            'PROJECT NAME',
+                            'NAME',
                             style: textTheme.bodySmall!
                                 .copyWith(color: ColorName.neural600),
                           ),
@@ -159,12 +159,15 @@ class _Title extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final initialProject =
+        context.select((EditProjectBloc bloc) => bloc.state.initialProject);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Project'.toUpperCase(),
+          initialProject != null ?
+          'EDIT PROJECT' : 'NEW PROJECT',
           style: textTheme.titleMedium!.copyWith(
             fontWeight: FontWeight.w500,
             letterSpacing: 1.05,

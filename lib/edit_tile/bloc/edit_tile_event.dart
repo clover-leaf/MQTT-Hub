@@ -11,6 +11,16 @@ class Submitted extends EditTileEvent {
   const Submitted();
 }
 
+class IsEditChanged extends EditTileEvent {
+  const IsEditChanged({required this.isEdit});
+
+  final bool isEdit;
+
+  @override
+  List<Object> get props => [isEdit];
+}
+
+
 class TileNameChanged extends EditTileEvent {
   const TileNameChanged(this.tileName);
 

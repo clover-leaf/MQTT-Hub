@@ -23,8 +23,8 @@ Future<void> main() async {
   // will show the iOS or Android push notification prompt.
   // We recommend removing the following code and instead
   // using an In-App Message to prompt for notification permission
-  final status = await OneSignal.shared.getDeviceState();
-  print('id: ${status?.userId}');
+  await OneSignal.shared.getDeviceState();
+  // print('id: ${status?.userId}');
   await OneSignal.shared
       .promptUserForPushNotificationPermission()
       .then((accepted) {
@@ -53,7 +53,6 @@ Future<void> main() async {
     // Will be called whenever the subscription changes
     // (ie. user gets registered with OneSignal and gets a user ID)
   });
-
 
   await dotenv.load(fileName: 'assets/.env');
   await bootstrap(() {

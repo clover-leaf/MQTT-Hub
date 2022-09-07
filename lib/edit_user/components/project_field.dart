@@ -14,11 +14,13 @@ class ProjectField extends StatefulWidget {
     required this.userID,
     required this.initialProjects,
     required this.userProjects,
+    required this.enabled,
   });
 
   final String userID;
   final List<Project> initialProjects;
   final List<UserProject> userProjects;
+  final bool enabled;
 
   @override
   State<ProjectField> createState() => _ProjectFieldState();
@@ -81,31 +83,40 @@ class _ProjectFieldState extends State<ProjectField> {
               ),
               TAddButton(
                 label: 'ADD PROJECT',
-                onPressed: () async => showMaterialModalBottomSheet<Project?>(
-                  backgroundColor: Colors.transparent,
-                  context: context,
-                  builder: (bContext) {
-                    final selectedProjectIDs =
-                        _userProjects.map((usPr) => usPr.projectID).toList();
-                    final notSelectedProjects = _projects
-                        .where((pr) => !selectedProjectIDs.contains(pr.id))
-                        .toList();
-                    return ProjectSheet(
-                      projects: notSelectedProjects,
-                      onSelectProject: (project) =>
-                          Navigator.of(bContext).pop(project),
-                    );
-                  },
-                ).then((project) {
-                  if (project != null) {
-                    final usPr =
-                        UserProject(userID: _userID, projectID: project.id);
-                    final userProjects = List<UserProject>.from(_userProjects)
-                      ..add(usPr);
-                    updateBloc(context, userProjects);
+                onPressed: () async {
+                  if (widget.enabled) {
+                    await showMaterialModalBottomSheet<Project?>(
+                      backgroundColor: Colors.transparent,
+                      context: context,
+                      builder: (bContext) {
+                        final selectedProjectIDs = _userProjects
+                            .map((usPr) => usPr.projectID)
+                            .toList();
+                        final notSelectedProjects = _projects
+                            .where(
+                              (pr) => !selectedProjectIDs.contains(pr.id),
+                            )
+                            .toList();
+                        return ProjectSheet(
+                          projects: notSelectedProjects,
+                          onSelectProject: (project) =>
+                              Navigator.of(bContext).pop(project),
+                        );
+                      },
+                    ).then((project) {
+                      if (project != null) {
+                        final usPr = UserProject(
+                          userID: _userID,
+                          projectID: project.id,
+                        );
+                        final userProjects =
+                            List<UserProject>.from(_userProjects)..add(usPr);
+                        updateBloc(context, userProjects);
+                      }
+                      return null;
+                    });
                   }
-                  return null;
-                }),
+                },
               )
             ],
           ),
@@ -113,6 +124,7 @@ class _ProjectFieldState extends State<ProjectField> {
           ..._showedProjects.map(
             (pr) => _ProjectItem(
               project: pr,
+              enabled: widget.enabled,
               onDelete: (delProject) {
                 final userProjects = List<UserProject>.from(_userProjects)
                   ..removeWhere((usPr) => usPr.projectID == delProject.id);
@@ -136,9 +148,14 @@ class _ProjectFieldState extends State<ProjectField> {
 }
 
 class _ProjectItem extends StatelessWidget {
-  const _ProjectItem({required this.project, required this.onDelete});
+  const _ProjectItem({
+    required this.project,
+    required this.onDelete,
+    required this.enabled,
+  });
 
   final Project project;
+  final bool enabled;
   final void Function(Project) onDelete;
 
   @override
@@ -155,7 +172,11 @@ class _ProjectItem extends StatelessWidget {
         TCircleButton(
           picture: Assets.icons.trash
               .svg(color: ColorName.neural600, fit: BoxFit.scaleDown),
-          onPressed: () => onDelete(project),
+          onPressed: () {
+            if (enabled) {
+              onDelete(project);
+            }
+          },
         )
       ],
     );

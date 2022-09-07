@@ -30,6 +30,7 @@ class EditUserView extends StatelessWidget {
     final _formKey = GlobalKey<FormState>();
     // get padding top
     final paddingTop = MediaQuery.of(context).viewPadding.top;
+    final isEdit = context.select((EditUserBloc bloc) => bloc.state.isEdit);
 
     return BlocListener<EditUserBloc, EditUserState>(
       listenWhen: (previous, current) => previous.status != current.status,
@@ -94,6 +95,7 @@ class EditUserView extends StatelessWidget {
                           initText: initialUser?.username,
                           labelText: 'Username',
                           picture: Assets.icons.frame,
+                          enabled: isEdit,
                           onChanged: (username) => context
                               .read<EditUserBloc>()
                               .add(UsernameChanged(username)),
@@ -117,6 +119,7 @@ class EditUserView extends StatelessWidget {
                           initText: initialUser?.password,
                           labelText: 'Password',
                           picture: Assets.icons.key,
+                          enabled: isEdit,
                           onChanged: (password) => context
                               .read<EditUserBloc>()
                               .add(PasswordChanged(password)),
@@ -132,6 +135,7 @@ class EditUserView extends StatelessWidget {
                           userID: userID,
                           initialProjects: initialProjects,
                           userProjects: userProjects,
+                          enabled: isEdit,
                         )
                       ],
                     ),
@@ -154,6 +158,7 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final isEdit = context.select((EditUserBloc bloc) => bloc.state.isEdit);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -165,22 +170,38 @@ class _Header extends StatelessWidget {
         ),
         Padding(
           padding: const EdgeInsets.only(right: 12),
-          child: TSecondaryButton(
-            label: 'SAVE',
-            onPressed: () {
-              if (formKey.currentState != null &&
-                  formKey.currentState!.validate()) {
-                context.read<EditUserBloc>().add(const Submitted());
-              }
-            },
-            enabled: true,
-            textStyle: textTheme.labelLarge!.copyWith(
-              color: ColorName.sky500,
-              fontWeight: FontWeight.w500,
-              letterSpacing: 1.1,
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          ),
+          child: isEdit
+              ? TSecondaryButton(
+                  label: 'SAVE',
+                  onPressed: () {
+                    if (formKey.currentState != null &&
+                        formKey.currentState!.validate()) {
+                      context.read<EditUserBloc>().add(const Submitted());
+                    }
+                  },
+                  enabled: true,
+                  textStyle: textTheme.labelLarge!.copyWith(
+                    color: ColorName.sky500,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 1.1,
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                )
+              : TSecondaryButton(
+                  label: 'EDIT',
+                  onPressed: () => context
+                      .read<EditUserBloc>()
+                      .add(const IsEditChanged(isEdit: true)),
+                  enabled: true,
+                  textStyle: textTheme.labelLarge!.copyWith(
+                    color: ColorName.sky500,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 1.1,
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                ),
         )
       ],
     );
@@ -193,12 +214,19 @@ class _Title extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final initialUser =
+        context.select((EditUserBloc bloc) => bloc.state.initialUser);
+    final isEdit = context.select((EditUserBloc bloc) => bloc.state.isEdit);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'User'.toUpperCase(),
+          initialUser == null
+              ? 'NEW USER'
+              : isEdit
+                  ? 'EDIT USER'
+                  : 'USER DETAIL',
           style: textTheme.titleMedium!.copyWith(
             fontWeight: FontWeight.w500,
             letterSpacing: 1.05,

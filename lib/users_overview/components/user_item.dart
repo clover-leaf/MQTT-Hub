@@ -41,27 +41,29 @@ class UserItem extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  user.username,
-                  style: textTheme.bodyLarge!.copyWith(
-                    color: ColorName.neural700,
-                    fontWeight: FontWeight.w600,
+            Flexible(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    user.username,
+                    style: textTheme.bodyLarge!.copyWith(
+                      color: ColorName.neural700,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    _StatItem(password: user.password),
-                    const SizedBox(width: 14),
-                  ],
-                )
-              ],
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      _StatItem(password: user.password),
+                      const SizedBox(width: 14),
+                    ],
+                  )
+                ],
+              ),
             ),
-            if (isAdmin) const Spacer(),
             if (isAdmin)
               TCircleButton(
                 picture: Assets.icons.trash.svg(

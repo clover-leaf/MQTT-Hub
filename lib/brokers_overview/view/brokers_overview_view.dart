@@ -71,6 +71,8 @@ class BrokersOverviewView extends StatelessWidget {
                           EditBrokerPage.route(
                             project: parentProject,
                             initialBroker: br,
+                            isAdmin: isAdmin,
+                            isEdit: false,
                           ),
                         ),
                         onDeletePressed: () => context
@@ -118,6 +120,8 @@ class _Header extends StatelessWidget {
                 EditBrokerPage.route(
                   project: parentProject,
                   initialBroker: null,
+                  isAdmin: true,
+                  isEdit: true,
                 ),
               ),
               enabled: true,

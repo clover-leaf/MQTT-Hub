@@ -7,6 +7,10 @@ class LogsOverviewEvent extends Equatable {
   List<Object?> get props => [];
 }
 
+class GetLogsRequested extends LogsOverviewEvent {
+  const GetLogsRequested();
+}
+
 class DeviceSubscriptionRequested extends LogsOverviewEvent {
   const DeviceSubscriptionRequested();
 }
@@ -21,6 +25,10 @@ class AlertSubscriptionRequested extends LogsOverviewEvent {
 
 class LogSubscriptionRequested extends LogsOverviewEvent {
   const LogSubscriptionRequested();
+}
+
+class ConditionSubscriptionRequested extends LogsOverviewEvent {
+  const ConditionSubscriptionRequested();
 }
 
 class ConditionLogSubscriptionRequested extends LogsOverviewEvent {

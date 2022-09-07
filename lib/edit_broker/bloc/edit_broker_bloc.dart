@@ -10,8 +10,12 @@ class EditBrokerBloc extends Bloc<EditBrokerEvent, EditBrokerState> {
     this._userRepository, {
     required Project parentProject,
     required Broker? initialBroker,
+    required bool isAdmin,
+    required bool isEdit,
   }) : super(
           EditBrokerState(
+            isEdit: isEdit,
+            isAdmin: isAdmin,
             parentProject: parentProject,
             initialBroker: initialBroker,
             name: initialBroker?.name ?? '',
@@ -22,6 +26,7 @@ class EditBrokerBloc extends Bloc<EditBrokerEvent, EditBrokerState> {
           ),
         ) {
     on<Submitted>(_onSubmitted);
+    on<IsEditChanged>(_onIsEditChanged);
     on<NameChanged>(_onNameChanged);
     on<UrlChanged>(_onUrlChanged);
     on<PortChanged>(_onPortChanged);
@@ -30,6 +35,10 @@ class EditBrokerBloc extends Bloc<EditBrokerEvent, EditBrokerState> {
   }
 
   final UserRepository _userRepository;
+
+  void _onIsEditChanged(IsEditChanged event, Emitter<EditBrokerState> emit) {
+    emit(state.copyWith(isEdit: event.isEdit));
+  }
 
   void _onNameChanged(NameChanged event, Emitter<EditBrokerState> emit) {
     emit(state.copyWith(name: event.name));
@@ -48,7 +57,9 @@ class EditBrokerBloc extends Bloc<EditBrokerEvent, EditBrokerState> {
   }
 
   void _onPasswordChanged(
-      PasswordChanged event, Emitter<EditBrokerState> emit,) {
+    PasswordChanged event,
+    Emitter<EditBrokerState> emit,
+  ) {
     emit(state.copyWith(password: event.password));
   }
 

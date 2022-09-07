@@ -11,6 +11,7 @@ Group _$GroupFromJson(Map<String, dynamic> json) => Group(
       projectID: json['project_id'] as String?,
       groupID: json['group_id'] as String?,
       name: json['name'] as String,
+      description: json['description'] as String?,
     );
 
 Map<String, dynamic> _$GroupToJson(Group instance) => <String, dynamic>{
@@ -18,4 +19,5 @@ Map<String, dynamic> _$GroupToJson(Group instance) => <String, dynamic>{
       'project_id': instance.projectID,
       'group_id': instance.groupID,
       'name': instance.name,
+      'description': instance.description,
     };

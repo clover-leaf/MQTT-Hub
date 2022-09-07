@@ -15,6 +15,7 @@ class Attribute extends Equatable {
   Attribute({
     FieldId? id,
     required this.deviceID,
+    required this.deviceTypeID,
     required this.name,
     required this.jsonPath,
     this.unit,
@@ -29,7 +30,11 @@ class Attribute extends Equatable {
 
   /// The device ID
   @JsonKey(name: 'device_id')
-  final FieldId deviceID;
+  final FieldId? deviceID;
+
+  /// The device ID
+  @JsonKey(name: 'device_type_id')
+  final FieldId? deviceTypeID;
 
   /// The name of attribute
   final String name;
@@ -53,6 +58,7 @@ class Attribute extends Equatable {
   Attribute copyWith({
     FieldId? id,
     FieldId? deviceID,
+    FieldId? deviceTypeID,
     String? name,
     String? jsonPath,
     String? unit,
@@ -60,6 +66,7 @@ class Attribute extends Equatable {
     return Attribute(
       id: id ?? this.id,
       deviceID: deviceID ?? this.deviceID,
+      deviceTypeID: deviceTypeID ?? this.deviceTypeID,
       name: name ?? this.name,
       jsonPath: jsonPath ?? this.jsonPath,
       unit: unit ?? this.unit,
@@ -67,5 +74,5 @@ class Attribute extends Equatable {
   }
 
   @override
-  List<Object?> get props => [id, deviceID, name, jsonPath, unit];
+  List<Object?> get props => [id, deviceID, deviceTypeID, name, jsonPath, unit];
 }

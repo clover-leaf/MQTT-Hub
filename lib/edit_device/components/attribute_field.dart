@@ -13,10 +13,12 @@ class AttributeField extends StatefulWidget {
     super.key,
     required this.initialAttributes,
     required this.deviceID,
+    required this.enabled,
   });
 
   final List<Attribute> initialAttributes;
   final String deviceID;
+  final bool enabled;
 
   @override
   State<AttributeField> createState() => _AttributeFieldState();
@@ -24,11 +26,28 @@ class AttributeField extends StatefulWidget {
 
 class _AttributeFieldState extends State<AttributeField> {
   late List<Attribute> _attributes;
+  late bool _enabled;
 
   @override
   void initState() {
     _attributes = widget.initialAttributes;
+    _enabled = widget.enabled;
     super.initState();
+  }
+
+  @override
+  void didUpdateWidget(AttributeField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialAttributes != widget.initialAttributes) {
+      setState(() {
+        _attributes = widget.initialAttributes;
+      });
+    }
+    if (oldWidget.enabled != widget.enabled) {
+      setState(() {
+        _enabled = widget.enabled;
+      });
+    }
   }
 
   void updateBloc(BuildContext context, List<Attribute> attributes) {
@@ -79,10 +98,12 @@ class _AttributeFieldState extends State<AttributeField> {
               ),
               TAddButton(
                 label: 'ADD ATTRIBUTE',
+                enabled: _enabled,
                 onPressed: () {
                   final att = Attribute(
                     id: const Uuid().v4(),
                     deviceID: widget.deviceID,
+                    deviceTypeID: null,
                     name: '',
                     jsonPath: '',
                     unit: '',
@@ -101,7 +122,7 @@ class _AttributeFieldState extends State<AttributeField> {
               style: Theme.of(context).textTheme.bodySmall,
               children: [
                 const TextSpan(
-                  text: 'An expression is used for extracting attribute '
+                  text: 'An syntax is used for extracting attribute '
                       'from the payload using JSON Pointer (RFC 6091). Visit',
                 ),
                 WidgetSpan(
@@ -139,6 +160,7 @@ class _AttributeFieldState extends State<AttributeField> {
                   expression: expression,
                   unit: unit,
                   attributes: _attributes,
+                  enabled: _enabled,
                   onSaved: (attributes) {
                     updateBloc(context, attributes);
                     setState(() {
@@ -173,6 +195,7 @@ class _AttributeItem extends StatelessWidget {
     required this.expression,
     required this.unit,
     required this.onSaved,
+    required this.enabled,
   });
 
   final int index;
@@ -180,6 +203,7 @@ class _AttributeItem extends StatelessWidget {
   final String name;
   final String expression;
   final String? unit;
+  final bool enabled;
   final void Function(List<Attribute>) onSaved;
 
   @override
@@ -189,10 +213,12 @@ class _AttributeItem extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Flexible(
+          flex: 3,
           child: TVanillaText(
             key: ValueKey(id),
             initText: name,
             hintText: 'Name',
+            enabled: enabled,
             onChanged: (name) {
               if (index >= 0 && index < attributes.length) {
                 final att = attributes[index];
@@ -211,10 +237,12 @@ class _AttributeItem extends StatelessWidget {
         ),
         const SizedBox(width: 12),
         Flexible(
+          flex: 3,
           child: TVanillaText(
             key: ValueKey(id),
             initText: expression,
-            hintText: 'Expression',
+            hintText: 'Syntax',
+            enabled: enabled,
             onChanged: (jsonPath) {
               if (index >= 0 && index < attributes.length) {
                 final att = attributes[index];
@@ -233,10 +261,12 @@ class _AttributeItem extends StatelessWidget {
         ),
         const SizedBox(width: 12),
         Flexible(
+          flex: 2,
           child: TVanillaText(
             key: ValueKey(id),
             initText: unit,
             hintText: 'Unit',
+            enabled: enabled,
             onChanged: (unit) {
               if (index >= 0 && index < attributes.length) {
                 final att = attributes[index];
@@ -252,9 +282,11 @@ class _AttributeItem extends StatelessWidget {
           picture: Assets.icons.trash
               .svg(color: ColorName.neural600, fit: BoxFit.scaleDown),
           onPressed: () {
-            if (index >= 0 && index < attributes.length) {
-              attributes.removeAt(index);
-              onSaved(attributes);
+            if (enabled) {
+              if (index >= 0 && index < attributes.length) {
+                attributes.removeAt(index);
+                onSaved(attributes);
+              }
             }
           },
         )

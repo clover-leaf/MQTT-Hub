@@ -29,7 +29,11 @@ class TAddButton extends StatelessWidget {
         shadowColor: Colors.transparent,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
       ),
-      onPressed: onPressed,
+      onPressed: () {
+        if (enabled) {
+          onPressed();
+        }
+      },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         child: Row(
@@ -42,11 +46,12 @@ class TAddButton extends StatelessWidget {
             ),
             Text(
               label,
-              style: textStyle ?? textTheme.labelMedium!.copyWith(
-                color: ColorName.sky500,
-                fontWeight: FontWeight.w500,
-                letterSpacing: 1.1,
-              ),
+              style: textStyle ??
+                  textTheme.labelMedium!.copyWith(
+                    color: ColorName.sky500,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 1.1,
+                  ),
             )
           ],
         ),

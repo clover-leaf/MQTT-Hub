@@ -7,9 +7,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class LineField extends StatelessWidget {
-  const LineField(this.initialLob, {super.key});
+  const LineField(this.initialLob, {super.key, required this.enabled});
 
   final String initialLob;
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
@@ -26,16 +27,17 @@ class LineField extends StatelessWidget {
             style: textTheme.bodySmall!.copyWith(color: ColorName.neural600),
           ),
         ),
-        _ColorItem(initialLob)
+        _ColorItem(initialLob, enabled: enabled)
       ],
     );
   }
 }
 
 class _ColorItem extends StatefulWidget {
-  const _ColorItem(this.initialLob);
+  const _ColorItem(this.initialLob, {required this.enabled});
 
   final String initialLob;
+  final bool enabled;
 
   @override
   State<_ColorItem> createState() => _ColorItemState();
@@ -66,21 +68,25 @@ class _ColorItemState extends State<_ColorItem> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () async => showMaterialModalBottomSheet<Color?>(
-        backgroundColor: Colors.transparent,
-        context: context,
-        builder: (bContext) => ColorSheet(
-          initialColor: _color,
-          onColorChanged: (color) => Navigator.of(bContext).pop(color),
-        ),
-      ).then((color) {
-        if (color != null) {
-          updateBloc(context, color);
-          setState(() {
-            _color = color;
+      onTap: () async {
+        if (widget.enabled) {
+          await showMaterialModalBottomSheet<Color?>(
+            backgroundColor: Colors.transparent,
+            context: context,
+            builder: (bContext) => ColorSheet(
+              initialColor: _color,
+              onColorChanged: (color) => Navigator.of(bContext).pop(color),
+            ),
+          ).then((color) {
+            if (color != null) {
+              updateBloc(context, color);
+              setState(() {
+                _color = color;
+              });
+            }
           });
         }
-      }),
+      },
       child: CircleAvatar(
         radius: 24,
         backgroundColor: _color,

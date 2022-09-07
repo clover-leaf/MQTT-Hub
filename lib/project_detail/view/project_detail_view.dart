@@ -2,12 +2,14 @@ import 'package:bee/alerts_overview/view/alerts_overview_page.dart';
 import 'package:bee/brokers_overview/view/brokers_overview_page.dart';
 import 'package:bee/components/component.dart';
 import 'package:bee/dashboards_overview/view/view.dart';
+import 'package:bee/device_types_overview/view/device_types_overview_page.dart';
 import 'package:bee/edit_project/view/edit_project_page.dart';
 import 'package:bee/gen/assets.gen.dart';
 import 'package:bee/gen/colors.gen.dart';
 import 'package:bee/groups_overview/view/groups_overview_page.dart';
 import 'package:bee/project_detail/bloc/project_detail_bloc.dart';
 import 'package:bee/project_detail/components/option_item.dart';
+import 'package:bee/schedules_overview/view/view.dart';
 import 'package:bee/users_overview/view/users_overview_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -31,6 +33,10 @@ class ProjectDetailView extends StatelessWidget {
         context.select((ProjectDetailBloc bloc) => bloc.state.userNumber);
     final alertNumber =
         context.select((ProjectDetailBloc bloc) => bloc.state.alertNumber);
+    final scheduleNumber =
+        context.select((ProjectDetailBloc bloc) => bloc.state.scheduleNumber);
+    final deviceTypeNumber =
+        context.select((ProjectDetailBloc bloc) => bloc.state.deviceTypeNumber);
     final isAdmin =
         context.select((ProjectDetailBloc bloc) => bloc.state.isAdmin);
 
@@ -111,12 +117,25 @@ class ProjectDetailView extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
+                if (isAdmin)
+                  OptionItem(
+                    title: 'Users',
+                    number: userNumber,
+                    unit: 'user',
+                    onPressed: () => Navigator.of(context).push(
+                      UsersOverviewPage.route(
+                        isAdmin: isAdmin,
+                        parentProject: project,
+                      ),
+                    ),
+                  ),
+                const SizedBox(height: 16),
                 OptionItem(
-                  title: 'Users',
-                  number: userNumber,
-                  unit: 'user',
+                  title: 'Device Types',
+                  number: deviceTypeNumber,
+                  unit: 'type',
                   onPressed: () => Navigator.of(context).push(
-                    UsersOverviewPage.route(
+                    DeviceTypesOverviewPage.route(
                       isAdmin: isAdmin,
                       parentProject: project,
                     ),
@@ -129,6 +148,18 @@ class ProjectDetailView extends StatelessWidget {
                   unit: 'alert',
                   onPressed: () => Navigator.of(context).push(
                     AlertsOverviewPage.route(
+                      isAdmin: isAdmin,
+                      parentProject: project,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                OptionItem(
+                  title: 'Schedules',
+                  number: scheduleNumber,
+                  unit: 'schedule',
+                  onPressed: () => Navigator.of(context).push(
+                    SchedulesOverviewPage.route(
                       isAdmin: isAdmin,
                       parentProject: project,
                     ),

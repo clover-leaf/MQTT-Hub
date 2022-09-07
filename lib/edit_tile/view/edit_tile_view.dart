@@ -42,6 +42,8 @@ class EditTileView extends StatelessWidget {
     final _formKey = GlobalKey<FormState>();
     // get padding top
     final paddingTop = MediaQuery.of(context).viewPadding.top;
+    // get is edit
+    final isEdit = context.select((EditTileBloc bloc) => bloc.state.isEdit);
 
     return BlocListener<EditTileBloc, EditTileState>(
       listenWhen: (previous, current) => previous.status != current.status,
@@ -108,6 +110,7 @@ class EditTileView extends StatelessWidget {
                               child: IconItem(
                                 initialColor: initialColor,
                                 initialIcon: initialIcon,
+                                enabled: isEdit,
                               ),
                             ),
                             Expanded(
@@ -115,6 +118,7 @@ class EditTileView extends StatelessWidget {
                                 initText: initialName,
                                 labelText: 'Tile Name',
                                 picture: Assets.icons.tag2,
+                                enabled: isEdit,
                                 onChanged: (tileName) => context
                                     .read<EditTileBloc>()
                                     .add(TileNameChanged(tileName)),
@@ -131,15 +135,15 @@ class EditTileView extends StatelessWidget {
                         const SizedBox(height: 24),
                         DeviceAttributeFIeld(
                           devices: devices,
-                          attributes: attributes,
                           initialDevice: initialDevice,
                           initialAttribute: initialAttribute,
+                          enabled: isEdit,
                         ),
                         const SizedBox(height: 24),
                         if (tileType.isLinearGauge || tileType.isRadialGauge)
-                          GaugeTileField(initialLob)
+                          GaugeTileField(initialLob, enabled: isEdit)
                         else if (tileType.isLine || tileType.isBar)
-                          LineField(initialLob)
+                          LineField(initialLob, enabled: isEdit)
                         else if (tileType.isToggle)
                           ToggleTileField(initialLob)
                         else if (tileType.isMultiCommand)
@@ -165,6 +169,9 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    // get is edit
+    final isEdit = context.select((EditTileBloc bloc) => bloc.state.isEdit);
+    final isAdmin = context.select((EditTileBloc bloc) => bloc.state.isAdmin);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -174,25 +181,47 @@ class _Header extends StatelessWidget {
               .svg(color: ColorName.neural700, fit: BoxFit.scaleDown),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        Padding(
-          padding: const EdgeInsets.only(right: 12),
-          child: TSecondaryButton(
-            label: 'SAVE',
-            onPressed: () {
-              if (formKey.currentState != null &&
-                  formKey.currentState!.validate()) {
-                context.read<EditTileBloc>().add(const Submitted());
-              }
-            },
-            enabled: true,
-            textStyle: textTheme.labelLarge!.copyWith(
-              color: ColorName.sky500,
-              fontWeight: FontWeight.w500,
-              letterSpacing: 1.1,
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          ),
-        )
+        if (isAdmin)
+          Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: isEdit
+                ? TSecondaryButton(
+                    label: 'SAVE',
+                    onPressed: () {
+                      if (formKey.currentState != null &&
+                          formKey.currentState!.validate()) {
+                        context.read<EditTileBloc>().add(const Submitted());
+                      }
+                    },
+                    enabled: true,
+                    textStyle: textTheme.labelLarge!.copyWith(
+                      color: ColorName.sky500,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 1.1,
+                    ),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  )
+                : TSecondaryButton(
+                    label: 'EDIT',
+                    onPressed: () {
+                      if (formKey.currentState != null &&
+                          formKey.currentState!.validate()) {
+                        context
+                            .read<EditTileBloc>()
+                            .add(const IsEditChanged(isEdit: true));
+                      }
+                    },
+                    enabled: true,
+                    textStyle: textTheme.labelLarge!.copyWith(
+                      color: ColorName.sky500,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 1.1,
+                    ),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  ),
+          )
       ],
     );
   }

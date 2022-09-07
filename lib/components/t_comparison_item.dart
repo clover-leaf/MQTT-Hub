@@ -8,10 +8,12 @@ class TComparisonItem extends StatelessWidget {
     super.key,
     required this.comparison,
     required this.onPressed,
+    this.enabled = true,
   });
 
   final Comparison comparison;
   final void Function() onPressed;
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +44,7 @@ class TComparisonItem extends StatelessWidget {
         shadowColor: Colors.transparent,
         shape: const CircleBorder(),
       ),
-      onPressed: onPressed,
+      onPressed: enabled ? onPressed : () {},
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: picture.svg(

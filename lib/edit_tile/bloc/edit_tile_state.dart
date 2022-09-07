@@ -16,6 +16,8 @@ extension EditTileStatusX on EditTileStatus {
 class EditTileState extends Equatable {
   EditTileState({
     this.status = EditTileStatus.normal,
+    required this.isEdit,
+    required this.isAdmin,
     required this.dashboardID,
     required this.devices,
     required this.attributes,
@@ -48,6 +50,8 @@ class EditTileState extends Equatable {
 
   // status
   final EditTileStatus status;
+  final bool isEdit;
+  final bool isAdmin;
   final String? error;
 
   // initial
@@ -57,8 +61,21 @@ class EditTileState extends Equatable {
     for (final dv in devices) dv.id: dv
   };
 
-  List<Attribute> get showedAttributes =>
-      attributes.where((att) => att.deviceID == selectedDeviceID).toList();
+  List<Attribute> get showedAttributes {
+    final selectedDevice = deviceView[selectedDeviceID];
+    if (selectedDevice != null) {
+      if (selectedDevice.deviceTypeID != null) {
+        return attributes
+            .where((att) => att.deviceTypeID == selectedDevice.deviceTypeID)
+            .toList();
+      } else {
+        return attributes
+            .where((att) => att.deviceID == selectedDeviceID)
+            .toList();
+      }
+    }
+    return attributes.where((att) => att.deviceID == selectedDeviceID).toList();
+  }
 
   Map<FieldId, Attribute> get attributeView =>
       {for (final att in attributes) att.id: att};
@@ -77,6 +94,8 @@ class EditTileState extends Equatable {
         attributes,
         status,
         initialTile,
+        isEdit,
+        isAdmin,
         error,
       ];
 
@@ -93,9 +112,13 @@ class EditTileState extends Equatable {
     String? lob,
     EditTileStatus? status,
     Tile? initialTile,
+    bool? isEdit,
+    bool? isAdmin,
     String? Function()? error,
   }) {
     return EditTileState(
+      isEdit: isEdit ?? this.isEdit,
+      isAdmin: isAdmin ?? this.isAdmin,
       dashboardID: dashboardID ?? this.dashboardID,
       devices: devices ?? this.devices,
       attributes: attributes ?? this.attributes,

@@ -41,20 +41,17 @@ class AlertItem extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  alert.name,
-                  style: textTheme.bodyLarge!.copyWith(
-                    color: ColorName.neural700,
-                    fontWeight: FontWeight.w600,
-                  ),
+            Flexible(
+              child: Text(
+                alert.name,
+                style: textTheme.bodyLarge!.copyWith(
+                  color: ColorName.neural700,
+                  fontWeight: FontWeight.w600,
                 ),
-              ],
+              ),
             ),
-            if (isAdmin) const Spacer(),
             if (isAdmin)
               TCircleButton(
                 picture: Assets.icons.trash.svg(

@@ -7,10 +7,16 @@ part 'dashboards_overview_state.dart';
 
 class DashboardsOverviewBloc
     extends Bloc<DashboardsOverviewEvent, DashboardsOverviewState> {
-  DashboardsOverviewBloc(this._userRepository,
-      {required Project parentProject, required bool isAdmin,})
-      : super(DashboardsOverviewState(
-            parentProject: parentProject, isAdmin: isAdmin,),) {
+  DashboardsOverviewBloc(
+    this._userRepository, {
+    required Project parentProject,
+    required bool isAdmin,
+  }) : super(
+          DashboardsOverviewState(
+            parentProject: parentProject,
+            isAdmin: isAdmin,
+          ),
+        ) {
     on<DashboardSubscriptionRequested>(_onDashboardSubcribed);
     on<DeletionRequested>(_onDeleted);
   }

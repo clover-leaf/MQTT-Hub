@@ -17,6 +17,7 @@ class Group extends Equatable {
     required this.projectID,
     required this.groupID,
     required this.name,
+    required this.description,
   })  : assert(
           id == null || id.isNotEmpty,
           'id can not be null and should be empty',
@@ -39,6 +40,9 @@ class Group extends Equatable {
   /// The name of project
   final String name;
 
+  /// The name of project
+  final String? description;
+
   /// Deserializes the given [JsonMap] into a [Group].
   static Group fromJson(JsonMap json) {
     return _$GroupFromJson(json);
@@ -53,15 +57,17 @@ class Group extends Equatable {
     FieldId? projectID,
     FieldId? groupID,
     String? name,
+    String? description,
   }) {
     return Group(
       id: id ?? this.id,
       projectID: projectID ?? this.projectID,
       groupID: groupID ?? this.groupID,
       name: name ?? this.name,
+      description: description ?? this.description,
     );
   }
 
   @override
-  List<Object?> get props => [id, projectID, groupID, name];
+  List<Object?> get props => [id, projectID, groupID, name, description];
 }

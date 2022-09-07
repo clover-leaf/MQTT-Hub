@@ -113,12 +113,20 @@ class GatewayClient {
   }
 
   /// Subscribes to given topic
-  void subscribe(String topic) {
-    _client.subscribe(topic, MqttQos.atMostOnce);
+  void subscribe({required String topic, required int qos}) {
+    late MqttQos mqttQos;
+    if (qos == 0) {
+      mqttQos = MqttQos.atMostOnce;
+    } else if (qos == 1) {
+      mqttQos = MqttQos.atLeastOnce;
+    } else if (qos == 2) {
+      mqttQos = MqttQos.exactlyOnce;
+    }
+    _client.subscribe(topic, mqttQos);
     // because adafruit not have retain msg system
     // so we must publish topic/get to get retain msg
     if (url == 'io.adafruit.com') {
-      published(payload: '', topic: '$topic/get', retain: false);
+      published(payload: '', topic: '$topic/get', retain: false, qos: qos);
     }
   }
 
@@ -132,14 +140,18 @@ class GatewayClient {
     required String payload,
     required String topic,
     required bool retain,
+    required int qos,
   }) {
+    late MqttQos mqttQos;
+    if (qos == 0) {
+      mqttQos = MqttQos.atMostOnce;
+    } else if (qos == 1) {
+      mqttQos = MqttQos.atLeastOnce;
+    } else if (qos == 2) {
+      mqttQos = MqttQos.exactlyOnce;
+    }
     final encoded = Uint8Buffer()..addAll(utf8.encode(payload));
-    _client.publishMessage(
-      topic,
-      MqttQos.atLeastOnce,
-      encoded,
-      retain: retain,
-    );
+    _client.publishMessage(topic, mqttQos, encoded, retain: retain);
     log('::MQTT_CLIENT:: publish $payload to $topic $account $password');
   }
 

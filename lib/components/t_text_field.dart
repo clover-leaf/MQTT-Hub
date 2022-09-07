@@ -96,11 +96,8 @@ class _TTextFieldState extends State<TTextField> {
           // label
           floatingLabelBehavior: FloatingLabelBehavior.auto,
           labelText: widget.labelText,
-          labelStyle: textTheme.bodyMedium!.copyWith(
-            color: hasFocus
-                ? (widget.enabled ? ColorName.neural600 : ColorName.sky300)
-                : (widget.enabled ? ColorName.neural600 : ColorName.neural400),
-          ),
+          labelStyle:
+              textTheme.bodyMedium!.copyWith(color: ColorName.neural600),
           focusedBorder: const UnderlineInputBorder(
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(8),
@@ -113,7 +110,7 @@ class _TTextFieldState extends State<TTextField> {
               topLeft: Radius.circular(8),
               topRight: Radius.circular(8),
             ),
-            borderSide: BorderSide(color: ColorName.neural300, width: 3),
+            borderSide: BorderSide(color: ColorName.neural200, width: 3),
           ),
           enabledBorder: const UnderlineInputBorder(
             borderRadius: BorderRadius.only(

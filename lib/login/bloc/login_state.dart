@@ -32,7 +32,6 @@ class LoginState extends Equatable {
   final String? error;
   final bool? isAdmin;
 
-
   @override
   List<Object?> get props =>
       [domainName, username, password, status, token, error, isAdmin];

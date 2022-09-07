@@ -7,14 +7,24 @@ part 'logs_overview_state.dart';
 
 class LogsOverviewBloc extends Bloc<LogsOverviewEvent, LogsOverviewState> {
   LogsOverviewBloc(this._userRepository) : super(LogsOverviewState()) {
+    on<GetLogsRequested>(_onGetLogs);
     on<AttributeSubscriptionRequested>(_onAttributeSubscribed);
     on<DeviceSubscriptionRequested>(_onDeviceSubscribed);
     on<LogSubscriptionRequested>(_onLogSubscribed);
     on<AlertSubscriptionRequested>(_onAlertSubscribed);
     on<ConditionLogSubscriptionRequested>(_onConditionLogSubscribed);
+    on<ConditionSubscriptionRequested>(_onConditionSubscribed);
   }
 
   final UserRepository _userRepository;
+
+  Future<void> _onGetLogs(
+    GetLogsRequested event,
+    Emitter<LogsOverviewState> emit,
+  ) async {
+    await _userRepository.getLogs();
+    await _userRepository.getConditionLogs();
+  }
 
   Future<void> _onDeviceSubscribed(
     DeviceSubscriptionRequested event,
@@ -60,6 +70,17 @@ class LogsOverviewBloc extends Bloc<LogsOverviewEvent, LogsOverviewState> {
       _userRepository.subscribeConditionLogStream(),
       onData: (conditionLogs) {
         return state.copyWith(conditionLogs: conditionLogs);
+      },
+    );
+  }
+  Future<void> _onConditionSubscribed(
+    ConditionSubscriptionRequested event,
+    Emitter<LogsOverviewState> emit,
+  ) async {
+    await emit.forEach<List<Condition>>(
+      _userRepository.subscribeConditionStream(),
+      onData: (conditions) {
+        return state.copyWith(conditions: conditions);
       },
     );
   }

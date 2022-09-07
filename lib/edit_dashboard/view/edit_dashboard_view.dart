@@ -19,6 +19,9 @@ class EditDashboardView extends StatelessWidget {
     final _formKey = GlobalKey<FormState>();
     // get padding top
     final paddingTop = MediaQuery.of(context).viewPadding.top;
+    // get is edit
+    final isEdit =
+        context.select((EditDashboardBloc bloc) => bloc.state.isEdit);
 
     return BlocListener<EditDashboardBloc, EditDashboardState>(
       listenWhen: (previous, current) => previous.status != current.status,
@@ -61,43 +64,45 @@ class EditDashboardView extends StatelessWidget {
             SizedBox(height: paddingTop),
             _Header(_formKey),
             Expanded(
-                child: ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              children: [
-                const _Title(),
-                const SizedBox(height: 20),
-                Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Text(
-                          'DASHBOARD NAME',
-                          style: textTheme.bodySmall!
-                              .copyWith(color: ColorName.neural600),
+              child: ListView(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                children: [
+                  const _Title(),
+                  const SizedBox(height: 20),
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Text(
+                            'NAME',
+                            style: textTheme.bodySmall!
+                                .copyWith(color: ColorName.neural600),
+                          ),
                         ),
-                      ),
-                      TTextField(
-                        initText: initialName,
-                        labelText: 'Project Name',
-                        picture: Assets.icons.tag2,
-                        onChanged: (name) => context
-                            .read<EditDashboardBloc>()
-                            .add(NameChanged(name)),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Enter a valid string';
-                          }
-                          return null;
-                        },
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            ),)
+                        TTextField(
+                          initText: initialName,
+                          labelText: 'Dashboard Name',
+                          picture: Assets.icons.tag2,
+                          onChanged: (name) => context
+                              .read<EditDashboardBloc>()
+                              .add(NameChanged(name)),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Enter a valid string';
+                            }
+                            return null;
+                          },
+                          enabled: isEdit,
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            )
           ],
         ),
       ),
@@ -114,6 +119,11 @@ class _Header extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
+    final isEdit =
+        context.select((EditDashboardBloc bloc) => bloc.state.isEdit);
+    final isAdmin =
+        context.select((EditDashboardBloc bloc) => bloc.state.isAdmin);
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -122,25 +132,44 @@ class _Header extends StatelessWidget {
               .svg(color: ColorName.neural700, fit: BoxFit.scaleDown),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        Padding(
-          padding: const EdgeInsets.only(right: 12),
-          child: TSecondaryButton(
-            label: 'SAVE',
-            onPressed: () {
-              if (formKey.currentState != null &&
-                  formKey.currentState!.validate()) {
-                context.read<EditDashboardBloc>().add(const Submitted());
-              }
-            },
-            enabled: true,
-            textStyle: textTheme.labelLarge!.copyWith(
-              color: ColorName.sky500,
-              fontWeight: FontWeight.w500,
-              letterSpacing: 1.1,
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          ),
-        )
+        if (isAdmin)
+          Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: isEdit
+                ? TSecondaryButton(
+                    label: 'SAVE',
+                    onPressed: () {
+                      if (formKey.currentState != null &&
+                          formKey.currentState!.validate()) {
+                        context
+                            .read<EditDashboardBloc>()
+                            .add(const Submitted());
+                      }
+                    },
+                    enabled: true,
+                    textStyle: textTheme.labelLarge!.copyWith(
+                      color: ColorName.sky500,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 1.1,
+                    ),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  )
+                : TSecondaryButton(
+                    label: 'EDIT',
+                    onPressed: () => context
+                        .read<EditDashboardBloc>()
+                        .add(const IsEditChanged(isEdit: true)),
+                    enabled: true,
+                    textStyle: textTheme.labelLarge!.copyWith(
+                      color: ColorName.sky500,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 1.1,
+                    ),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  ),
+          )
       ],
     );
   }
@@ -152,12 +181,21 @@ class _Title extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final initialDashboard =
+        context.select((EditDashboardBloc bloc) => bloc.state.initialDashboard);
+    // get is edit
+    final isEdit =
+        context.select((EditDashboardBloc bloc) => bloc.state.isEdit);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Dashboard'.toUpperCase(),
+          initialDashboard == null
+              ? 'NEW DASHBOARD'
+              : isEdit
+                  ? 'EDIT DASHBOARD'
+                  : 'DASHBOARD DETAIL',
           style: textTheme.titleMedium!.copyWith(
             fontWeight: FontWeight.w500,
             letterSpacing: 1.05,

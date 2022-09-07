@@ -23,6 +23,7 @@ class EditUserPage extends StatelessWidget {
     required List<Project> initialProjects,
     required List<UserProject> initialUserProjects,
     required User? initialUser,
+    required bool isEdit,
   }) {
     final userID = initialUser?.id ?? const Uuid().v4();
     return PageRouteBuilder<void>(
@@ -30,6 +31,7 @@ class EditUserPage extends StatelessWidget {
       pageBuilder: (context, animation, secondaryAnimation) => BlocProvider(
         create: (context) => EditUserBloc(
           context.read<UserRepository>(),
+          isEdit: isEdit,
           initialProjects: initialProjects,
           initialUserProjects: initialUserProjects,
           initialUser: initialUser,

@@ -51,11 +51,6 @@ class AlertsOverviewState extends Equatable {
         return brokerIdInProject.contains(dv.brokerID);
       }).toList();
 
-  List<Attribute> get attributeInProject => attributes.where((att) {
-        final deviceIdInProject = deviceInProject.map((dv) => dv.id);
-        return deviceIdInProject.contains(att.deviceID);
-      }).toList();
-
   List<Alert> get showedAlerts {
     final brokerIDinProjet = brokers
         .where((br) => br.projectID == parentProject.id)

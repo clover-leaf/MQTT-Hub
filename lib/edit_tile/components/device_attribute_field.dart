@@ -11,15 +11,15 @@ class DeviceAttributeFIeld extends StatefulWidget {
   const DeviceAttributeFIeld({
     super.key,
     required this.devices,
-    required this.attributes,
     required this.initialDevice,
     required this.initialAttribute,
+    required this.enabled,
   });
 
   final List<Device> devices;
-  final List<Attribute> attributes;
   final Device? initialDevice;
   final Attribute? initialAttribute;
+  final bool enabled;
 
   @override
   State<DeviceAttributeFIeld> createState() => _DeviceAttributeFIeldState();
@@ -46,6 +46,12 @@ class _DeviceAttributeFIeldState extends State<DeviceAttributeFIeld> {
       validator: (_) {
         if (selectedDevice == null || selectedAttrbute == null) {
           return null;
+        } else if (selectedDevice!.deviceTypeID != null) {
+          if (selectedAttrbute!.deviceTypeID != selectedDevice!.deviceTypeID) {
+            return 'Attribute must belong to monitoring device';
+          } else {
+            return null;
+          }
         } else if (selectedAttrbute!.deviceID != selectedDevice!.id) {
           return 'Attribute must belong to monitoring device';
         } else {
@@ -59,6 +65,7 @@ class _DeviceAttributeFIeldState extends State<DeviceAttributeFIeld> {
             labelText: 'Monitoring Device',
             initialValue: selectedDevice?.name,
             picture: Assets.icons.airdrop,
+            enabled: widget.enabled,
             onTapped: () async => showMaterialModalBottomSheet<Device?>(
               backgroundColor: Colors.transparent,
               context: context,
@@ -92,6 +99,7 @@ class _DeviceAttributeFIeldState extends State<DeviceAttributeFIeld> {
             labelText: 'Monitoring Attribute',
             initialValue: selectedAttrbute?.name,
             picture: Assets.icons.autobrightness,
+            enabled: widget.enabled,
             onTapped: () async => showMaterialModalBottomSheet<Attribute?>(
               backgroundColor: Colors.transparent,
               context: context,
@@ -123,8 +131,7 @@ class _DeviceAttributeFIeldState extends State<DeviceAttributeFIeld> {
             },
           ),
           // List ranges error line
-          if (dvattFormFieldState.hasError)
-            const SizedBox(height: 8),
+          if (dvattFormFieldState.hasError) const SizedBox(height: 8),
           if (dvattFormFieldState.hasError)
             Text(
               dvattFormFieldState.errorText!,

@@ -41,30 +41,32 @@ class BrokerItem extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  broker.name,
-                  style: textTheme.bodyLarge!.copyWith(
-                    color: ColorName.neural700,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    _StatItem(
-                      url: broker.url,
-                      port: broker.port.toString(),
-                      image: Assets.icons.global,
+            Flexible(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    broker.name,
+                    style: textTheme.bodyLarge!.copyWith(
+                      color: ColorName.neural700,
+                      fontWeight: FontWeight.w600,
                     ),
-                  ],
-                )
-              ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      _StatItem(
+                        url: broker.url,
+                        port: broker.port.toString(),
+                        image: Assets.icons.global,
+                      ),
+                    ],
+                  )
+                ],
+              ),
             ),
-            if (isAdmin) const Spacer(),
             if (isAdmin)
               TCircleButton(
                 picture: Assets.icons.trash.svg(

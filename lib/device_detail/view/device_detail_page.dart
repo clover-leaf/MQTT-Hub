@@ -23,7 +23,9 @@ class DeviceDetailPage extends StatelessWidget {
         )
           ..add(const AttributeSubscriptionRequested())
           ..add(const BrokerSubscriptionRequested())
-          ..add(const DeviceSubscriptionRequested()),
+          ..add(const DeviceTypeSubscriptionRequested())
+          ..add(const DeviceSubscriptionRequested())
+          ..add(const GetRecords()),
         child: const DeviceDetailPage(),
       ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {

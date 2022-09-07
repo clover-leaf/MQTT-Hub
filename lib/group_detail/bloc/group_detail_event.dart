@@ -19,6 +19,14 @@ class DeviceSubscriptionRequested extends GroupDetailEvent {
   const DeviceSubscriptionRequested();
 }
 
+class AttributeSubscriptionRequested extends GroupDetailEvent {
+  const AttributeSubscriptionRequested();
+}
+
+class DeviceTypeSubscriptionRequested extends GroupDetailEvent {
+  const DeviceTypeSubscriptionRequested();
+}
+
 class DeletionRequested extends GroupDetailEvent {
   const DeletionRequested();
 }

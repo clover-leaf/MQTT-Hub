@@ -33,6 +33,8 @@ class EditBrokerView extends StatelessWidget {
     final _formKey = GlobalKey<FormState>();
     // get padding top
     final paddingTop = MediaQuery.of(context).viewPadding.top;
+    // get is edit
+    final isEdit = context.select((EditBrokerBloc bloc) => bloc.state.isEdit);
 
     return BlocListener<EditBrokerBloc, EditBrokerState>(
       listenWhen: (previous, current) => previous.status != current.status,
@@ -107,6 +109,7 @@ class EditBrokerView extends StatelessWidget {
                             return null;
                           },
                           textInputType: TextInputType.url,
+                          enabled: isEdit,
                         ),
                         const SizedBox(height: 24),
                         Padding(
@@ -138,6 +141,7 @@ class EditBrokerView extends StatelessWidget {
                                       return null;
                                     },
                                     textInputType: TextInputType.url,
+                                    enabled: isEdit,
                                   ),
                                 ),
                                 SizedBox(width: width * 0.03),
@@ -157,6 +161,7 @@ class EditBrokerView extends StatelessWidget {
                                       }
                                       return null;
                                     },
+                                    enabled: isEdit,
                                     textInputType: TextInputType.number,
                                   ),
                                 ),
@@ -181,6 +186,7 @@ class EditBrokerView extends StatelessWidget {
                               .read<EditBrokerBloc>()
                               .add(AccountChanged(account)),
                           validator: (value) => null,
+                          enabled: isEdit,
                         ),
                         const SizedBox(height: 24),
                         Padding(
@@ -199,6 +205,7 @@ class EditBrokerView extends StatelessWidget {
                               .read<EditBrokerBloc>()
                               .add(PasswordChanged(password)),
                           validator: (value) => null,
+                          enabled: isEdit,
                         ),
                       ],
                     ),
@@ -221,6 +228,9 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    // get is edit
+    final isEdit = context.select((EditBrokerBloc bloc) => bloc.state.isEdit);
+    final isAdmin = context.select((EditBrokerBloc bloc) => bloc.state.isAdmin);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -230,25 +240,42 @@ class _Header extends StatelessWidget {
               .svg(color: ColorName.neural700, fit: BoxFit.scaleDown),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        Padding(
-          padding: const EdgeInsets.only(right: 12),
-          child: TSecondaryButton(
-            label: 'SAVE',
-            onPressed: () {
-              if (formKey.currentState != null &&
-                  formKey.currentState!.validate()) {
-                context.read<EditBrokerBloc>().add(const Submitted());
-              }
-            },
-            enabled: true,
-            textStyle: textTheme.labelLarge!.copyWith(
-              color: ColorName.sky500,
-              fontWeight: FontWeight.w500,
-              letterSpacing: 1.1,
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          ),
-        )
+        if (isAdmin)
+          Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: isEdit
+                ? TSecondaryButton(
+                    label: 'SAVE',
+                    onPressed: () {
+                      if (formKey.currentState != null &&
+                          formKey.currentState!.validate()) {
+                        context.read<EditBrokerBloc>().add(const Submitted());
+                      }
+                    },
+                    enabled: true,
+                    textStyle: textTheme.labelLarge!.copyWith(
+                      color: ColorName.sky500,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 1.1,
+                    ),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  )
+                : TSecondaryButton(
+                    label: 'EDIT',
+                    onPressed: () => context
+                        .read<EditBrokerBloc>()
+                        .add(const IsEditChanged(isEdit: true)),
+                    enabled: true,
+                    textStyle: textTheme.labelLarge!.copyWith(
+                      color: ColorName.sky500,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 1.1,
+                    ),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  ),
+          )
       ],
     );
   }
@@ -260,12 +287,21 @@ class _Title extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final initialBroker =
+        context.select((EditBrokerBloc bloc) => bloc.state.initialBroker);
+    // get is edit
+    final isEdit =
+        context.select((EditBrokerBloc bloc) => bloc.state.isEdit);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Broker'.toUpperCase(),
+          initialBroker == null
+              ? 'NEW BROKER'
+              : isEdit
+                  ? 'EDIT BROKER'
+                  : 'BROKER DETAIL',
           style: textTheme.titleMedium!.copyWith(
             fontWeight: FontWeight.w500,
             letterSpacing: 1.05,

@@ -41,15 +41,17 @@ class DashboardItem extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              dashboard.name,
-              style: textTheme.bodyLarge!.copyWith(
-                color: ColorName.neural700,
-                fontWeight: FontWeight.w600,
+            Flexible(
+              child: Text(
+                dashboard.name,
+                style: textTheme.bodyLarge!.copyWith(
+                  color: ColorName.neural700,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
-            if (isAdmin) const Spacer(),
             if (isAdmin)
               TCircleButton(
                 picture: Assets.icons.trash.svg(

@@ -7,11 +7,13 @@ class TSelectedVanilla extends StatefulWidget {
     required this.initialValue,
     required this.onTapped,
     required this.validator,
+    this.enabled = true,
   });
 
   final String? initialValue;
   final Future<String?> Function() onTapped;
   final String? Function(String?)? validator;
+  final bool enabled;
 
   @override
   State<TSelectedVanilla> createState() => _TSelectedVanillaState();
@@ -45,12 +47,14 @@ class _TSelectedVanillaState extends State<TSelectedVanilla> {
         GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: () async {
-            final value = await widget.onTapped();
-            setState(() {
-              if (value != null) {
-                _controller.text = value;
-              }
-            });
+            if (widget.enabled) {
+              final value = await widget.onTapped();
+              setState(() {
+                if (value != null) {
+                  _controller.text = value;
+                }
+              });
+            }
           },
           child: TextFormField(
             validator: (value) => widget.validator?.call(value),

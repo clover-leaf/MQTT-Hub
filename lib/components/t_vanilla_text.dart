@@ -81,11 +81,7 @@ class _TVanillaTextState extends State<TVanillaText> {
           // label
           floatingLabelBehavior: FloatingLabelBehavior.auto,
           hintText: widget.hintText,
-          hintStyle: textTheme.bodyMedium!.copyWith(
-            color: hasFocus
-                ? (widget.enabled ? ColorName.neural600 : ColorName.sky300)
-                : (widget.enabled ? ColorName.neural600 : ColorName.neural400),
-          ),
+          hintStyle: textTheme.bodyMedium!.copyWith(color: ColorName.neural600),
           focusedBorder: const UnderlineInputBorder(
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(8),

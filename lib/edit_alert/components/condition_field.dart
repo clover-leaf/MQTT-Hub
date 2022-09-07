@@ -14,12 +14,14 @@ class ConditionField extends StatefulWidget {
     required this.attributes,
     required this.alertID,
     required this.onConditionsChanged,
+    required this.enabled,
   });
 
   final List<Condition> initialConditions;
   final List<Attribute> attributes;
   final String alertID;
   final void Function(List<Condition>) onConditionsChanged;
+  final bool enabled;
 
   @override
   State<ConditionField> createState() => _ConditionFieldState();
@@ -61,6 +63,7 @@ class _ConditionFieldState extends State<ConditionField> {
               ),
               TAddButton(
                 label: 'ADD CONDITION',
+                enabled: widget.enabled,
                 onPressed: () {
                   final cd = Condition(
                     id: const Uuid().v4(),
@@ -101,6 +104,7 @@ class _ConditionFieldState extends State<ConditionField> {
                   onSaved: (conditions) {
                     widget.onConditionsChanged(conditions);
                   },
+                  enabled: widget.enabled,
                 ),
                 const SizedBox(height: 12)
               ],
@@ -130,6 +134,7 @@ class _CondtionItem extends StatelessWidget {
     required this.comparison,
     required this.value,
     required this.onSaved,
+    required this.enabled,
   });
 
   final int index;
@@ -138,6 +143,7 @@ class _CondtionItem extends StatelessWidget {
   final Attribute? attribute;
   final Comparison comparison;
   final String value;
+  final bool enabled;
   final void Function(List<Condition>) onSaved;
 
   @override
@@ -149,6 +155,7 @@ class _CondtionItem extends StatelessWidget {
           child: TSelectedVanilla(
             key: ValueKey(id),
             initialValue: attribute?.name,
+            enabled: enabled,
             onTapped: () async => showMaterialModalBottomSheet<Attribute?>(
               backgroundColor: Colors.transparent,
               context: context,
@@ -183,6 +190,7 @@ class _CondtionItem extends StatelessWidget {
         TComparisonItem(
           key: ValueKey(id),
           comparison: comparison,
+          enabled: enabled,
           onPressed: () async => showMaterialModalBottomSheet<Comparison?>(
             backgroundColor: Colors.transparent,
             context: context,
@@ -209,6 +217,7 @@ class _CondtionItem extends StatelessWidget {
             key: ValueKey(id),
             initText: value,
             hintText: 'Value',
+            enabled: enabled,
             onChanged: (newValue) {
               if (index >= 0 && index < conditions.length) {
                 final cd = conditions[index];
@@ -232,9 +241,11 @@ class _CondtionItem extends StatelessWidget {
           picture: Assets.icons.trash
               .svg(color: ColorName.neural600, fit: BoxFit.scaleDown),
           onPressed: () {
-            if (index >= 0 && index < conditions.length) {
-              conditions.removeAt(index);
-              onSaved(conditions);
+            if (enabled) {
+              if (index >= 0 && index < conditions.length) {
+                conditions.removeAt(index);
+                onSaved(conditions);
+              }
             }
           },
         )

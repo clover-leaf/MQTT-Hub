@@ -37,6 +37,10 @@ class GroupDetailView extends StatelessWidget {
         context.select((GroupDetailBloc bloc) => bloc.state.isAdmin);
     final brokerInProjects =
         context.select((GroupDetailBloc bloc) => bloc.state.brokerInProjects);
+    final deviceTypeInProjects = context
+        .select((GroupDetailBloc bloc) => bloc.state.deviceTypeInProjects);
+    final attributes =
+        context.select((GroupDetailBloc bloc) => bloc.state.attributes);
 
     return BlocListener<GroupDetailBloc, GroupDetailState>(
       listenWhen: (previous, current) => previous.status != current.status,
@@ -147,8 +151,13 @@ class GroupDetailView extends StatelessWidget {
                             EditDevicePage.route(
                               parentGroupID: group.id,
                               brokers: brokerInProjects,
+                              deviceTypes: deviceTypeInProjects,
+                              allAttributes: attributes,
                               initialAttributes: [],
                               initialDevice: null,
+                              isUseDeviceType: false,
+                              isAdmin: isAdmin,
+                              isEdit: true,
                             ),
                           );
                         },
@@ -281,13 +290,15 @@ class _Title extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 4),
-        Text(
-          'Overview',
-          style: textTheme.labelMedium!.copyWith(
-            fontWeight: FontWeight.w500,
-            color: ColorName.neural600,
+        if (group.description != null)
+          Text(
+            group.description!,
+            style: textTheme.labelMedium!.copyWith(
+              fontWeight: FontWeight.w500,
+              color: ColorName.neural600,
+            ),
+            overflow: TextOverflow.ellipsis,
           ),
-        ),
       ],
     );
   }

@@ -20,7 +20,9 @@ class GroupDetailBloc extends Bloc<GroupDetailEvent, GroupDetailState> {
         ) {
     on<BrokerSubscriptionRequested>(_onBrokerSubscribed);
     on<GroupSubscriptionRequested>(_onGroupSubscribed);
+    on<DeviceTypeSubscriptionRequested>(_onDeviceTypeSubscribed);
     on<DeviceSubscriptionRequested>(_onDeviceSubscribed);
+    on<AttributeSubscriptionRequested>(_onAttributeSubscribed);
     on<DeletionRequested>(_onDeleted);
     on<GroupVisibilityChanged>(_onGroupVisibleChanged);
     on<DeviceVisibilityChanged>(_onDeviceVisibleChanged);
@@ -84,6 +86,18 @@ class GroupDetailBloc extends Bloc<GroupDetailEvent, GroupDetailState> {
     );
   }
 
+  Future<void> _onDeviceTypeSubscribed(
+    DeviceTypeSubscriptionRequested event,
+    Emitter<GroupDetailState> emit,
+  ) async {
+    await emit.forEach<List<DeviceType>>(
+      _userRepository.subscribeDeviceTypeStream(),
+      onData: (deviceTypes) {
+        return state.copyWith(deviceTypes: deviceTypes);
+      },
+    );
+  }
+
   Future<void> _onDeviceSubscribed(
     DeviceSubscriptionRequested event,
     Emitter<GroupDetailState> emit,
@@ -92,6 +106,18 @@ class GroupDetailBloc extends Bloc<GroupDetailEvent, GroupDetailState> {
       _userRepository.subscribeDeviceStream(),
       onData: (devices) {
         return state.copyWith(devices: devices);
+      },
+    );
+  }
+
+  Future<void> _onAttributeSubscribed(
+    AttributeSubscriptionRequested event,
+    Emitter<GroupDetailState> emit,
+  ) async {
+    await emit.forEach<List<Attribute>>(
+      _userRepository.subscribeAttributeStream(),
+      onData: (attributes) {
+        return state.copyWith(attributes: attributes);
       },
     );
   }

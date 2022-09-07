@@ -18,9 +18,9 @@ class AlertsOverviewBloc
           ),
         ) {
     on<AlertSubscriptionRequested>(_onAlertSubscribed);
+    on<BrokerSubscriptionRequested>(_onBrokerSubscribed);
     on<ConditionSubscriptionRequested>(_onConditionSubscribed);
     on<ActionSubscriptionRequested>(_onActionSubscribed);
-    on<BrokerSubscriptionRequested>(_onBrokerSubscribed);
     on<DeviceSubscriptionRequested>(_onDeviceSubscribed);
     on<AttributeSubscriptionRequested>(_onAttributeSubscribed);
     on<DeletionRequested>(_onDeleted);

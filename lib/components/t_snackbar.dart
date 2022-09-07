@@ -29,7 +29,9 @@ class TSnackbar {
               ),
               child: Text(
                 content,
-                style: textTheme.labelLarge!.copyWith(color: ColorName.pine500,),
+                style: textTheme.labelLarge!.copyWith(
+                  color: ColorName.pine500,
+                ),
               ),
             ),
           ),

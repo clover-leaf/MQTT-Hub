@@ -21,7 +21,9 @@ class GroupDetailState extends Equatable {
     required this.group,
     this.brokers = const [],
     this.groups = const [],
+    this.deviceTypes = const [],
     this.devices = const [],
+    this.attributes = const [],
     this.isShowGroup = false,
     this.isShowDevice = false,
     this.error,
@@ -35,7 +37,9 @@ class GroupDetailState extends Equatable {
   // listen
   final List<Broker> brokers;
   final List<Group> groups;
+  final List<DeviceType> deviceTypes;
   final List<Device> devices;
+  final List<Attribute> attributes;
 
   // status
   final bool isShowGroup;
@@ -57,6 +61,9 @@ class GroupDetailState extends Equatable {
   List<Broker> get brokerInProjects =>
       brokers.where((br) => br.projectID == rootProject.id).toList();
 
+  List<DeviceType> get deviceTypeInProjects =>
+      deviceTypes.where((dT) => dT.projectID == rootProject.id).toList();
+
   int get deviceNumber {
     final _devices = devices.where((dv) => dv.groupID == group.id).toList();
     return _devices.length;
@@ -70,7 +77,9 @@ class GroupDetailState extends Equatable {
         group,
         brokers,
         groups,
+        deviceTypes,
         devices,
+        attributes,
         isShowGroup,
         isShowDevice,
         error
@@ -83,7 +92,9 @@ class GroupDetailState extends Equatable {
     Group? group,
     List<Broker>? brokers,
     List<Group>? groups,
+    List<DeviceType>? deviceTypes,
     List<Device>? devices,
+    List<Attribute>? attributes,
     bool? isShowGroup,
     bool? isShowDevice,
     String? Function()? error,
@@ -95,7 +106,9 @@ class GroupDetailState extends Equatable {
       group: group ?? this.group,
       brokers: brokers ?? this.brokers,
       groups: groups ?? this.groups,
+      deviceTypes: deviceTypes ?? this.deviceTypes,
       devices: devices ?? this.devices,
+      attributes: attributes ?? this.attributes,
       isShowGroup: isShowGroup ?? this.isShowGroup,
       isShowDevice: isShowDevice ?? this.isShowDevice,
       error: error != null ? error() : this.error,

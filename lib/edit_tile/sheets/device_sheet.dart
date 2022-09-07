@@ -1,6 +1,5 @@
-import 'package:bee/components/t_item_box.dart';
+import 'package:bee/components/component.dart';
 import 'package:bee/edit_tile/bloc/edit_tile_bloc.dart';
-import 'package:bee/gen/assets.gen.dart';
 import 'package:bee/gen/colors.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -36,6 +35,14 @@ class DeviceSheet extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 8, horizontal: 28),
+                child: Text(
+                  'DEVICES',
+                  style: textTheme.titleSmall,
+                ),
+              ),
               if (devices.isEmpty)
                 Container(
                   alignment: Alignment.center,
@@ -47,16 +54,13 @@ class DeviceSheet extends StatelessWidget {
                 )
               else
                 ...devices.map(
-                  (dv) => TItemBox(
+                  (dv) => TBrokerItem(
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                     title: dv.name,
                     subtitle: dv.topic,
-                    prefix: Assets.icons.add.svg(),
-                    postfix: dv.id == selectedDeviceID
-                        ? Assets.icons.eye.svg()
-                        : null,
-                    onPressed: () =>
-                        onDeviceSelected(dv),
-                    enabled: true,
+                    isSelected: dv.id == selectedDeviceID,
+                    onPressed: () => onDeviceSelected(dv),
                   ),
                 )
             ],

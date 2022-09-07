@@ -28,7 +28,7 @@ class TCircleButton extends StatelessWidget {
         shadowColor: Colors.transparent,
         shape: const CircleBorder(),
       ),
-      onPressed: onPressed,
+      onPressed: enabled ? onPressed : () {},
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: picture,

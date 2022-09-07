@@ -78,6 +78,7 @@ class UsersOverviewView extends StatelessWidget {
                               initialProjects: projects,
                               initialUserProjects: initialUserProjects,
                               initialUser: user,
+                              isEdit: false,
                             ),
                           );
                         },
@@ -127,6 +128,7 @@ class _Header extends StatelessWidget {
                   initialProjects: projects,
                   initialUserProjects: [],
                   initialUser: null,
+                  isEdit: true,
                 ),
               ),
               enabled: true,

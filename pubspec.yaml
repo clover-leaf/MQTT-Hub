@@ -12,6 +12,7 @@ dependencies:
   awesome_snackbar_content: ^0.0.8
   bloc: ^8.1.0
   bloc_concurrency: ^0.2.0
+  day_night_time_picker: ^1.1.2
   equatable: ^2.0.3
   firebase_core: ^1.21.1
   firebase_messaging: ^13.0.0
@@ -36,6 +37,7 @@ dependencies:
   rfc_6901: ^0.1.1
   secure_storage_client:
     path: ./packages/secure_storage_client
+  syncfusion_flutter_datepicker: ^20.2.46
   url_launcher: ^6.1.5
   user_repository:
     path: ./packages/user_repository

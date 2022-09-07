@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:loader_overlay/loader_overlay.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:user_repository/user_repository.dart';
 
 class AppView extends StatefulWidget {
@@ -15,7 +16,7 @@ class AppView extends StatefulWidget {
 
 class _AppViewState extends State<AppView> {
   bool isInit = true;
-  
+
   @override
   Future<void> didChangeDependencies() async {
     if (isInit) {
@@ -24,6 +25,8 @@ class _AppViewState extends State<AppView> {
         final token = await repository.recoverSession();
         final res = await repository.getUserInJWT(token);
         final isAdmin = res['isAdmin']! as bool;
+        final userID = res['user-id']! as String;
+        await OneSignal.shared.setExternalUserId(userID);
         if (!mounted) return;
         context.read<AppBloc>().add(
               AppAuthenticated(

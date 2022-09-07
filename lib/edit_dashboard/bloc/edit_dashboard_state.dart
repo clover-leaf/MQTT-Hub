@@ -17,6 +17,8 @@ class EditDashboardState extends Equatable {
   const EditDashboardState({
     this.status = EditDashboardStatus.normal,
     required this.parentProject,
+    required this.isEdit,
+    required this.isAdmin,
     required this.name,
     this.initialDashboard,
     this.error,
@@ -33,20 +35,26 @@ class EditDashboardState extends Equatable {
 
   // status
   final EditDashboardStatus status;
+  final bool isEdit;
+  final bool isAdmin;
   final String? error;
 
   @override
   List<Object?> get props =>
-      [parentProject, initialDashboard, name, status, error];
+      [parentProject, initialDashboard, name, status, isAdmin, isEdit, error];
 
   EditDashboardState copyWith({
     EditDashboardStatus? status,
     Project? parentProject,
     Dashboard? initialDashboard,
     String? name,
+    bool? isEdit,
+    bool? isAdmin,
     String? Function()? error,
   }) {
     return EditDashboardState(
+      isEdit: isEdit ?? this.isEdit,
+      isAdmin: isAdmin ?? this.isAdmin,
       status: status ?? this.status,
       parentProject: parentProject ?? this.parentProject,
       initialDashboard: initialDashboard ?? this.initialDashboard,

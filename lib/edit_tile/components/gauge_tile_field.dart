@@ -15,9 +15,10 @@ import 'package:user_repository/user_repository.dart';
 import 'package:uuid/uuid.dart';
 
 class GaugeTileField extends StatefulWidget {
-  const GaugeTileField(this.initialLob, {super.key});
+  const GaugeTileField(this.initialLob, {super.key, required this.enabled});
 
   final String initialLob;
+  final bool enabled;
 
   @override
   State<GaugeTileField> createState() => _GaugeTileFieldState();
@@ -94,6 +95,7 @@ class _GaugeTileFieldState extends State<GaugeTileField> {
               ),
               TAddButton(
                 label: 'ADD RANGE',
+                enabled: widget.enabled,
                 onPressed: () {
                   final gaugeRange = GaugeRange(
                     color: TileHelper.colorToString(ColorName.iColor1),
@@ -140,6 +142,7 @@ class _GaugeTileFieldState extends State<GaugeTileField> {
                 return Column(
                   children: [
                     _GaugeRangeItem(
+                      enabled: widget.enabled,
                       index: index,
                       gaugeRanges: _gaugeRanges,
                       ggRIdentities: _ggRIdentities,
@@ -201,6 +204,7 @@ class _GaugeRangeItem extends StatelessWidget {
     required this.max,
     required this.onSaved,
     required this.onDeleted,
+    required this.enabled,
   });
 
   final int index;
@@ -209,6 +213,7 @@ class _GaugeRangeItem extends StatelessWidget {
   final Color color;
   final String min;
   final String max;
+  final bool enabled;
   final void Function(List<GaugeRange>) onSaved;
   final void Function(List<String>) onDeleted;
 
@@ -221,25 +226,29 @@ class _GaugeRangeItem extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         GestureDetector(
-          onTap: () async => showMaterialModalBottomSheet<Color?>(
-            backgroundColor: Colors.transparent,
-            context: context,
-            builder: (bContext) => ColorSheet(
-              initialColor: color,
-              onColorChanged: (color) => Navigator.of(bContext).pop(color),
-            ),
-          ).then((color) {
-            if (color != null) {
-              // convert selected color to String
-              final colorInString = TileHelper.colorToString(color);
-              // create new GaugeRange with coverted color
-              final updatedGaugeRange =
-                  gaugeRange.copyWith(color: colorInString);
-              // update GaugeRange list
-              gaugeRanges[index] = updatedGaugeRange;
-              onSaved(gaugeRanges);
+          onTap: () async {
+            if (enabled) {
+              await showMaterialModalBottomSheet<Color?>(
+                backgroundColor: Colors.transparent,
+                context: context,
+                builder: (bContext) => ColorSheet(
+                  initialColor: color,
+                  onColorChanged: (color) => Navigator.of(bContext).pop(color),
+                ),
+              ).then((color) {
+                if (color != null) {
+                  // convert selected color to String
+                  final colorInString = TileHelper.colorToString(color);
+                  // create new GaugeRange with coverted color
+                  final updatedGaugeRange =
+                      gaugeRange.copyWith(color: colorInString);
+                  // update GaugeRange list
+                  gaugeRanges[index] = updatedGaugeRange;
+                  onSaved(gaugeRanges);
+                }
+              });
             }
-          }),
+          },
           child: CircleAvatar(radius: 24, backgroundColor: color),
         ),
         const SizedBox(width: 12),
@@ -247,6 +256,7 @@ class _GaugeRangeItem extends StatelessWidget {
           child: TVanillaText(
             key: ValueKey(ggRIdentity),
             initText: min,
+            enabled: enabled,
             hintText: 'Min Value',
             onChanged: (minInString) {
               // create new GaugeRange
@@ -272,6 +282,7 @@ class _GaugeRangeItem extends StatelessWidget {
             key: ValueKey(ggRIdentity),
             initText: max,
             hintText: 'Max Value',
+            enabled: enabled,
             onChanged: (maxInString) {
               // create new GaugeRange
               final updatedGaugeRange = gaugeRange.copyWith(max: maxInString);
@@ -291,6 +302,7 @@ class _GaugeRangeItem extends StatelessWidget {
           ),
         ),
         TCircleButton(
+          enabled: enabled,
           picture: Assets.icons.trash
               .svg(color: ColorName.neural600, fit: BoxFit.scaleDown),
           onPressed: () {

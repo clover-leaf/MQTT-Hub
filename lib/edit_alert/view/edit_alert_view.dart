@@ -35,6 +35,8 @@ class EditAlertView extends StatelessWidget {
     final _formKey = GlobalKey<FormState>();
     // get padding top
     final paddingTop = MediaQuery.of(context).viewPadding.top;
+    // get is edit
+    final isEdit = context.select((EditAlertBloc bloc) => bloc.state.isEdit);
 
     return BlocListener<EditAlertBloc, EditAlertState>(
       listenWhen: (previous, current) => previous.status != current.status,
@@ -97,6 +99,7 @@ class EditAlertView extends StatelessWidget {
                           initText: initialAlert?.name,
                           labelText: 'Alert Name',
                           picture: Assets.icons.tag2,
+                          enabled: isEdit,
                           onChanged: (name) => context
                               .read<EditAlertBloc>()
                               .add(NameChanged(name)),
@@ -110,9 +113,10 @@ class EditAlertView extends StatelessWidget {
                         const SizedBox(height: 24),
                         DeviceConditionField(
                           alertID: initialID,
-                          attributes: attributes,
+                          allAttributes: attributes,
                           initialDevice: initialSelectedDevice,
                           initialConditions: initialConditions,
+                          enabled: isEdit,
                         ),
                         const SizedBox(height: 24),
                         ActionListField(
@@ -120,6 +124,7 @@ class EditAlertView extends StatelessWidget {
                           initialActions: initialActions,
                           devices: devices,
                           attributes: attributes,
+                          enabled: isEdit,
                         )
                       ],
                     ),
@@ -142,6 +147,7 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final isEdit = context.select((EditAlertBloc bloc) => bloc.state.isEdit);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -153,22 +159,38 @@ class _Header extends StatelessWidget {
         ),
         Padding(
           padding: const EdgeInsets.only(right: 12),
-          child: TSecondaryButton(
-            label: 'SAVE',
-            onPressed: () {
-              if (formKey.currentState != null &&
-                  formKey.currentState!.validate()) {
-                context.read<EditAlertBloc>().add(const Submitted());
-              }
-            },
-            enabled: true,
-            textStyle: textTheme.labelLarge!.copyWith(
-              color: ColorName.sky500,
-              fontWeight: FontWeight.w500,
-              letterSpacing: 1.1,
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          ),
+          child: isEdit
+              ? TSecondaryButton(
+                  label: 'SAVE',
+                  onPressed: () {
+                    if (formKey.currentState != null &&
+                        formKey.currentState!.validate()) {
+                      context.read<EditAlertBloc>().add(const Submitted());
+                    }
+                  },
+                  enabled: true,
+                  textStyle: textTheme.labelLarge!.copyWith(
+                    color: ColorName.sky500,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 1.1,
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                )
+              : TSecondaryButton(
+                  label: 'EDIT',
+                  onPressed: () => context
+                      .read<EditAlertBloc>()
+                      .add(const IsEditChanged(isEdit: true)),
+                  enabled: true,
+                  textStyle: textTheme.labelLarge!.copyWith(
+                    color: ColorName.sky500,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 1.1,
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                ),
         )
       ],
     );
@@ -181,12 +203,20 @@ class _Title extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final initialAlert =
+        context.select((EditAlertBloc bloc) => bloc.state.initialAlert);
+    final isEdit =
+        context.select((EditAlertBloc bloc) => bloc.state.isEdit);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'alert'.toUpperCase(),
+          initialAlert == null
+              ? 'NEW ALERT'
+              : isEdit
+                  ? 'EDIT ALERT'
+                  : 'ALERT DETAIL',
           style: textTheme.titleMedium!.copyWith(
             fontWeight: FontWeight.w500,
             letterSpacing: 1.05,

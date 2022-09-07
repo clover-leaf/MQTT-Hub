@@ -16,8 +16,11 @@ class Device extends Equatable {
     FieldId? id,
     required this.groupID,
     required this.brokerID,
+    required this.deviceTypeID,
     required this.name,
+    required this.description,
     required this.topic,
+    required this.qos,
   })  : assert(
           id == null || id.isNotEmpty,
           'id can not be null and should be empty',
@@ -35,11 +38,21 @@ class Device extends Equatable {
   @JsonKey(name: 'broker_id')
   final FieldId brokerID;
 
+  /// The broker ID
+  @JsonKey(name: 'device_type_id')
+  final FieldId? deviceTypeID;
+
   /// The name of device
   final String name;
 
+  /// The name of device
+  final String? description;
+
   /// The topic of device
   final String topic;
+
+  /// The QoS of device
+  final int qos;
 
   /// Deserializes the given [JsonMap] into a [Device].
   static Device fromJson(JsonMap json) {
@@ -54,18 +67,25 @@ class Device extends Equatable {
     FieldId? id,
     FieldId? groupID,
     FieldId? brokerID,
+    FieldId? deviceTypeID,
     String? name,
+    String? description,
     String? topic,
+    int? qos,
   }) {
     return Device(
       id: id ?? this.id,
       groupID: groupID ?? this.groupID,
       brokerID: brokerID ?? this.brokerID,
+      deviceTypeID: deviceTypeID ?? this.deviceTypeID,
       name: name ?? this.name,
+      description: description ?? this.description,
       topic: topic ?? this.topic,
+      qos: qos ?? this.qos,
     );
   }
 
   @override
-  List<Object> get props => [id, groupID, brokerID, name, topic];
+  List<Object?> get props =>
+      [id, groupID, brokerID, deviceTypeID, name, description, topic, qos];
 }

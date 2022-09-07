@@ -16,9 +16,13 @@ class EditTileBloc extends Bloc<EditTileEvent, EditTileState> {
     required List<Device> devices,
     required List<Attribute> attributes,
     required Tile? initialTile,
+    required bool isAdmin,
+    required bool isEdit,
   }) : super(
           EditTileState(
+            isEdit: isEdit,
             // immutate
+            isAdmin: isAdmin,
             dashboardID: dashboardID,
             devices: devices,
             attributes: attributes,
@@ -36,6 +40,7 @@ class EditTileBloc extends Bloc<EditTileEvent, EditTileState> {
           ),
         ) {
     on<Submitted>(_onSubmitted);
+    on<IsEditChanged>(_onIsEditChanged);
     on<TileNameChanged>(_onTileNameChanged);
     on<DeviceIDChanged>(_onDeviceIDChanged);
     on<AttributeIDChanged>(_onAttributeIDChanged);
@@ -45,6 +50,10 @@ class EditTileBloc extends Bloc<EditTileEvent, EditTileState> {
   }
 
   final UserRepository _userRepository;
+
+  void _onIsEditChanged(IsEditChanged event, Emitter<EditTileState> emit) {
+    emit(state.copyWith(isEdit: event.isEdit));
+  }
 
   void _onTileNameChanged(TileNameChanged event, Emitter<EditTileState> emit) {
     emit(state.copyWith(tileName: event.tileName));

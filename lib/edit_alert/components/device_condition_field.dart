@@ -11,15 +11,17 @@ class DeviceConditionField extends StatefulWidget {
   const DeviceConditionField({
     super.key,
     required this.alertID,
-    required this.attributes,
+    required this.allAttributes,
     required this.initialDevice,
     required this.initialConditions,
+    required this.enabled,
   });
 
   final String alertID;
-  final List<Attribute> attributes;
+  final List<Attribute> allAttributes;
   final Device? initialDevice;
   final List<Condition> initialConditions;
+  final bool enabled;
 
   @override
   State<DeviceConditionField> createState() => _DeviceConditionFieldState();
@@ -37,10 +39,16 @@ class _DeviceConditionFieldState extends State<DeviceConditionField> {
     _alertID = widget.alertID;
     _selectedDevice = widget.initialDevice;
     _conditions = widget.initialConditions;
-    _attributesInDevice = widget.attributes
-        .where((att) => att.deviceID == _selectedDevice?.id)
-        .toList();
-    _attributeView = {for (final att in widget.attributes) att.id: att};
+    _attributesInDevice = widget.allAttributes.where((att) {
+      if (_selectedDevice == null) {
+        return false;
+      } else if (_selectedDevice!.deviceTypeID != null) {
+        return att.deviceTypeID == _selectedDevice!.deviceTypeID;
+      } else {
+        return att.deviceID == _selectedDevice!.id;
+      }
+    }).toList();
+    _attributeView = {for (final att in widget.allAttributes) att.id: att};
     super.initState();
   }
 
@@ -60,7 +68,17 @@ class _DeviceConditionFieldState extends State<DeviceConditionField> {
       validator: (_) {
         for (final cd in _conditions) {
           final attributeOfCondition = _attributeView[cd.attributeID];
-          if (attributeOfCondition?.deviceID != _selectedDevice?.id) {
+          // device is using device type
+          if (_selectedDevice?.deviceTypeID != null) {
+            if (attributeOfCondition?.deviceTypeID !=
+                _selectedDevice?.deviceTypeID) {
+              return 'All attributes must belong to device';
+            } else {
+              return null;
+            }
+          }
+          // device not using device type
+          else if (attributeOfCondition?.deviceID != _selectedDevice?.id) {
             return 'All attributes must belong to device';
           }
         }
@@ -73,6 +91,7 @@ class _DeviceConditionFieldState extends State<DeviceConditionField> {
             labelText: 'Device',
             initialValue: _selectedDevice?.name,
             picture: Assets.icons.airdrop,
+            enabled: widget.enabled,
             onTapped: () async => showMaterialModalBottomSheet<Device?>(
               backgroundColor: Colors.transparent,
               context: context,
@@ -90,7 +109,7 @@ class _DeviceConditionFieldState extends State<DeviceConditionField> {
                 updateSelectedDeviceIDBloc(context, device.id);
                 setState(() {
                   _selectedDevice = device;
-                  _attributesInDevice = widget.attributes
+                  _attributesInDevice = widget.allAttributes
                       .where((att) => att.deviceID == device.id)
                       .toList();
                 });
@@ -116,6 +135,7 @@ class _DeviceConditionFieldState extends State<DeviceConditionField> {
                 _conditions = conditions;
               });
             },
+            enabled: widget.enabled,
           ),
           // List ranges error line
           if (dvcdFormFieldState.hasError) const SizedBox(height: 8),

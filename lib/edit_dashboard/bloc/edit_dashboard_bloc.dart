@@ -10,18 +10,27 @@ class EditDashboardBloc extends Bloc<EditDashboardEvent, EditDashboardState> {
     this._userRepository, {
     required Project parentProject,
     required Dashboard? initialDashboard,
+    required bool isAdmin,
+    required bool isEdit,
   }) : super(
           EditDashboardState(
+            isEdit: isEdit,
+            isAdmin: isAdmin,
             parentProject: parentProject,
             initialDashboard: initialDashboard,
             name: initialDashboard?.name ?? '',
           ),
         ) {
     on<Submitted>(_onSubmitted);
+    on<IsEditChanged>(_onIsEditChanged);
     on<NameChanged>(_onNameChanged);
   }
 
   final UserRepository _userRepository;
+
+  void _onIsEditChanged(IsEditChanged event, Emitter<EditDashboardState> emit) {
+    emit(state.copyWith(isEdit: event.isEdit));
+  }
 
   Future<void> _onSubmitted(
     Submitted event,
@@ -41,10 +50,18 @@ class EditDashboardBloc extends Bloc<EditDashboardEvent, EditDashboardState> {
       emit(state.copyWith(status: EditDashboardStatus.success));
     } catch (error) {
       final err = error.toString().split(':').last.trim();
-      emit(state.copyWith(
-          status: EditDashboardStatus.failure, error: () => err,),);
-      emit(state.copyWith(
-          status: EditDashboardStatus.normal, error: () => null,),);
+      emit(
+        state.copyWith(
+          status: EditDashboardStatus.failure,
+          error: () => err,
+        ),
+      );
+      emit(
+        state.copyWith(
+          status: EditDashboardStatus.normal,
+          error: () => null,
+        ),
+      );
     }
   }
 

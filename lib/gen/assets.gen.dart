@@ -71,11 +71,17 @@ class $AssetsIconsGen {
   /// File path: assets/icons/box.svg
   SvgGenImage get box => const SvgGenImage('assets/icons/box.svg');
 
+  /// File path: assets/icons/calendar.svg
+  SvgGenImage get calendar => const SvgGenImage('assets/icons/calendar.svg');
+
   /// File path: assets/icons/category-2.svg
   SvgGenImage get category2 => const SvgGenImage('assets/icons/category-2.svg');
 
   /// File path: assets/icons/chart.svg
   SvgGenImage get chart => const SvgGenImage('assets/icons/chart.svg');
+
+  /// File path: assets/icons/clock.svg
+  SvgGenImage get clock => const SvgGenImage('assets/icons/clock.svg');
 
   /// File path: assets/icons/cloud.svg
   SvgGenImage get cloud => const SvgGenImage('assets/icons/cloud.svg');
@@ -86,6 +92,10 @@ class $AssetsIconsGen {
 
   /// File path: assets/icons/diagram.svg
   SvgGenImage get diagram => const SvgGenImage('assets/icons/diagram.svg');
+
+  /// File path: assets/icons/document-text.svg
+  SvgGenImage get documentText =>
+      const SvgGenImage('assets/icons/document-text.svg');
 
   /// File path: assets/icons/edit.svg
   SvgGenImage get edit => const SvgGenImage('assets/icons/edit.svg');
@@ -139,6 +149,10 @@ class $AssetsIconsGen {
 
   /// File path: assets/icons/more.svg
   SvgGenImage get more => const SvgGenImage('assets/icons/more.svg');
+
+  /// File path: assets/icons/notification.svg
+  SvgGenImage get notification =>
+      const SvgGenImage('assets/icons/notification.svg');
 
   /// File path: assets/icons/password-check.svg
   SvgGenImage get passwordCheck =>

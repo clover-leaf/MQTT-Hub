@@ -32,7 +32,7 @@ class DashboardsOverviewView extends StatelessWidget {
               ..showSnackBar(
                 TSnackbar.success(
                   context,
-                  content: 'Broker has deleted successfully',
+                  content: 'Dashboard has deleted successfully',
                 ),
               );
             if (context.loaderOverlay.visible) {
@@ -70,6 +70,8 @@ class DashboardsOverviewView extends StatelessWidget {
                           EditDashboardPage.route(
                             project: parentProject,
                             initialDashboard: db,
+                            isAdmin: isAdmin,
+                            isEdit: false,
                           ),
                         ),
                         onDeletePressed: () => context
@@ -117,6 +119,8 @@ class _Header extends StatelessWidget {
                 EditDashboardPage.route(
                   project: parentProject,
                   initialDashboard: null,
+                  isAdmin: isAdmin,
+                  isEdit: true,
                 ),
               ),
               enabled: true,

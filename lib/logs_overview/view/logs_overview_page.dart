@@ -12,10 +12,12 @@ class LogsOverviewPage extends StatelessWidget {
       transitionDuration: const Duration(milliseconds: 400),
       pageBuilder: (context, animation, secondaryAnimation) => BlocProvider(
         create: (context) => LogsOverviewBloc(context.read<UserRepository>())
+          ..add(const GetLogsRequested())
           ..add(const DeviceSubscriptionRequested())
           ..add(const AttributeSubscriptionRequested())
           ..add(const AlertSubscriptionRequested())
           ..add(const LogSubscriptionRequested())
+          ..add(const ConditionSubscriptionRequested())
           ..add(const ConditionLogSubscriptionRequested()),
         child: const LogsOverviewPage(),
       ),

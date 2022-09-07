@@ -38,11 +38,13 @@ class SubItem extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                title,
-                style: textTheme.bodyMedium!.copyWith(
-                  color: ColorName.neural700,
-                  fontWeight: FontWeight.w600,
+              Flexible(
+                child: Text(
+                  title,
+                  style: textTheme.bodyMedium!.copyWith(
+                    color: ColorName.neural700,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ],

@@ -31,6 +31,8 @@ class EditAlertPage extends StatelessWidget {
     required List<Condition> initialConditions,
     required List<TAction> initialActions,
     required Alert? initialAlert,
+    required bool isAdmin,
+    required bool isEdit,
   }) {
     return PageRouteBuilder<void>(
       transitionDuration: const Duration(milliseconds: 400),
@@ -43,6 +45,8 @@ class EditAlertPage extends StatelessWidget {
         return BlocProvider(
           create: (context) => EditAlertBloc(
             context.read<UserRepository>(),
+            isAdmin: isAdmin,
+            isEdit: isEdit,
             devices: devices,
             attributes: attributes,
             initialConditions: initialConditions,

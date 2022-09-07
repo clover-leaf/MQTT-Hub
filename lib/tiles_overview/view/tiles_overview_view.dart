@@ -1,4 +1,5 @@
 import 'package:bee/app/app.dart';
+import 'package:bee/components/component.dart';
 import 'package:bee/tiles_overview/bloc/bloc.dart';
 import 'package:bee/tiles_overview/components/component.dart';
 import 'package:flutter/material.dart';
@@ -44,6 +45,9 @@ class TilesOverviewView extends StatelessWidget {
     // get broker status view
     final brokerStatusView = state.brokerStatusView;
 
+    // get is admin
+    final isAdmin = state.isAdmin;
+
     // tile width
     final mediaWidth = MediaQuery.of(context).size.width;
     final tileWidth = (mediaWidth - 48) / 2;
@@ -60,6 +64,28 @@ class TilesOverviewView extends StatelessWidget {
         } else {
           if (context.loaderOverlay.visible) {
             context.loaderOverlay.hide();
+          }
+          if (state.status.isSuccess()) {
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                TSnackbar.success(
+                  context,
+                  content: 'Broker has deleted successfully',
+                ),
+              );
+            if (context.loaderOverlay.visible) {
+              context.loaderOverlay.hide();
+            }
+          } else if (state.status.isFailure()) {
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                TSnackbar.error(context, content: state.error!),
+              );
+            if (context.loaderOverlay.visible) {
+              context.loaderOverlay.hide();
+            }
           }
           if (state.isLogout) {
             context.read<AppBloc>().add(const AppUnauthenticated());
@@ -107,6 +133,7 @@ class TilesOverviewView extends StatelessWidget {
                     value: tileValueView[tile.id],
                     status: brokerStatusView[device?.brokerID],
                     unit: attributeView[tile.attributeID]?.unit,
+                    isAdmin: isAdmin,
                   );
                 },
               ),

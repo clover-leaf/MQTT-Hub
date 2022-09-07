@@ -38,12 +38,18 @@ class GroupItem extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              group.name,
-              style: textTheme.bodyLarge!.copyWith(
-                color: ColorName.neural700,
-                fontWeight: FontWeight.w600,
-              ),
+            Row(
+              children: [
+                Flexible(
+                  child: Text(
+                    group.name,
+                    style: textTheme.bodyLarge!.copyWith(
+                      color: ColorName.neural700,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 12),
             Row(

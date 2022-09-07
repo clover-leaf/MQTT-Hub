@@ -15,6 +15,7 @@ class TAction extends Equatable {
   TAction({
     FieldId? id,
     required this.alertID,
+    required this.scheduleID,
     required this.deviceID,
     required this.attributeID,
     required this.value,
@@ -29,7 +30,11 @@ class TAction extends Equatable {
 
   /// The alert ID
   @JsonKey(name: 'alert_id')
-  final FieldId alertID;
+  final FieldId? alertID;
+
+  /// The alert ID
+  @JsonKey(name: 'schedule_id')
+  final FieldId? scheduleID;
 
   /// The attribute ID
   @JsonKey(name: 'device_id')
@@ -51,15 +56,18 @@ class TAction extends Equatable {
   JsonMap toJson() => _$TActionToJson(this);
 
   /// Returns a copy of [TAction] with given parameters
-  TAction copyWith(
-      {FieldId? id,
-      FieldId? alertID,
-      FieldId? deviceID,
-      FieldId? attributeID,
-      String? value,}) {
+  TAction copyWith({
+    FieldId? id,
+    FieldId? alertID,
+    FieldId? scheduleID,
+    FieldId? deviceID,
+    FieldId? attributeID,
+    String? value,
+  }) {
     return TAction(
       id: id ?? this.id,
       alertID: alertID ?? this.alertID,
+      scheduleID: scheduleID ?? this.scheduleID,
       deviceID: deviceID ?? this.deviceID,
       attributeID: attributeID ?? this.attributeID,
       value: value ?? this.value,
@@ -67,5 +75,6 @@ class TAction extends Equatable {
   }
 
   @override
-  List<Object?> get props => [id, alertID, deviceID, attributeID, value];
+  List<Object?> get props =>
+      [id, alertID, scheduleID, deviceID, attributeID, value];
 }

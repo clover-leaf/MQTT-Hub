@@ -1,5 +1,4 @@
 import 'package:bee/components/component.dart';
-import 'package:bee/device_detail/components/attribute_item.dart';
 import 'package:bee/device_detail/device_detail.dart';
 import 'package:bee/edit_device/edit_device.dart';
 import 'package:bee/gen/assets.gen.dart';
@@ -13,6 +12,10 @@ class DeviceDetailView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final trackingDevices =
+        context.select((DeviceDetailBloc bloc) => bloc.state.trackingDevices);
+    final trackingAttributes = context
+        .select((DeviceDetailBloc bloc) => bloc.state.trackingAttributes);
     final showedAttributes =
         context.select((DeviceDetailBloc bloc) => bloc.state.showedAttributes);
     final isAdmin =
@@ -26,14 +29,17 @@ class DeviceDetailView extends StatelessWidget {
           context.loaderOverlay.show();
         } else {
           if (state.status.isSuccess()) {
-            ScaffoldMessenger.of(context)
-              ..hideCurrentSnackBar()
-              ..showSnackBar(
-                TSnackbar.success(
-                  context,
-                  content: 'Device has deleted successfully',
-                ),
-              );
+            if (state.isDeleted) {
+              Navigator.of(context).pop();
+              ScaffoldMessenger.of(context)
+                ..hideCurrentSnackBar()
+                ..showSnackBar(
+                  TSnackbar.success(
+                    context,
+                    content: 'Device has deleted successfully',
+                  ),
+                );
+            }
             if (context.loaderOverlay.visible) {
               context.loaderOverlay.hide();
             }
@@ -52,25 +58,25 @@ class DeviceDetailView extends StatelessWidget {
       child: Column(
         children: [
           SizedBox(height: paddingTop),
-           _Header(isAdmin: isAdmin),
+          _Header(isAdmin: isAdmin),
           Expanded(
-            child: ListView(
+            child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
-              children: [
-                const _Title(),
-                const SizedBox(height: 20),
-                ...showedAttributes.map((att) {
-                  return Column(
-                    children: [
-                      AttributeItem(
-                        attribute: att,
-                        onPressed: () {},
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const _Title(),
+                  const SizedBox(height: 20),
+                  if (showedAttributes.isNotEmpty)
+                    Expanded(
+                      child: TrackingTab(
+                        attributes: showedAttributes,
+                        trackingDevices: trackingDevices,
+                        trackingAttributes: trackingAttributes,
                       ),
-                      const SizedBox(height: 16)
-                    ],
-                  );
-                }).toList()
-              ],
+                    ),
+                ],
+              ),
             ),
           ),
         ],
@@ -92,6 +98,8 @@ class _Header extends StatelessWidget {
         context.select((DeviceDetailBloc bloc) => bloc.state.attributes);
     final brokerInProjects =
         context.select((DeviceDetailBloc bloc) => bloc.state.brokerInProjects);
+    final deviceTypeInProjects = context
+        .select((DeviceDetailBloc bloc) => bloc.state.deviceTypeInProjects);
 
     return Row(
       children: [
@@ -100,47 +108,60 @@ class _Header extends StatelessWidget {
               .svg(color: ColorName.neural700, fit: BoxFit.scaleDown),
           onPressed: () => Navigator.of(context).pop(),
         ),
+        if (isAdmin) const Spacer(),
         if (isAdmin)
-        const Spacer(),
-        if (isAdmin)
-        TSecondaryButton(
-          label: 'DELETE',
-          onPressed: () =>
-              context.read<DeviceDetailBloc>().add(const DeletionRequested()),
-          enabled: true,
-          textStyle: textTheme.labelLarge!.copyWith(
-            color: ColorName.sky500,
-            fontWeight: FontWeight.w500,
-            letterSpacing: 1.1,
+          TSecondaryButton(
+            label: 'DELETE',
+            onPressed: () =>
+                context.read<DeviceDetailBloc>().add(const DeletionRequested()),
+            enabled: true,
+            textStyle: textTheme.labelLarge!.copyWith(
+              color: ColorName.sky500,
+              fontWeight: FontWeight.w500,
+              letterSpacing: 1.1,
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        ),
+        if (isAdmin) const SizedBox(width: 4),
         if (isAdmin)
-        const SizedBox(width: 4),
-        if (isAdmin)
-        TSecondaryButton(
-          label: 'EDIT',
-          onPressed: () {
-            final _attributes =
-                attributes.where((att) => att.deviceID == device.id).toList();
-            Navigator.of(context).push(
-              EditDevicePage.route(
-                parentGroupID: device.groupID,
-                brokers: brokerInProjects,
-                initialAttributes: _attributes,
-                initialDevice: device,
-              ),
-            );
-          },
-          enabled: true,
-          textStyle: textTheme.labelLarge!.copyWith(
-            color: ColorName.sky500,
-            fontWeight: FontWeight.w500,
-            letterSpacing: 1.1,
+          TSecondaryButton(
+            label: 'DETAIL',
+            onPressed: () {
+              final _attributes =
+                  attributes.where((att) => att.deviceID == device.id).toList();
+              Navigator.of(context).push(
+                EditDevicePage.route(
+                  parentGroupID: device.groupID,
+                  brokers: brokerInProjects,
+                  deviceTypes: deviceTypeInProjects,
+                  allAttributes: attributes,
+                  initialAttributes: _attributes,
+                  initialDevice: device,
+                  isUseDeviceType: device.deviceTypeID != null,
+                  isAdmin: isAdmin,
+                  isEdit: false,
+                ),
+              );
+            },
+            enabled: true,
+            textStyle: textTheme.labelLarge!.copyWith(
+              color: ColorName.sky500,
+              fontWeight: FontWeight.w500,
+              letterSpacing: 1.1,
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        ),
         const SizedBox(width: 12),
+        // TCircleButton(
+        //   picture: Assets.icons.box.svg(),
+        //   onPressed: () => Navigator.of(context).push(
+        //     RecordsOverviewPage.route(
+        //       device: device,
+        //       attributes: showedAttributes,
+        //     ),
+        //   ),
+        //   // context.read<DeviceDetailBloc>().add(const DonwloadRequested()),
+        // )
       ],
     );
   }
@@ -167,7 +188,7 @@ class _Title extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          'Overview',
+          device.description ?? 'Records',
           style: textTheme.labelMedium!.copyWith(
             fontWeight: FontWeight.w500,
             color: ColorName.neural600,

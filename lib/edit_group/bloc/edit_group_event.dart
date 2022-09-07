@@ -19,3 +19,12 @@ class NameChanged extends EditGroupEvent {
   @override
   List<Object> get props => [name];
 }
+
+class DescriptionChanged extends EditGroupEvent {
+  const DescriptionChanged(this.description);
+
+  final String description;
+
+  @override
+  List<Object> get props => [description];
+}

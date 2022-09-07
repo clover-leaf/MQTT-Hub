@@ -46,3 +46,12 @@ class ActionsChanged extends EditAlertEvent {
   @override
   List<Object?> get props => [actions];
 }
+
+class IsEditChanged extends EditAlertEvent {
+  const IsEditChanged({required this.isEdit});
+
+  final bool isEdit;
+
+  @override
+  List<Object> get props => [isEdit];
+}

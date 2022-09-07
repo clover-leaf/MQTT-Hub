@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:user_repository/user_repository.dart';
 
 part 'login_event.dart';
@@ -48,7 +49,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         state.password,
       );
       final token = res['token'] as String;
+      final userID = res['user-id'] as String;
       final isAdmin = res['isAdmin'] as bool;
+      await OneSignal.shared.setExternalUserId(userID);
       emit(
         state.copyWith(
           status: LoginStatus.success,

@@ -21,8 +21,10 @@ class GroupDetailPage extends StatelessWidget {
           group: group,
         )
           ..add(const GroupSubscriptionRequested())
+          ..add(const DeviceTypeSubscriptionRequested())
           ..add(const BrokerSubscriptionRequested())
-          ..add(const DeviceSubscriptionRequested()),
+          ..add(const DeviceSubscriptionRequested())
+          ..add(const AttributeSubscriptionRequested()),
         child: const GroupDetailPage(),
       ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {

@@ -34,16 +34,16 @@ class DashboardItem extends StatelessWidget {
         decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(
-              width: 4,
+              width: 2,
               color: isSelected ? ColorName.sky600 : Colors.transparent,
             ),
           ),
         ),
         child: Text(
-          title.toUpperCase(),
+          title,
           style: textTheme.bodyMedium!.copyWith(
             color: isSelected ? ColorName.sky700 : ColorName.neural500,
-            fontWeight: FontWeight.w600,
+            fontSize: 13,
             letterSpacing: 1.02,
           ),
         ),

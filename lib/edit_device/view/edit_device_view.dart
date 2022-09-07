@@ -1,5 +1,5 @@
 import 'package:bee/components/component.dart';
-import 'package:bee/edit_device/components/attribute_field.dart';
+import 'package:bee/edit_device/components/component.dart';
 import 'package:bee/edit_device/edit_device.dart';
 import 'package:bee/edit_device/sheets/broker_sheet.dart';
 import 'package:bee/gen/assets.gen.dart';
@@ -16,13 +16,17 @@ class EditDeviceView extends StatelessWidget {
     required this.initialID,
     required this.initialDevice,
     required this.initialSelectedBroker,
+    required this.initialSelectedDeviceType,
     required this.initialAttributes,
+    required this.allAttributes,
   });
 
   final String initialID;
   final Device? initialDevice;
   final Broker? initialSelectedBroker;
+  final DeviceType? initialSelectedDeviceType;
   final List<Attribute> initialAttributes;
+  final List<Attribute> allAttributes;
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +36,7 @@ class EditDeviceView extends StatelessWidget {
     final _formKey = GlobalKey<FormState>();
     // get padding top
     final paddingTop = MediaQuery.of(context).viewPadding.top;
+    final isEdit = context.select((EditDeviceBloc bloc) => bloc.state.isEdit);
 
     return BlocListener<EditDeviceBloc, EditDeviceState>(
       listenWhen: (previous, current) => previous.status != current.status,
@@ -94,6 +99,7 @@ class EditDeviceView extends StatelessWidget {
                           initText: initialDevice?.name,
                           labelText: 'Device Name',
                           picture: Assets.icons.tag2,
+                          enabled: isEdit,
                           onChanged: (name) => context
                               .read<EditDeviceBloc>()
                               .add(NameChanged(name)),
@@ -105,10 +111,28 @@ class EditDeviceView extends StatelessWidget {
                           },
                         ),
                         const SizedBox(height: 24),
+                        Text(
+                          'DESCRIPTION',
+                          style: textTheme.bodySmall!
+                              .copyWith(color: ColorName.neural600),
+                        ),
+                        const SizedBox(height: 8),
+                        TTextField(
+                          initText: initialDevice?.description,
+                          labelText: 'Device Description',
+                          picture: Assets.icons.documentText,
+                          enabled: isEdit,
+                          onChanged: (description) => context
+                              .read<EditDeviceBloc>()
+                              .add(DescriptionChanged(description)),
+                          validator: (value) => null,
+                        ),
+                        const SizedBox(height: 24),
                         TSelectedField(
                           labelText: 'Broker',
                           initialValue: initialSelectedBroker?.name,
                           picture: Assets.icons.airdrop,
+                          enabled: isEdit,
                           onTapped: () async =>
                               showMaterialModalBottomSheet<Broker?>(
                             backgroundColor: Colors.transparent,
@@ -148,6 +172,7 @@ class EditDeviceView extends StatelessWidget {
                           initText: initialDevice?.topic,
                           labelText: 'Device Topic',
                           picture: Assets.icons.tag2,
+                          enabled: isEdit,
                           onChanged: (topic) => context
                               .read<EditDeviceBloc>()
                               .add(TopicChanged(topic)),
@@ -159,9 +184,24 @@ class EditDeviceView extends StatelessWidget {
                           },
                         ),
                         const SizedBox(height: 24),
-                        AttributeField(
+                        Text(
+                          'QUALITY OF SERVICE',
+                          style: textTheme.bodySmall!
+                              .copyWith(color: ColorName.neural600),
+                        ),
+                        const SizedBox(height: 8),
+                        QosField(
+                          initialQos: initialDevice?.qos ?? 0,
+                          enabled: isEdit,
+                        ),
+                        const SizedBox(height: 16),
+                        TypeAttributeField(
                           initialAttributes: initialAttributes,
+                          initialDeviceType: initialSelectedDeviceType,
+                          allAttributes: allAttributes,
                           deviceID: initialID,
+                          isUseDeviceType: initialSelectedDeviceType != null,
+                          enabled: isEdit,
                         )
                       ],
                     ),
@@ -184,6 +224,9 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    // get is edit
+    final isEdit = context.select((EditDeviceBloc bloc) => bloc.state.isEdit);
+    final isAdmin = context.select((EditDeviceBloc bloc) => bloc.state.isAdmin);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -193,25 +236,47 @@ class _Header extends StatelessWidget {
               .svg(color: ColorName.neural700, fit: BoxFit.scaleDown),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        Padding(
-          padding: const EdgeInsets.only(right: 12),
-          child: TSecondaryButton(
-            label: 'SAVE',
-            onPressed: () {
-              if (formKey.currentState != null &&
-                  formKey.currentState!.validate()) {
-                context.read<EditDeviceBloc>().add(const Submitted());
-              }
-            },
-            enabled: true,
-            textStyle: textTheme.labelLarge!.copyWith(
-              color: ColorName.sky500,
-              fontWeight: FontWeight.w500,
-              letterSpacing: 1.1,
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          ),
-        )
+        if (isAdmin)
+          Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: isEdit
+                ? TSecondaryButton(
+                    label: 'SAVE',
+                    onPressed: () {
+                      if (formKey.currentState != null &&
+                          formKey.currentState!.validate()) {
+                        context.read<EditDeviceBloc>().add(const Submitted());
+                      }
+                    },
+                    enabled: true,
+                    textStyle: textTheme.labelLarge!.copyWith(
+                      color: ColorName.sky500,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 1.1,
+                    ),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  )
+                : TSecondaryButton(
+                    label: 'EDIT',
+                    onPressed: () {
+                      if (formKey.currentState != null &&
+                          formKey.currentState!.validate()) {
+                        context
+                            .read<EditDeviceBloc>()
+                            .add(const IsEditChanged(isEdit: true));
+                      }
+                    },
+                    enabled: true,
+                    textStyle: textTheme.labelLarge!.copyWith(
+                      color: ColorName.sky500,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 1.1,
+                    ),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  ),
+          )
       ],
     );
   }
@@ -223,12 +288,20 @@ class _Title extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final initialDevice =
+        context.select((EditDeviceBloc bloc) => bloc.state.initialDevice);
+    // get is edit
+    final isEdit = context.select((EditDeviceBloc bloc) => bloc.state.isEdit);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Device'.toUpperCase(),
+          initialDevice == null
+              ? 'NEW DEVICE'
+              : isEdit
+                  ? 'EDIT DEVICE'
+                  : 'DEVICE DETAIL',
           style: textTheme.titleMedium!.copyWith(
             fontWeight: FontWeight.w500,
             letterSpacing: 1.05,

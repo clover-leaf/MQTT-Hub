@@ -5,6 +5,7 @@ import 'package:bee/logs_overview/bloc/bloc.dart';
 import 'package:bee/logs_overview/components/log_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:user_repository/user_repository.dart';
 
 class LogsOverviewView extends StatelessWidget {
   const LogsOverviewView({super.key});
@@ -13,6 +14,8 @@ class LogsOverviewView extends StatelessWidget {
   Widget build(BuildContext context) {
     final state = context.watch<LogsOverviewBloc>().state;
     final logs = state.logs;
+    final sortedLogs = List<Log>.from(logs)
+      ..sort((a, b) => b.time.compareTo(a.time));
 
     final paddingTop = MediaQuery.of(context).viewPadding.top;
 
@@ -26,7 +29,14 @@ class LogsOverviewView extends StatelessWidget {
             children: [
               const _Title(),
               const SizedBox(height: 20),
-              ...logs.map(LogItem.new).toList()
+              ...sortedLogs.map((log) {
+                return Column(
+                  children: [
+                    LogItem(log),
+                    const SizedBox(height: 16),
+                  ],
+                );
+              }).toList()
             ],
           ),
         ),

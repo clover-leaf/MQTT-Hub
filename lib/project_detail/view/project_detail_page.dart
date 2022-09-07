@@ -23,8 +23,10 @@ class ProjectDetailPage extends StatelessWidget {
           ..add(const BrokerSubscriptionRequested())
           ..add(const UserProjectSubscriptionRequested())
           ..add(const DashboardSubscriptionRequested())
+          ..add(const DeviceTypeSubscriptionRequested())
           ..add(const DeviceSubscriptionRequested())
-          ..add(const AlertSubscriptionRequested()),
+          ..add(const AlertSubscriptionRequested())
+          ..add(const ScheduleSubscriptionRequested()),
         child: const ProjectDetailPage(),
       ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {

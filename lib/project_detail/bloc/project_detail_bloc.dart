@@ -17,6 +17,8 @@ class ProjectDetailBloc extends Bloc<ProjectDetailEvent, ProjectDetailState> {
     on<DashboardSubscriptionRequested>(_onDashboardSubscribed);
     on<DeviceSubscriptionRequested>(_onDeviceSubscribed);
     on<AlertSubscriptionRequested>(_onAlertSubscribed);
+    on<DeviceTypeSubscriptionRequested>(_onDeviceTypeSubscribed);
+    on<ScheduleSubscriptionRequested>(_onScheduleSubscribed);
     on<DeletionRequested>(_onDeleted);
   }
 
@@ -107,6 +109,18 @@ class ProjectDetailBloc extends Bloc<ProjectDetailEvent, ProjectDetailState> {
     );
   }
 
+  Future<void> _onDeviceTypeSubscribed(
+    DeviceTypeSubscriptionRequested event,
+    Emitter<ProjectDetailState> emit,
+  ) async {
+    await emit.forEach<List<DeviceType>>(
+      _userRepository.subscribeDeviceTypeStream(),
+      onData: (deviceTypes) {
+        return state.copyWith(deviceTypes: deviceTypes);
+      },
+    );
+  }
+
   Future<void> _onAlertSubscribed(
     AlertSubscriptionRequested event,
     Emitter<ProjectDetailState> emit,
@@ -115,6 +129,18 @@ class ProjectDetailBloc extends Bloc<ProjectDetailEvent, ProjectDetailState> {
       _userRepository.subscribeAlertStream(),
       onData: (alerts) {
         return state.copyWith(alerts: alerts);
+      },
+    );
+  }
+
+  Future<void> _onScheduleSubscribed(
+    ScheduleSubscriptionRequested event,
+    Emitter<ProjectDetailState> emit,
+  ) async {
+    await emit.forEach<List<Schedule>>(
+      _userRepository.subscribeScheduleStream(),
+      onData: (schedules) {
+        return state.copyWith(schedules: schedules);
       },
     );
   }

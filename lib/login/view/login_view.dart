@@ -59,7 +59,7 @@ class LoginView extends StatelessWidget {
                   children: [
                     TTextField(
                       initText: null,
-                      labelText: 'Domain Name',
+                      labelText: 'Company Name',
                       picture: Assets.icons.box,
                       onChanged: (domainName) {
                         context

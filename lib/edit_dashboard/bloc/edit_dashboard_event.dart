@@ -19,3 +19,12 @@ class NameChanged extends EditDashboardEvent {
   @override
   List<Object> get props => [name];
 }
+
+class IsEditChanged extends EditDashboardEvent {
+  const IsEditChanged({required this.isEdit});
+
+  final bool isEdit;
+
+  @override
+  List<Object> get props => [isEdit];
+}

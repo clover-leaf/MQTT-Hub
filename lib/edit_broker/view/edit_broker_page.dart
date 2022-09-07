@@ -15,12 +15,16 @@ class EditBrokerPage extends StatelessWidget {
   static PageRoute<void> route({
     required Project project,
     required Broker? initialBroker,
+    required bool isAdmin,
+    required bool isEdit,
   }) {
     return PageRouteBuilder<void>(
       transitionDuration: const Duration(milliseconds: 400),
       pageBuilder: (context, animation, secondaryAnimation) => BlocProvider(
         create: (context) => EditBrokerBloc(
           context.read<UserRepository>(),
+          isAdmin: isAdmin,
+          isEdit: isEdit,
           parentProject: project,
           initialBroker: initialBroker,
         ),

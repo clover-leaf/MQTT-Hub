@@ -14,8 +14,12 @@ class EditAlertBloc extends Bloc<EditAlertEvent, EditAlertState> {
     required List<Condition> initialConditions,
     required List<TAction> initialActions,
     required Alert? initialAlert,
+    required bool isAdmin,
+    required bool isEdit,
   }) : super(
           EditAlertState(
+            isEdit: isEdit,
+            isAdmin: isAdmin,
             id: initialID,
             devices: devices,
             attributes: attributes,
@@ -32,10 +36,15 @@ class EditAlertBloc extends Bloc<EditAlertEvent, EditAlertState> {
     on<NameChanged>(_onNameChanged);
     on<SelectedDeviceIDChanged>(_onSelectedDeviceIDChanged);
     on<ConditionsChanged>(_onConditionsChanged);
+    on<IsEditChanged>(_onIsEditChanged);
     on<ActionsChanged>(_onActionsChanged);
   }
 
   final UserRepository _userRepository;
+
+  void _onIsEditChanged(IsEditChanged event, Emitter<EditAlertState> emit) {
+    emit(state.copyWith(isEdit: event.isEdit));
+  }
 
   void _onNameChanged(NameChanged event, Emitter<EditAlertState> emit) {
     emit(state.copyWith(name: event.name));
@@ -65,15 +74,11 @@ class EditAlertBloc extends Bloc<EditAlertEvent, EditAlertState> {
   ) async {
     try {
       emit(state.copyWith(status: EditAlertStatus.processing));
-      final alert = state.initialAlert?.copyWith(
-            name: state.name,
-            deviceID: state.selectedDeviceID,
-          ) ??
-          Alert(
-            id: state.id,
-            name: state.name,
-            deviceID: state.selectedDeviceID!,
-          );
+      final alert = Alert(
+        id: state.id,
+        name: state.name,
+        deviceID: state.selectedDeviceID!,
+      );
       await _userRepository.saveAlert(alert);
 
       final initialConditionView = {
@@ -81,16 +86,15 @@ class EditAlertBloc extends Bloc<EditAlertEvent, EditAlertState> {
       };
       // handle new conditions
       final newCondition = state.conditions
-          .where((cd) => !initialConditionView.containsKey(cd.id)).toList();
+          .where((cd) => !initialConditionView.containsKey(cd.id))
+          .toList();
       for (final cd in newCondition) {
         await _userRepository.saveCondition(cd);
       }
       // handle editted conditions
       final edittedConditions = state.conditions
           .where(
-            (cd) =>
-                initialConditionView.containsKey(cd.id) &&
-                cd != initialConditionView[cd.id],
+            (cd) => initialConditionView.containsKey(cd.id),
           )
           .toList();
       for (final cd in edittedConditions) {
@@ -108,18 +112,15 @@ class EditAlertBloc extends Bloc<EditAlertEvent, EditAlertState> {
         for (final ac in state.initialActions) ac.id: ac
       };
       // handle new actions
-      final newAction =
-          state.actions.where((ac) => !initialActionView.containsKey(ac.id));
+      final newAction = state.actions
+          .where((ac) => !initialActionView.containsKey(ac.id))
+          .toList();
       for (final ac in newAction) {
         await _userRepository.saveAction(ac);
       }
       // handle editted actions
       final edittedActions = state.actions
-          .where(
-            (ac) =>
-                initialActionView.containsKey(ac.id) &&
-                ac != initialActionView[ac.id],
-          )
+          .where((ac) => initialActionView.containsKey(ac.id))
           .toList();
       for (final ac in edittedActions) {
         await _userRepository.saveAction(ac);

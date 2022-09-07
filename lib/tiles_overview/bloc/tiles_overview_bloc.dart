@@ -39,13 +39,36 @@ class TilesOverviewBloc extends Bloc<TilesOverviewEvent, TilesOverviewState> {
     on<DashboardSubscriptionRequested>(_onDashboardSubscribed);
     on<TileSubscriptionRequested>(_onTileSubscribed);
     on<DeviceSubscriptionRequested>(_onDeviceSubscribed);
+    on<ActionSubscriptionRequested>(_onActionSubscribed);
+    on<ActionTileSubscriptionRequested>(_onActionTileSubscribed);
+    on<DeviceTypeSubscriptionRequested>(_onDeviceTypeSubscribed);
     on<AttributeSubscriptionRequested>(_onAttributeSubscribed);
     on<SelectedProjectChanged>(_onSelectedProjectChanged);
     on<SelectedDashboardChanged>(_onSelectedDashboardChanged);
+    on<TileDeletedRequested>(_onTileDeletedRequested);
     on<LogoutRequested>(_onLogout);
   }
 
   final UserRepository _userRepository;
+
+  Future<void> _onTileDeletedRequested(
+    TileDeletedRequested event,
+    Emitter<TilesOverviewState> emit,
+  ) async {
+    try {
+      emit(state.copyWith(status: TilesOverviewStatus.processing));
+      await _userRepository.deleteTile(event.tileID);
+      emit(state.copyWith(status: TilesOverviewStatus.normal));
+    } catch (error) {
+      final err = error.toString().split(':').last.trim();
+      emit(
+        state.copyWith(status: TilesOverviewStatus.normal, error: () => err),
+      );
+      emit(
+        state.copyWith(status: TilesOverviewStatus.normal, error: () => null),
+      );
+    }
+  }
 
   Future<void> _onLogout(
     LogoutRequested event,
@@ -90,6 +113,9 @@ class TilesOverviewBloc extends Bloc<TilesOverviewEvent, TilesOverviewState> {
     add(const ProjectSubscriptionRequested());
     add(const DashboardSubscriptionRequested());
     add(const TileSubscriptionRequested());
+    add(const ActionSubscriptionRequested());
+    add(const ActionTileSubscriptionRequested());
+    add(const DeviceTypeSubscriptionRequested());
     add(const DeviceSubscriptionRequested());
     add(const AttributeSubscriptionRequested());
 
@@ -166,7 +192,7 @@ class TilesOverviewBloc extends Bloc<TilesOverviewEvent, TilesOverviewState> {
           <String, String?>{};
       for (final dv in state.devices) {
         if (dv.brokerID == event.gatewayClient.brokerID) {
-          event.gatewayClient.subscribe(dv.topic);
+          event.gatewayClient.subscribe(topic: dv.topic, qos: dv.qos);
           brokerTopic[dv.topic] = null;
         }
       }
@@ -235,8 +261,12 @@ class TilesOverviewBloc extends Bloc<TilesOverviewEvent, TilesOverviewState> {
     final activeAttribute = state.attributeView[event.attributeID];
     final expression = activeAttribute?.jsonPath;
     final topic = activeDevice?.topic;
+    final qos = activeDevice?.qos;
     final brokerID = activeDevice?.brokerID;
-    if (expression != null && topic != null && brokerID != null) {
+    if (expression != null &&
+        topic != null &&
+        qos != null &&
+        brokerID != null) {
       final client = state.gatewayClientView[brokerID];
       final connectionStatus = state.brokerStatusView[brokerID];
       if (client != null &&
@@ -247,6 +277,7 @@ class TilesOverviewBloc extends Bloc<TilesOverviewEvent, TilesOverviewState> {
           client,
           topic: topic,
           payload: payload,
+          qos: qos,
         );
       }
     }
@@ -365,7 +396,7 @@ class TilesOverviewBloc extends Bloc<TilesOverviewEvent, TilesOverviewState> {
               if (gatewayClient != null &&
                   brokerStatus != null &&
                   brokerStatus.isConnected) {
-                gatewayClient.subscribe(dv.topic);
+                gatewayClient.subscribe(topic: dv.topic, qos: dv.qos);
               }
               brokerTopicPayloads[dv.brokerID] = brokerTopic;
             }
@@ -410,7 +441,7 @@ class TilesOverviewBloc extends Bloc<TilesOverviewEvent, TilesOverviewState> {
                 if (gatewayClient != null &&
                     brokerStatus != null &&
                     brokerStatus.isConnected) {
-                  gatewayClient.subscribe(dv.topic);
+                  gatewayClient.subscribe(topic: dv.topic, qos: dv.qos);
                 }
                 brokerTopicPayloads[dv.brokerID] = newBrokerTopic;
               }
@@ -566,6 +597,42 @@ class TilesOverviewBloc extends Bloc<TilesOverviewEvent, TilesOverviewState> {
       _userRepository.subscribeAttributeStream(),
       onData: (attributes) {
         return state.copyWith(attributes: attributes);
+      },
+    );
+  }
+
+  Future<void> _onActionSubscribed(
+    ActionSubscriptionRequested event,
+    Emitter<TilesOverviewState> emit,
+  ) async {
+    await emit.forEach<List<TAction>>(
+      _userRepository.subscribeActionStream(),
+      onData: (actions) {
+        return state.copyWith(actions: actions);
+      },
+    );
+  }
+
+  Future<void> _onActionTileSubscribed(
+    ActionTileSubscriptionRequested event,
+    Emitter<TilesOverviewState> emit,
+  ) async {
+    await emit.forEach<List<ActionTile>>(
+      _userRepository.subscribeActionTileStream(),
+      onData: (actionTiles) {
+        return state.copyWith(actionTiles: actionTiles);
+      },
+    );
+  }
+
+  Future<void> _onDeviceTypeSubscribed(
+    DeviceTypeSubscriptionRequested event,
+    Emitter<TilesOverviewState> emit,
+  ) async {
+    await emit.forEach<List<DeviceType>>(
+      _userRepository.subscribeDeviceTypeStream(),
+      onData: (deviceTypes) {
+        return state.copyWith(deviceTypes: deviceTypes);
       },
     );
   }

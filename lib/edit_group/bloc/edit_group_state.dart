@@ -19,6 +19,7 @@ class EditGroupState extends Equatable {
     required this.parentProjetID,
     required this.parentGroupID,
     this.name = '',
+    this.description,
     this.initialGroup,
     this.error,
   });
@@ -29,6 +30,7 @@ class EditGroupState extends Equatable {
 
   // input
   final String name;
+  final String? description;
 
   // status
   final EditGroupStatus status;
@@ -38,13 +40,21 @@ class EditGroupState extends Equatable {
   final Group? initialGroup;
 
   @override
-  List<Object?> get props =>
-      [parentProjetID, parentGroupID, name, initialGroup, status, error];
+  List<Object?> get props => [
+        parentProjetID,
+        parentGroupID,
+        name,
+        description,
+        initialGroup,
+        status,
+        error
+      ];
 
   EditGroupState copyWith({
     String? parentProjetID,
     String? parentGroupID,
     String? name,
+    String? description,
     EditGroupStatus? status,
     Group? initialGroup,
     String? Function()? error,
@@ -53,6 +63,7 @@ class EditGroupState extends Equatable {
       parentProjetID: parentProjetID ?? this.parentProjetID,
       parentGroupID: parentGroupID ?? this.parentGroupID,
       name: name ?? this.name,
+      description: description ?? this.description,
       status: status ?? this.status,
       initialGroup: initialGroup ?? this.initialGroup,
       error: error != null ? error() : this.error,
