@@ -125,10 +125,6 @@ class UserRepository {
   final _conditionLogStreamController =
       BehaviorSubject<List<ConditionLog>>.seeded([]);
 
-  /// the controller of [Stream] of [ActionTile]
-  final _actionTileStreamController =
-      BehaviorSubject<List<ActionTile>>.seeded([]);
-
   /// the controller of [Stream] of [Schedule]
   final _scheduleStreamController = BehaviorSubject<List<Schedule>>.seeded([]);
 
@@ -193,7 +189,6 @@ class UserRepository {
     _conditionStreamController.add([]);
     _actionStreamController.add([]);
     _logStreamController.add([]);
-    _actionTileStreamController.add([]);
     _scheduleStreamController.add([]);
   }
 
@@ -258,12 +253,6 @@ class UserRepository {
           (dynamic json) => ConditionLog.fromJson(json as Map<String, dynamic>),
         )
         .toList();
-    final actionTileJsons = res['action-tiles'] as List<dynamic>;
-    final actionTiles = actionTileJsons
-        .map(
-          (dynamic json) => ActionTile.fromJson(json as Map<String, dynamic>),
-        )
-        .toList();
     final scheduleJsons = res['schedules'] as List<dynamic>;
     final schedules = scheduleJsons
         .map(
@@ -308,7 +297,6 @@ class UserRepository {
     _actionStreamController.add(actions);
     _logStreamController.add(logs);
     _conditionLogStreamController.add(conditionLogs);
-    _actionTileStreamController.add(actionTiles);
     _scheduleStreamController.add(schedules);
   }
 
@@ -1075,63 +1063,6 @@ class UserRepository {
     }
   }
   // ================== ACTION REST API ========================
-
-  // ================== ACTION TILE REST API ========================
-  ///
-  Stream<List<ActionTile>> subscribeActionTileStream() {
-    return _actionTileStreamController.asBroadcastStream();
-  }
-
-  /// create or update action
-  Future<void> saveActionTile(ActionTile action) async {
-    if (_token == null) throw Exception('Token not found');
-    final actionTiles = [..._actionTileStreamController.value];
-    final idx = actionTiles.indexWhere((t) => t.id == action.id);
-    if (idx == -1) {
-      await _apiClient.createAction(
-        token: _token!,
-        action: action.toJson(),
-      );
-      actionTiles.add(action);
-    } else {
-      await _apiClient.updateAction(
-        token: _token!,
-        actionID: action.id,
-        action: action.toJson(),
-      );
-      actionTiles
-        ..removeAt(idx)
-        ..insertAll(idx, [action]);
-    }
-    _actionTileStreamController.add(actionTiles);
-  }
-
-  /// get action list
-  Future<void> getActionTiles() async {
-    if (_token == null) throw Exception('Token not found');
-    final data = await _apiClient.getActions(_token!);
-    final actionTiles = data
-        .map(
-          (dynamic json) => ActionTile.fromJson(json as Map<String, dynamic>),
-        )
-        .toList();
-    _actionTileStreamController.add(actionTiles);
-  }
-
-  /// delete action by ID
-  Future<void> deleteActionTile(String actionID) async {
-    final actionTiles = [..._actionTileStreamController.value];
-    final idx = actionTiles.indexWhere((t) => t.id == actionID);
-    if (idx > -1) {
-      await _apiClient.deleteAction(
-        token: _token!,
-        actionID: actionID,
-      );
-      actionTiles.removeAt(idx);
-      _actionTileStreamController.add(actionTiles);
-    }
-  }
-  // ================== ACTION TILE REST API ========================
 
   // ================== LOG REST API ========================
   ///

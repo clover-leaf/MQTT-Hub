@@ -40,7 +40,6 @@ class TilesOverviewBloc extends Bloc<TilesOverviewEvent, TilesOverviewState> {
     on<TileSubscriptionRequested>(_onTileSubscribed);
     on<DeviceSubscriptionRequested>(_onDeviceSubscribed);
     on<ActionSubscriptionRequested>(_onActionSubscribed);
-    on<ActionTileSubscriptionRequested>(_onActionTileSubscribed);
     on<DeviceTypeSubscriptionRequested>(_onDeviceTypeSubscribed);
     on<AttributeSubscriptionRequested>(_onAttributeSubscribed);
     on<SelectedProjectChanged>(_onSelectedProjectChanged);
@@ -114,7 +113,6 @@ class TilesOverviewBloc extends Bloc<TilesOverviewEvent, TilesOverviewState> {
     add(const DashboardSubscriptionRequested());
     add(const TileSubscriptionRequested());
     add(const ActionSubscriptionRequested());
-    add(const ActionTileSubscriptionRequested());
     add(const DeviceTypeSubscriptionRequested());
     add(const DeviceSubscriptionRequested());
     add(const AttributeSubscriptionRequested());
@@ -609,18 +607,6 @@ class TilesOverviewBloc extends Bloc<TilesOverviewEvent, TilesOverviewState> {
       _userRepository.subscribeActionStream(),
       onData: (actions) {
         return state.copyWith(actions: actions);
-      },
-    );
-  }
-
-  Future<void> _onActionTileSubscribed(
-    ActionTileSubscriptionRequested event,
-    Emitter<TilesOverviewState> emit,
-  ) async {
-    await emit.forEach<List<ActionTile>>(
-      _userRepository.subscribeActionTileStream(),
-      onData: (actionTiles) {
-        return state.copyWith(actionTiles: actionTiles);
       },
     );
   }

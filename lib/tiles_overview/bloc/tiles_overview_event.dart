@@ -91,10 +91,6 @@ class ActionSubscriptionRequested extends TilesOverviewEvent {
   const ActionSubscriptionRequested();
 }
 
-class ActionTileSubscriptionRequested extends TilesOverviewEvent {
-  const ActionTileSubscriptionRequested();
-}
-
 class DeviceTypeSubscriptionRequested extends TilesOverviewEvent {
   const DeviceTypeSubscriptionRequested();
 }

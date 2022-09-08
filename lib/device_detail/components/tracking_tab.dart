@@ -58,7 +58,6 @@ class _TrackingTabState extends State<TrackingTab> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     final tabs = widget.attributes
         .map(
           (att) => TrackingAttributeTab(

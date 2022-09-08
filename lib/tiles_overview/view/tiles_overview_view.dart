@@ -88,6 +88,9 @@ class TilesOverviewView extends StatelessWidget {
             }
           }
           if (state.isLogout) {
+            if (!context.loaderOverlay.visible) {
+              context.loaderOverlay.show();
+            }
             context.read<AppBloc>().add(const AppUnauthenticated());
           }
         }

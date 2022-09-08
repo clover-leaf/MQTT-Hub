@@ -114,6 +114,14 @@ class TileWidget extends StatelessWidget {
                       textTheme.labelMedium!.copyWith(color: ColorName.sky500),
                 ),
               )
+            else if (status != null &&
+                status!.isConnected &&
+                tile.type.isToggle)
+              ToggleWidget(tile: tile, value: value)
+            else if (status != null &&
+                status!.isConnected &&
+                tile.type.isMultiCommand)
+              MultiCommandWidget(tile: tile, value: value)
             else if (status != null && status!.isConnected && value == null)
               Padding(
                 padding: const EdgeInsets.fromLTRB(0, 12, 0, 32),
@@ -140,10 +148,6 @@ class TileWidget extends StatelessWidget {
               LineWidget(lob: tile.lob, value: value!, unit: unit)
             else if (tile.type.isBar)
               BarWidget(lob: tile.lob, value: value!, unit: unit)
-            else if (tile.type.isToggle)
-              ToggleWidget(tile: tile, value: value!)
-            else if (tile.type.isMultiCommand)
-              MultiCommandWidget(tile: tile, value: value!)
           ],
         ),
       ),

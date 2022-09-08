@@ -162,6 +162,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.1"
+  cli_util:
+    dependency: transitive
+    description:
+      name: cli_util
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.5"
   clock:
     dependency: transitive
     description:
@@ -349,6 +356,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "5.0.2"
+  flutter_gen:
+    dependency: "direct main"
+    description:
+      name: flutter_gen
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.3.0"
   flutter_gen_core:
     dependency: transitive
     description:
@@ -363,6 +377,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.3.0"
+  flutter_launcher_icons:
+    dependency: "direct main"
+    description:
+      name: flutter_launcher_icons
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.10.0"
   flutter_native_splash:
     dependency: "direct main"
     description:
@@ -436,20 +457,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  form_inputs:
-    dependency: "direct main"
-    description:
-      path: "packages/form_inputs"
-      relative: true
-    source: path
-    version: "1.0.0+1"
-  formz:
-    dependency: transitive
-    description:
-      name: formz
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.4.1"
   frontend_server_client:
     dependency: transitive
     description:

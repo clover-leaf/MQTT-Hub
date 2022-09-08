@@ -8,9 +8,10 @@ part 'project_detail_state.dart';
 class ProjectDetailBloc extends Bloc<ProjectDetailEvent, ProjectDetailState> {
   ProjectDetailBloc(
     this._userRepository, {
-    required Project project,
+    required String projectID,
     required bool isAdmin,
-  }) : super(ProjectDetailState(project: project, isAdmin: isAdmin)) {
+  }) : super(ProjectDetailState(projectID: projectID, isAdmin: isAdmin)) {
+    on<ProjectSubscriptionRequested>(_onProjectSubscribed);
     on<GroupSubscriptionRequested>(_onGroupSubscribed);
     on<BrokerSubscriptionRequested>(_onBrokerSubscribed);
     on<UserProjectSubscriptionRequested>(_onUserProjectSubscribed);
@@ -30,7 +31,7 @@ class ProjectDetailBloc extends Bloc<ProjectDetailEvent, ProjectDetailState> {
   ) async {
     try {
       emit(state.copyWith(status: ProjectDetailStatus.processing));
-      await _userRepository.deleteProject(state.project.id);
+      await _userRepository.deleteProject(state.projectID);
       emit(state.copyWith(status: ProjectDetailStatus.success));
     } catch (error) {
       final err = error.toString().split(':').last.trim();
@@ -47,6 +48,18 @@ class ProjectDetailBloc extends Bloc<ProjectDetailEvent, ProjectDetailState> {
         ),
       );
     }
+  }
+
+  Future<void> _onProjectSubscribed(
+    ProjectSubscriptionRequested event,
+    Emitter<ProjectDetailState> emit,
+  ) async {
+    await emit.forEach<List<Project>>(
+      _userRepository.subscribeProjectStream(),
+      onData: (projects) {
+        return state.copyWith(projects: projects);
+      },
+    );
   }
 
   Future<void> _onGroupSubscribed(

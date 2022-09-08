@@ -51,7 +51,8 @@ class ProjectsOverviewView extends StatelessWidget {
                       brokerNumber: _broker.length,
                       userNumber: _userProjects.length,
                       onPressed: () => Navigator.of(context).push(
-                        ProjectDetailPage.route(project: pr, isAdmin: isAdmin),
+                        ProjectDetailPage.route(
+                            projectID: pr.id, isAdmin: isAdmin,),
                       ),
                     ),
                     const SizedBox(height: 16)

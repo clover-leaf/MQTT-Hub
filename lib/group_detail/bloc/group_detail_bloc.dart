@@ -9,13 +9,13 @@ class GroupDetailBloc extends Bloc<GroupDetailEvent, GroupDetailState> {
   GroupDetailBloc(
     this._userRepository, {
     required Project rootProject,
-    required Group group,
+    required String groupID,
     required bool isAdmin,
   }) : super(
           GroupDetailState(
             isAdmin: isAdmin,
             rootProject: rootProject,
-            group: group,
+            groupID: groupID,
           ),
         ) {
     on<BrokerSubscriptionRequested>(_onBrokerSubscribed);
@@ -50,7 +50,7 @@ class GroupDetailBloc extends Bloc<GroupDetailEvent, GroupDetailState> {
   ) async {
     try {
       emit(state.copyWith(status: GroupDetailStatus.processing));
-      await _userRepository.deleteGroup(state.group.id);
+      await _userRepository.deleteGroup(state.groupID);
       emit(state.copyWith(status: GroupDetailStatus.success));
     } catch (error) {
       final err = error.toString().split(':').last.trim();

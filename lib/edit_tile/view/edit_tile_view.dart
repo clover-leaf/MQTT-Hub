@@ -236,12 +236,20 @@ class _Title extends StatelessWidget {
     final type = context.select((EditTileBloc bloc) => bloc.state.type);
     final typeTitle = type.getTitle();
     final description = type.getDescription();
+    final initialTile =
+        context.select((EditTileBloc bloc) => bloc.state.initialTile);
+    // get is edit
+    final isEdit = context.select((EditTileBloc bloc) => bloc.state.isEdit);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '$typeTitle Tile'.toUpperCase(),
+          initialTile == null
+              ? 'NEW ${typeTitle.toUpperCase()}'
+              : isEdit
+                  ? 'EDIT ${typeTitle.toUpperCase()}'
+                  : '${typeTitle.toUpperCase()} DETAIL',
           style: textTheme.titleMedium!.copyWith(
             fontWeight: FontWeight.w500,
             letterSpacing: 1.05,

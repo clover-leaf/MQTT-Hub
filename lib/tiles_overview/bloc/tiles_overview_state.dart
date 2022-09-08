@@ -30,7 +30,6 @@ class TilesOverviewState extends Equatable {
     this.dashboards = const [],
     this.tiles = const [],
     this.actions = const [],
-    this.actionTiles = const [],
     this.deviceTypes = const [],
     this.devices = const [],
     this.attributes = const [],
@@ -77,7 +76,6 @@ class TilesOverviewState extends Equatable {
   final List<Dashboard> dashboards;
   final List<Tile> tiles;
   final List<TAction> actions;
-  final List<ActionTile> actionTiles;
   final List<DeviceType> deviceTypes;
   final List<Device> devices;
   final List<Attribute> attributes;
@@ -134,7 +132,6 @@ class TilesOverviewState extends Equatable {
         dashboards,
         tiles,
         actions,
-        actionTiles,
         devices,
         deviceTypes,
         attributes,
@@ -157,7 +154,6 @@ class TilesOverviewState extends Equatable {
     List<Dashboard>? dashboards,
     List<Tile>? tiles,
     List<TAction>? actions,
-    List<ActionTile>? actionTiles,
     List<DeviceType>? deviceTypes,
     List<Device>? devices,
     List<Attribute>? attributes,
@@ -180,7 +176,6 @@ class TilesOverviewState extends Equatable {
       dashboards: dashboards ?? this.dashboards,
       tiles: tiles ?? this.tiles,
       actions: actions ?? this.actions,
-      actionTiles: actionTiles ?? this.actionTiles,
       deviceTypes: deviceTypes ?? this.deviceTypes,
       devices: devices ?? this.devices,
       attributes: attributes ?? this.attributes,

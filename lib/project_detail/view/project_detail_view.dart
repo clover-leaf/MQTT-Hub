@@ -21,8 +21,8 @@ class ProjectDetailView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final paddingTop = MediaQuery.of(context).viewPadding.top;
-    final project =
-        context.select((ProjectDetailBloc bloc) => bloc.state.project);
+    final curProject =
+        context.select((ProjectDetailBloc bloc) => bloc.state.curProject);
     final groupNumber =
         context.select((ProjectDetailBloc bloc) => bloc.state.groupNumber);
     final dashboardNumber =
@@ -71,105 +71,107 @@ class ProjectDetailView extends StatelessWidget {
           }
         }
       },
-      child: Column(
-        children: [
-          SizedBox(height: paddingTop),
-          _Header(isAdmin: isAdmin),
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: curProject == null
+          ? const SizedBox.shrink()
+          : Column(
               children: [
-                const _Title(),
-                const SizedBox(height: 20),
-                OptionItem(
-                  title: 'Groups',
-                  number: groupNumber,
-                  unit: 'group',
-                  onPressed: () => Navigator.of(context).push(
-                    GroupsOverviewPage.route(
-                      parentProject: project,
-                      isAdmin: isAdmin,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                OptionItem(
-                  title: 'Dashboards',
-                  number: dashboardNumber,
-                  unit: 'dashboard',
-                  onPressed: () => Navigator.of(context).push(
-                    DashboardsOverviewPage.route(
-                      isAdmin: isAdmin,
-                      parentProject: project,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                OptionItem(
-                  title: 'Brokers',
-                  number: brokerNumber,
-                  unit: 'broker',
-                  onPressed: () => Navigator.of(context).push(
-                    BrokersOverviewPage.route(
-                      isAdmin: isAdmin,
-                      parentProject: project,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                if (isAdmin)
-                  OptionItem(
-                    title: 'Users',
-                    number: userNumber,
-                    unit: 'user',
-                    onPressed: () => Navigator.of(context).push(
-                      UsersOverviewPage.route(
-                        isAdmin: isAdmin,
-                        parentProject: project,
+                SizedBox(height: paddingTop),
+                _Header(isAdmin: isAdmin),
+                Expanded(
+                  child: ListView(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    children: [
+                      const _Title(),
+                      const SizedBox(height: 20),
+                      OptionItem(
+                        title: 'Groups',
+                        number: groupNumber,
+                        unit: 'group',
+                        onPressed: () => Navigator.of(context).push(
+                          GroupsOverviewPage.route(
+                            parentProject: curProject,
+                            isAdmin: isAdmin,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                const SizedBox(height: 16),
-                OptionItem(
-                  title: 'Device Types',
-                  number: deviceTypeNumber,
-                  unit: 'type',
-                  onPressed: () => Navigator.of(context).push(
-                    DeviceTypesOverviewPage.route(
-                      isAdmin: isAdmin,
-                      parentProject: project,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                OptionItem(
-                  title: 'Alerts',
-                  number: alertNumber,
-                  unit: 'alert',
-                  onPressed: () => Navigator.of(context).push(
-                    AlertsOverviewPage.route(
-                      isAdmin: isAdmin,
-                      parentProject: project,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                OptionItem(
-                  title: 'Schedules',
-                  number: scheduleNumber,
-                  unit: 'schedule',
-                  onPressed: () => Navigator.of(context).push(
-                    SchedulesOverviewPage.route(
-                      isAdmin: isAdmin,
-                      parentProject: project,
-                    ),
+                      const SizedBox(height: 16),
+                      OptionItem(
+                        title: 'Dashboards',
+                        number: dashboardNumber,
+                        unit: 'dashboard',
+                        onPressed: () => Navigator.of(context).push(
+                          DashboardsOverviewPage.route(
+                            isAdmin: isAdmin,
+                            parentProject: curProject,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      OptionItem(
+                        title: 'Brokers',
+                        number: brokerNumber,
+                        unit: 'broker',
+                        onPressed: () => Navigator.of(context).push(
+                          BrokersOverviewPage.route(
+                            isAdmin: isAdmin,
+                            parentProject: curProject,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      if (isAdmin)
+                        OptionItem(
+                          title: 'Users',
+                          number: userNumber,
+                          unit: 'user',
+                          onPressed: () => Navigator.of(context).push(
+                            UsersOverviewPage.route(
+                              isAdmin: isAdmin,
+                              parentProject: curProject,
+                            ),
+                          ),
+                        ),
+                      const SizedBox(height: 16),
+                      OptionItem(
+                        title: 'Device Types',
+                        number: deviceTypeNumber,
+                        unit: 'type',
+                        onPressed: () => Navigator.of(context).push(
+                          DeviceTypesOverviewPage.route(
+                            isAdmin: isAdmin,
+                            parentProject: curProject,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      OptionItem(
+                        title: 'Alerts',
+                        number: alertNumber,
+                        unit: 'alert',
+                        onPressed: () => Navigator.of(context).push(
+                          AlertsOverviewPage.route(
+                            isAdmin: isAdmin,
+                            parentProject: curProject,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      OptionItem(
+                        title: 'Schedules',
+                        number: scheduleNumber,
+                        unit: 'schedule',
+                        onPressed: () => Navigator.of(context).push(
+                          SchedulesOverviewPage.route(
+                            isAdmin: isAdmin,
+                            parentProject: curProject,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
-          ),
-        ],
-      ),
     );
   }
 }
@@ -182,8 +184,8 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final project =
-        context.select((ProjectDetailBloc bloc) => bloc.state.project);
+    final curProject =
+        context.select((ProjectDetailBloc bloc) => bloc.state.curProject);
 
     return Row(
       children: [
@@ -212,7 +214,7 @@ class _Header extends StatelessWidget {
           TSecondaryButton(
             label: 'EDIT',
             onPressed: () => Navigator.of(context)
-                .push(EditProjectPage.route(initialProject: project)),
+                .push(EditProjectPage.route(initialProject: curProject)),
             enabled: true,
             textStyle: textTheme.labelLarge!.copyWith(
               color: ColorName.sky500,
@@ -233,14 +235,14 @@ class _Title extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final project =
-        context.select((ProjectDetailBloc bloc) => bloc.state.project);
+    final curProject =
+        context.select((ProjectDetailBloc bloc) => bloc.state.curProject);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          project.name,
+          curProject?.name ?? '',
           style: textTheme.titleMedium!.copyWith(
             fontWeight: FontWeight.w500,
             letterSpacing: 1.05,

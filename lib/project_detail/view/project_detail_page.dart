@@ -9,16 +9,17 @@ class ProjectDetailPage extends StatelessWidget {
 
   static PageRoute<void> route({
     required bool isAdmin,
-    required Project project,
+    required String projectID,
   }) {
     return PageRouteBuilder<void>(
       transitionDuration: const Duration(milliseconds: 400),
       pageBuilder: (context, animation, secondaryAnimation) => BlocProvider(
         create: (context) => ProjectDetailBloc(
           context.read<UserRepository>(),
-          project: project,
+          projectID: projectID,
           isAdmin: isAdmin,
         )
+          ..add(const ProjectSubscriptionRequested())
           ..add(const GroupSubscriptionRequested())
           ..add(const BrokerSubscriptionRequested())
           ..add(const UserProjectSubscriptionRequested())

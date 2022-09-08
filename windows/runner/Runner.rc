@@ -89,11 +89,11 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.example.verygoodcore.bee" "\0"
+            VALUE "CompanyName", "com.thangnguyen.verygoodcore.bee" "\0"
             VALUE "FileDescription", "bee" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "bee" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2022 com.example.verygoodcore.bee. All rights reserved." "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2022 com.thangnguyen.verygoodcore.bee. All rights reserved." "\0"
             VALUE "OriginalFilename", "bee.exe" "\0"
             VALUE "ProductName", "Bee" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"

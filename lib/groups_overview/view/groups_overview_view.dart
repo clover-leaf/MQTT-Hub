@@ -50,7 +50,7 @@ class GroupsOverviewView extends StatelessWidget {
                         GroupDetailPage.route(
                           isAdmin: isAdmin,
                           rootProject: parentProject,
-                          group: gr,
+                          groupID: gr.id,
                         ),
                       ),
                     ),

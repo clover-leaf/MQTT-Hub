@@ -18,7 +18,7 @@ class GroupDetailState extends Equatable {
     required this.isAdmin,
     this.status = GroupDetailStatus.normal,
     required this.rootProject,
-    required this.group,
+    required this.groupID,
     this.brokers = const [],
     this.groups = const [],
     this.deviceTypes = const [],
@@ -32,7 +32,7 @@ class GroupDetailState extends Equatable {
   // immutate
   final bool isAdmin;
   final Project rootProject;
-  final Group group;
+  final String groupID;
 
   // listen
   final List<Broker> brokers;
@@ -47,14 +47,18 @@ class GroupDetailState extends Equatable {
   final GroupDetailStatus status;
   final String? error;
 
+  Map<String, Group> get groupView => {for (final gr in groups) gr.id: gr};
+
+  Group? get curGroup => groupView[groupID];
+
   List<Group> get childrenGroups =>
-      groups.where((gr) => gr.groupID == group.id).toList();
+      groups.where((gr) => gr.groupID == groupID).toList();
 
   List<Device> get childrenDevices =>
-      devices.where((dv) => dv.groupID == group.id).toList();
+      devices.where((dv) => dv.groupID == groupID).toList();
 
   int get groupNumber {
-    final _groups = groups.where((gr) => gr.groupID == group.id).toList();
+    final _groups = groups.where((gr) => gr.groupID == groupID).toList();
     return _groups.length;
   }
 
@@ -65,7 +69,7 @@ class GroupDetailState extends Equatable {
       deviceTypes.where((dT) => dT.projectID == rootProject.id).toList();
 
   int get deviceNumber {
-    final _devices = devices.where((dv) => dv.groupID == group.id).toList();
+    final _devices = devices.where((dv) => dv.groupID == groupID).toList();
     return _devices.length;
   }
 
@@ -74,7 +78,7 @@ class GroupDetailState extends Equatable {
         isAdmin,
         status,
         rootProject,
-        group,
+        groupID,
         brokers,
         groups,
         deviceTypes,
@@ -89,7 +93,7 @@ class GroupDetailState extends Equatable {
     bool? isAdmin,
     GroupDetailStatus? status,
     Project? rootProject,
-    Group? group,
+    String? groupID,
     List<Broker>? brokers,
     List<Group>? groups,
     List<DeviceType>? deviceTypes,
@@ -103,7 +107,7 @@ class GroupDetailState extends Equatable {
       isAdmin: isAdmin ?? this.isAdmin,
       status: status ?? this.status,
       rootProject: rootProject ?? this.rootProject,
-      group: group ?? this.group,
+      groupID: groupID ?? this.groupID,
       brokers: brokers ?? this.brokers,
       groups: groups ?? this.groups,
       deviceTypes: deviceTypes ?? this.deviceTypes,

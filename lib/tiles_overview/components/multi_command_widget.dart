@@ -15,7 +15,7 @@ class MultiCommandWidget extends StatelessWidget {
   });
 
   final Tile tile;
-  final String value;
+  final String? value;
 
   @override
   Widget build(BuildContext context) {

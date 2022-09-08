@@ -70,6 +70,6 @@ class DefaultFirebaseOptions {
     projectId: 'bee1903',
     storageBucket: 'bee1903.appspot.com',
     iosClientId: '441892589835-luurr0r6dqat9usoh1ca5u5kfpikfnjf.apps.googleusercontent.com',
-    iosBundleId: 'com.example.verygoodcore.bee',
+    iosBundleId: 'com.thangnguyen.verygoodcore.bee',
   );
 }

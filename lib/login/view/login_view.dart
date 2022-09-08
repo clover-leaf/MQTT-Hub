@@ -16,6 +16,9 @@ class LoginView extends StatelessWidget {
   Widget build(BuildContext context) {
     final _formKey = GlobalKey<FormState>();
     // use ListView to make page scroll up when keyboard comes
+    if (context.loaderOverlay.visible) {
+      context.loaderOverlay.hide();
+    }
     return BlocListener<LoginBloc, LoginState>(
       listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) {

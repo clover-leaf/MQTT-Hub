@@ -7,6 +7,10 @@ class ProjectDetailEvent extends Equatable {
   List<Object?> get props => [];
 }
 
+class ProjectSubscriptionRequested extends ProjectDetailEvent {
+  const ProjectSubscriptionRequested();
+}
+
 class GroupSubscriptionRequested extends ProjectDetailEvent {
   const GroupSubscriptionRequested();
 }

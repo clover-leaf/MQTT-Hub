@@ -20,7 +20,10 @@ class GroupDetailView extends StatelessWidget {
     final paddingTop = MediaQuery.of(context).viewPadding.top;
     final rootProject =
         context.select((GroupDetailBloc bloc) => bloc.state.rootProject);
-    final group = context.select((GroupDetailBloc bloc) => bloc.state.group);
+    final groupID =
+        context.select((GroupDetailBloc bloc) => bloc.state.groupID);
+    final curGroup =
+        context.select((GroupDetailBloc bloc) => bloc.state.curGroup);
     final groupVisible =
         context.select((GroupDetailBloc bloc) => bloc.state.isShowGroup);
     final deviceVisible =
@@ -73,143 +76,147 @@ class GroupDetailView extends StatelessWidget {
           }
         }
       },
-      child: Column(
-        children: [
-          SizedBox(height: paddingTop),
-          _Header(isAdmin: isAdmin),
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: curGroup == null
+          ? const SizedBox.shrink()
+          : Column(
               children: [
-                const _Title(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    if (isAdmin)
-                      TSecondaryButton(
-                        label: 'ADD GROUP',
-                        onPressed: () => Navigator.of(context).push(
-                          EditGroupPage.route(
-                            parentProjetID: null,
-                            parentGroupID: group.id,
-                            initialGroup: null,
-                          ),
-                        ),
-                        enabled: true,
-                        textStyle: textTheme.labelLarge!.copyWith(
-                          color: ColorName.sky500,
-                          fontWeight: FontWeight.w500,
-                          letterSpacing: 1.1,
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
-                      ),
-                  ],
-                ),
-                OptionItem(
-                  title: 'Groups',
-                  number: groupNumber,
-                  unit: 'group',
-                  onPressed: () => context
-                      .read<GroupDetailBloc>()
-                      .add(GroupVisibilityChanged(isVisible: !groupVisible)),
-                  visible: groupVisible,
-                ),
-                Column(
-                  children: childrenGroups
-                      .map(
-                        (gr) => Column(
-                          children: [
-                            const SizedBox(height: 12),
-                            SubItem(
-                              title: gr.name,
-                              visible: groupVisible,
+                SizedBox(height: paddingTop),
+                _Header(isAdmin: isAdmin),
+                Expanded(
+                  child: ListView(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    children: [
+                      const _Title(),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          if (isAdmin)
+                            TSecondaryButton(
+                              label: 'ADD GROUP',
                               onPressed: () => Navigator.of(context).push(
-                                GroupDetailPage.route(
-                                  isAdmin: isAdmin,
-                                  rootProject: rootProject,
-                                  group: gr,
+                                EditGroupPage.route(
+                                  parentProjetID: null,
+                                  parentGroupID: groupID,
+                                  initialGroup: null,
                                 ),
+                              ),
+                              enabled: true,
+                              textStyle: textTheme.labelLarge!.copyWith(
+                                color: ColorName.sky500,
+                                fontWeight: FontWeight.w500,
+                                letterSpacing: 1.1,
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
+                            ),
+                        ],
+                      ),
+                      OptionItem(
+                        title: 'Groups',
+                        number: groupNumber,
+                        unit: 'group',
+                        onPressed: () => context.read<GroupDetailBloc>().add(
+                              GroupVisibilityChanged(isVisible: !groupVisible),
+                            ),
+                        visible: groupVisible,
+                      ),
+                      Column(
+                        children: childrenGroups
+                            .map(
+                              (gr) => Column(
+                                children: [
+                                  const SizedBox(height: 12),
+                                  SubItem(
+                                    title: gr.name,
+                                    visible: groupVisible,
+                                    onPressed: () => Navigator.of(context).push(
+                                      GroupDetailPage.route(
+                                        isAdmin: isAdmin,
+                                        rootProject: rootProject,
+                                        groupID: groupID,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                            .toList(),
+                      ),
+                      const SizedBox(height: 16),
+                      if (isAdmin)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            TSecondaryButton(
+                              label: 'ADD DEVICE',
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  EditDevicePage.route(
+                                    parentGroupID: groupID,
+                                    brokers: brokerInProjects,
+                                    deviceTypes: deviceTypeInProjects,
+                                    allAttributes: attributes,
+                                    initialAttributes: [],
+                                    initialDevice: null,
+                                    isUseDeviceType: false,
+                                    isAdmin: isAdmin,
+                                    isEdit: true,
+                                  ),
+                                );
+                              },
+                              enabled: true,
+                              textStyle: textTheme.labelLarge!.copyWith(
+                                color: ColorName.sky500,
+                                fontWeight: FontWeight.w500,
+                                letterSpacing: 1.1,
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
                               ),
                             ),
                           ],
                         ),
-                      )
-                      .toList(),
-                ),
-                const SizedBox(height: 16),
-                if (isAdmin)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TSecondaryButton(
-                        label: 'ADD DEVICE',
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            EditDevicePage.route(
-                              parentGroupID: group.id,
-                              brokers: brokerInProjects,
-                              deviceTypes: deviceTypeInProjects,
-                              allAttributes: attributes,
-                              initialAttributes: [],
-                              initialDevice: null,
-                              isUseDeviceType: false,
-                              isAdmin: isAdmin,
-                              isEdit: true,
+                      OptionItem(
+                        title: 'Devices',
+                        number: deviceNumber,
+                        unit: 'devices',
+                        onPressed: () => context.read<GroupDetailBloc>().add(
+                              DeviceVisibilityChanged(
+                                isVisible: !deviceVisible,
+                              ),
                             ),
-                          );
-                        },
-                        enabled: true,
-                        textStyle: textTheme.labelLarge!.copyWith(
-                          color: ColorName.sky500,
-                          fontWeight: FontWeight.w500,
-                          letterSpacing: 1.1,
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
+                        visible: deviceVisible,
+                      ),
+                      Column(
+                        children: childrenDevices
+                            .map(
+                              (dv) => Column(
+                                children: [
+                                  const SizedBox(height: 12),
+                                  SubItem(
+                                    title: dv.name,
+                                    visible: deviceVisible,
+                                    onPressed: () => Navigator.of(context).push(
+                                      DeviceDetailPage.route(
+                                        rootProject: rootProject,
+                                        device: dv,
+                                        isAdmin: isAdmin,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                            .toList(),
                       ),
                     ],
                   ),
-                OptionItem(
-                  title: 'Devices',
-                  number: deviceNumber,
-                  unit: 'devices',
-                  onPressed: () => context
-                      .read<GroupDetailBloc>()
-                      .add(DeviceVisibilityChanged(isVisible: !deviceVisible)),
-                  visible: deviceVisible,
-                ),
-                Column(
-                  children: childrenDevices
-                      .map(
-                        (dv) => Column(
-                          children: [
-                            const SizedBox(height: 12),
-                            SubItem(
-                              title: dv.name,
-                              visible: deviceVisible,
-                              onPressed: () => Navigator.of(context).push(
-                                DeviceDetailPage.route(
-                                  rootProject: rootProject,
-                                  device: dv,
-                                  isAdmin: isAdmin,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                      .toList(),
                 ),
               ],
             ),
-          ),
-        ],
-      ),
     );
   }
 }
@@ -222,7 +229,8 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final group = context.select((GroupDetailBloc bloc) => bloc.state.group);
+    final curGroup =
+        context.select((GroupDetailBloc bloc) => bloc.state.curGroup);
 
     return Row(
       children: [
@@ -249,13 +257,15 @@ class _Header extends StatelessWidget {
         if (isAdmin)
           TSecondaryButton(
             label: 'EDIT',
-            onPressed: () => Navigator.of(context).push(
-              EditGroupPage.route(
-                parentProjetID: group.projectID,
-                parentGroupID: group.groupID,
-                initialGroup: group,
-              ),
-            ),
+            onPressed: () => curGroup == null
+                ? () {}
+                : Navigator.of(context).push(
+                    EditGroupPage.route(
+                      parentProjetID: curGroup.projectID,
+                      parentGroupID: curGroup.groupID,
+                      initialGroup: curGroup,
+                    ),
+                  ),
             enabled: true,
             textStyle: textTheme.labelLarge!.copyWith(
               color: ColorName.sky500,
@@ -276,13 +286,14 @@ class _Title extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final group = context.select((GroupDetailBloc bloc) => bloc.state.group);
+    final curGroup =
+        context.select((GroupDetailBloc bloc) => bloc.state.curGroup);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          group.name,
+          curGroup?.name ?? '',
           style: textTheme.titleMedium!.copyWith(
             fontWeight: FontWeight.w500,
             letterSpacing: 1.05,
@@ -290,9 +301,9 @@ class _Title extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 4),
-        if (group.description != null)
+        if (curGroup?.description != null)
           Text(
-            group.description!,
+            curGroup!.description!,
             style: textTheme.labelMedium!.copyWith(
               fontWeight: FontWeight.w500,
               color: ColorName.neural600,

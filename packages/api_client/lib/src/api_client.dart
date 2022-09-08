@@ -934,69 +934,6 @@ class ApiClient {
   }
   // ================== SCHEDULE REST API ========================
 
-  // ================== ACTION TILE REST API ========================
-  /// POST: create action tile
-  Future<Map<String, dynamic>> createActionTile({
-    required String token,
-    required Map<String, dynamic> actionTile,
-  }) async {
-    final res = await httpWrapper.post(
-      Uri.http(API_URL, 'v1/domain/action-tiles'),
-      body: actionTile,
-      header: {'Authorization': 'Bearer $token'},
-    );
-    return res;
-  }
-
-  /// GET: get actions list
-  Future<List<dynamic>> getActionTiles(String token) async {
-    final res = await httpWrapper.get(
-      Uri.http(API_URL, 'v1/domain/action-tiles'),
-      header: {'Authorization': 'Bearer $token'},
-    );
-    final projects = res['action-tiles'] as List<dynamic>;
-    return projects;
-  }
-
-  /// GET: get action by ID
-  Future<Map<String, dynamic>> getActionTile({
-    required String token,
-    required String actionTileID,
-  }) async {
-    final res = await httpWrapper.get(
-      Uri.http(API_URL, 'v1/domain/action-tiles/$actionTileID'),
-      header: {'Authorization': 'Bearer $token'},
-    );
-    return res;
-  }
-
-  /// PUT: update action by ID
-  Future<Map<String, dynamic>> updateActionTile({
-    required String token,
-    required String actionID,
-    required Map<String, dynamic> actionTile,
-  }) async {
-    final res = await httpWrapper.put(
-      Uri.http(API_URL, 'v1/domain/action-tiles/$actionID'),
-      body: actionTile,
-      header: {'Authorization': 'Bearer $token'},
-    );
-    return res;
-  }
-
-  /// DELETE: delete tile by ID
-  Future<Map<String, dynamic>> deleteActionTile({
-    required String token,
-    required String actionTileID,
-  }) async {
-    final res = await httpWrapper.delete(
-      Uri.http(API_URL, 'v1/domain/action-tiles/$actionTileID'),
-      header: {'Authorization': 'Bearer $token'},
-    );
-    return res;
-  }
-  // ================== ACTION TILE REST API ========================
-
   // ================== LOG REST API ========================
 
   /// GET: get logs list

@@ -9,7 +9,7 @@ class GroupDetailPage extends StatelessWidget {
   static PageRoute<void> route({
     required bool isAdmin,
     required Project rootProject,
-    required Group group,
+    required String groupID,
   }) {
     return PageRouteBuilder<void>(
       transitionDuration: const Duration(milliseconds: 400),
@@ -18,7 +18,7 @@ class GroupDetailPage extends StatelessWidget {
           context.read<UserRepository>(),
           isAdmin: isAdmin,
           rootProject: rootProject,
-          group: group,
+          groupID: groupID,
         )
           ..add(const GroupSubscriptionRequested())
           ..add(const DeviceTypeSubscriptionRequested())
