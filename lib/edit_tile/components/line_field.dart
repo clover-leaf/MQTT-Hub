@@ -7,10 +7,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class LineField extends StatelessWidget {
-  const LineField(this.initialLob, {super.key, required this.enabled});
+  const LineField(
+    this.initialLob, {
+    super.key,
+    required this.enabled,
+    required this.isLine,
+  });
 
   final String initialLob;
   final bool enabled;
+  final bool isLine;
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +29,7 @@ class LineField extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(bottom: 8),
           child: Text(
-            'LINE COLOR',
+            isLine ? 'LINE COLOR' : 'BAR COLOR',
             style: textTheme.bodySmall!.copyWith(color: ColorName.neural600),
           ),
         ),

@@ -143,7 +143,11 @@ class EditTileView extends StatelessWidget {
                         if (tileType.isLinearGauge || tileType.isRadialGauge)
                           GaugeTileField(initialLob, enabled: isEdit)
                         else if (tileType.isLine || tileType.isBar)
-                          LineField(initialLob, enabled: isEdit)
+                          LineField(
+                            initialLob,
+                            enabled: isEdit,
+                            isLine: tileType.isLine,
+                          )
                         else if (tileType.isToggle)
                           ToggleTileField(initialLob)
                         else if (tileType.isMultiCommand)

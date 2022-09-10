@@ -44,7 +44,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     try {
       emit(state.copyWith(status: LoginStatus.processing));
       final res = await _userRepository.login(
-        state.domainName,
+        state.domainName.replaceAll(' ', '_'),
         state.username,
         state.password,
       );
