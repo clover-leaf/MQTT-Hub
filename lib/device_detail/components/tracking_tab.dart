@@ -244,7 +244,7 @@ class _DateFilter extends StatelessWidget {
       children: [
         Text(
           label,
-          style: textTheme.bodySmall!.copyWith(color: ColorName.neural600),
+          style: textTheme.labelSmall!.copyWith(color: ColorName.neural600),
         ),
         const SizedBox(height: 4),
         GestureDetector(
@@ -281,7 +281,7 @@ class _DateFilter extends StatelessWidget {
             child: Text(
               DateFormat.yMMMd().add_jm().format(initialTime),
               style: textTheme.bodyMedium!.copyWith(
-                fontSize: 13,
+                fontSize: 12,
                 color: ColorName.neural700,
               ),
             ),

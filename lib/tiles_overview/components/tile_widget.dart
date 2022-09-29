@@ -13,12 +13,14 @@ class TileWidget extends StatelessWidget {
     required this.tile,
     required this.width,
     required this.value,
+    required this.isUpdate,
     required this.status,
     required this.unit,
     required this.isAdmin,
   });
 
   final Tile tile;
+  final bool? isUpdate;
   final double width;
   final String? value;
   final String? unit;
@@ -42,7 +44,7 @@ class TileWidget extends StatelessWidget {
     final selectedProjectID = context
         .select((TilesOverviewBloc bloc) => bloc.state.selectedProjectID);
     final selectedDashboardID = projectDashboardView[selectedProjectID];
-
+    
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         padding: EdgeInsets.zero,
@@ -96,7 +98,7 @@ class TileWidget extends StatelessWidget {
                 ),
               ],
             ),
-            if (status != null && status!.isConnecting && value == null)
+            if (status != null && status!.isConnecting)
               Padding(
                 padding: const EdgeInsets.fromLTRB(0, 12, 0, 32),
                 child: Text(

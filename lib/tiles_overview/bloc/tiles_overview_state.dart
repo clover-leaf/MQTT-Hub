@@ -24,6 +24,7 @@ class TilesOverviewState extends Equatable {
     this.gatewayClientView = const {},
     this.brokerTopicPayloads = const {},
     this.tileValueView = const {},
+    this.tileUpdateView = const {},
     this.brokerStatusView = const {},
     this.brokers = const [],
     this.projects = const [],
@@ -67,6 +68,10 @@ class TilesOverviewState extends Equatable {
   /// cặp tile ID và giá trị của tile đó
   /// phụ thuộc tiles
   final Map<FieldId, String?> tileValueView;
+  /// <TileID, value?>
+  /// cặp tile ID và chỉ báo cho biết nhận
+  /// được giá trị mới
+  final Map<FieldId, bool?> tileUpdateView;
 
   // === Update by stream ===
   /// <BrokerID, GatewayClient>
@@ -126,6 +131,7 @@ class TilesOverviewState extends Equatable {
         gatewayClientView,
         brokerTopicPayloads,
         tileValueView,
+        tileUpdateView,
         brokerStatusView,
         brokers,
         projects,
@@ -148,6 +154,7 @@ class TilesOverviewState extends Equatable {
     Map<FieldId, GatewayClient>? gatewayClientView,
     Map<FieldId, Map<String, String?>>? brokerTopicPayloads,
     Map<FieldId, String?>? tileValueView,
+    Map<FieldId, bool?>? tileUpdateView,
     Map<FieldId, ConnectionStatus>? brokerStatusView,
     List<Broker>? brokers,
     List<Project>? projects,
@@ -170,6 +177,7 @@ class TilesOverviewState extends Equatable {
       gatewayClientView: gatewayClientView ?? this.gatewayClientView,
       brokerTopicPayloads: brokerTopicPayloads ?? this.brokerTopicPayloads,
       tileValueView: tileValueView ?? this.tileValueView,
+      tileUpdateView: tileUpdateView ?? this.tileUpdateView,
       brokerStatusView: brokerStatusView ?? this.brokerStatusView,
       brokers: brokers ?? this.brokers,
       projects: projects ?? this.projects,

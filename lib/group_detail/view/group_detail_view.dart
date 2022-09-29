@@ -135,7 +135,7 @@ class GroupDetailView extends StatelessWidget {
                                       GroupDetailPage.route(
                                         isAdmin: isAdmin,
                                         rootProject: rootProject,
-                                        groupID: groupID,
+                                        groupID: gr.id,
                                       ),
                                     ),
                                   ),

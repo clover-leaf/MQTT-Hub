@@ -109,9 +109,15 @@ class _DeviceConditionFieldState extends State<DeviceConditionField> {
                 updateSelectedDeviceIDBloc(context, device.id);
                 setState(() {
                   _selectedDevice = device;
-                  _attributesInDevice = widget.allAttributes
-                      .where((att) => att.deviceID == device.id)
-                      .toList();
+                  _attributesInDevice = widget.allAttributes.where((att) {
+                    if (_selectedDevice == null) {
+                      return false;
+                    } else if (_selectedDevice!.deviceTypeID != null) {
+                      return att.deviceTypeID == _selectedDevice!.deviceTypeID;
+                    } else {
+                      return att.deviceID == _selectedDevice!.id;
+                    }
+                  }).toList();
                 });
                 return device.name;
               }

@@ -217,6 +217,7 @@ class TilesOverviewBloc extends Bloc<TilesOverviewEvent, TilesOverviewState> {
         final payload = message['payload']!;
         // clone
         final tileValueView = Map<FieldId, String?>.from(state.tileValueView);
+        final tileUpdateView = Map<FieldId, bool?>.from(state.tileUpdateView);
         final brokerTopicPayloads =
             Map<FieldId, Map<String, String?>>.from(state.brokerTopicPayloads);
         final brokerTopic = brokerTopicPayloads[event.gatewayClient.brokerID] ??
@@ -234,18 +235,24 @@ class TilesOverviewBloc extends Bloc<TilesOverviewEvent, TilesOverviewState> {
               expression: att.jsonPath,
               payload: payload,
             );
+            if (tile.type.isBar) {
+              print('set ${tile.type} value: $value in tile subscribe');
+            }
             if (value == '?') {
               if (tileValueView[tile.id] == null) {
                 tileValueView[tile.id] = value;
+                tileUpdateView[tile.id] = true;
               }
             } else {
               tileValueView[tile.id] = value;
+              tileUpdateView[tile.id] = !tileUpdateView[tile.id]!;
             }
           }
         }
         return state.copyWith(
           brokerTopicPayloads: brokerTopicPayloads,
           tileValueView: tileValueView,
+          tileUpdateView: tileUpdateView,
         );
       },
     );
@@ -484,6 +491,7 @@ class TilesOverviewBloc extends Bloc<TilesOverviewEvent, TilesOverviewState> {
         final tileView = {for (final tl in tiles) tl.id: tl};
         // clone
         final tileValueView = Map<FieldId, String?>.from(state.tileValueView);
+        final tileUpdateView = Map<FieldId, bool?>.from(state.tileUpdateView);
         // handle new tile and edited tile
         final newTiles = tiles.where(
           (tl) => !state.tileView.keys.contains(tl.id),
@@ -503,12 +511,17 @@ class TilesOverviewBloc extends Bloc<TilesOverviewEvent, TilesOverviewState> {
             final payload = brokerTopic[dv?.topic];
             if (payload == null) {
               tileValueView[tl.id] = null;
+              tileUpdateView[tl.id] = true;
             } else {
               final value = readJson(
                 expression: att.jsonPath,
                 payload: payload,
               );
+              if (tl.type.isBar) {
+                print('set ${tl.type} value: $value in tile subscribe');
+              }
               tileValueView[tl.id] = value;
+              tileUpdateView[tl.id] = true;
             }
           }
         }
@@ -517,8 +530,13 @@ class TilesOverviewBloc extends Bloc<TilesOverviewEvent, TilesOverviewState> {
             state.tiles.where((tl) => !tileView.keys.contains(tl.id));
         for (final tl in deletedTiles) {
           tileValueView.remove(tl.id);
+          tileUpdateView.remove(tl.id);
         }
-        return state.copyWith(tiles: tiles, tileValueView: tileValueView);
+        return state.copyWith(
+          tiles: tiles,
+          tileValueView: tileValueView,
+          tileUpdateView: tileUpdateView,
+        );
       },
     );
   }

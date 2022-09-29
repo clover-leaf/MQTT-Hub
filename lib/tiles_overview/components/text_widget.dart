@@ -64,9 +64,7 @@ class _TextWidgetState extends State<TextWidget> {
   @override
   void didUpdateWidget(TextWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.value != widget.value) {
-      _updateValue(widget.value);
-    }
+    _updateValue(widget.value);
     if (oldWidget.unit != widget.unit) {
       _updateUnit(widget.unit);
     }

@@ -1,6 +1,6 @@
 name: bee
 description: An flutter app that helps manage IoT device used MQTT protocol
-version: 1.0.0+1
+version: 1.0.1
 publish_to: none
 
 environment:

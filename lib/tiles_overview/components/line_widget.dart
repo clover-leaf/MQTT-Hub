@@ -34,17 +34,22 @@ class _LineWidgetState extends State<LineWidget> {
   late Color _color;
   // unit of chart
   late String? _unit;
+  late bool _shouldUpdate;
 
   @override
   void initState() {
     super.initState();
+    _shouldUpdate = true;
     _unit = widget.unit;
     _updateColor(widget.lob);
     _updateValue(widget.value);
+    setState(() {
+      _shouldUpdate = false;
+    });
   }
 
   void _updateValue(String latestValue) {
-    if (double.tryParse(latestValue) != null) {
+    if (double.tryParse(latestValue) != null && _shouldUpdate) {
       final latestValueDouble = double.parse(latestValue);
       final values = List<double>.from(_values);
       if (values.isNotEmpty) {
@@ -89,8 +94,12 @@ class _LineWidgetState extends State<LineWidget> {
   @override
   void didUpdateWidget(LineWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.value != widget.value) {
+    if (_shouldUpdate) {
       _updateValue(widget.value);
+    } else {
+      setState(() {
+        _shouldUpdate = true;
+      });
     }
     if (oldWidget.lob != widget.lob) {
       _updateColor(widget.lob);

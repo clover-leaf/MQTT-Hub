@@ -39,6 +39,9 @@ class TilesOverviewView extends StatelessWidget {
     // get tiles value view
     final tileValueView = state.tileValueView;
 
+    // get tiles update view
+    final tileUpdateView = state.tileUpdateView;
+
     // get device view
     final deviceView = state.deviceView;
 
@@ -134,6 +137,7 @@ class TilesOverviewView extends StatelessWidget {
                     tile: tile,
                     width: tileWidth,
                     value: tileValueView[tile.id],
+                    isUpdate: tileUpdateView[tile.id],
                     status: brokerStatusView[device?.brokerID],
                     unit: attributeView[tile.attributeID]?.unit,
                     isAdmin: isAdmin,
